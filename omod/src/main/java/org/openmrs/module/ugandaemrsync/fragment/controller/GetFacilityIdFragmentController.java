@@ -10,6 +10,8 @@
 package org.openmrs.module.ugandaemrsync.fragment.controller;
 
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.ugandaemrsync.server.SyncConstant;
+import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.module.ugandaemrsync.server.UgandaEMRHttpURLConnection;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.FragmentModel;
@@ -24,9 +26,21 @@ public class GetFacilityIdFragmentController {
 	}
 	
 	public void get(@SpringBean PageModel pageModel) throws Exception {
-		UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
+		SyncGlobalProperties properties = new SyncGlobalProperties();
+		String serverProtocol = properties.getGlobalProperty(SyncConstant.SERVER_PROTOCOL);
+		String serverIP = properties.getGlobalProperty(SyncConstant.SERVER_IP);
 		
-		pageModel.put("message", ugandaEMRHttpURLConnection.requestFacilityId());
+		UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection(serverProtocol, serverIP);
+		
+		String facilityId = ugandaEMRHttpURLConnection.requestFacilityId();
+		
+		if (facilityId != null) {
+			properties.setGlobalProperty(SyncConstant.HEALTH_CENTER_SYNC_ID, facilityId);
+			pageModel.put("message", "Facility ID generation successful");
+		} else {
+			pageModel.put("message", "Facility ID generation failed");
+		}
+		
 	}
 	
 }

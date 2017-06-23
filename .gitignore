@@ -2,8 +2,15 @@
 .idea/
 api/target/
 omod/target/
-.iml
+*.iml
 omod/*.iml
 ugandaemr.sync.iml
 api/*.iml
 target/
+api/src/.DS_Store
+api/src/main/.DS_Store
+api/src/main/java/.DS_Store
+api/src/main/java/org/.DS_Store
+api/src/main/java/org/openmrs/.DS_Store
+api/src/main/java/org/openmrs/module/.DS_Store
+ugandaemrsync.iml

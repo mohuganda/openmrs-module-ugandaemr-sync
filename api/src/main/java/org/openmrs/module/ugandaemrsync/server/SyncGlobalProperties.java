@@ -27,11 +27,6 @@ public class SyncGlobalProperties {
 			log.info("Default Server IP is Set");
 		}
 		
-		if (getGlobalProperty(INITIAL_SYNC) == null) {
-			setGlobalProperty(INITIAL_SYNC, INITIAL_SYNC_PLACE_HOLDER);
-			log.info("Default Initial Sync State is Set");
-		}
-		
 		if (getGlobalProperty(SERVER_IP) == null) {
 			setGlobalProperty(SERVER_IP, SERVER_IP_PLACE_HOLDER);
 			log.info("Default Server IP is Set");

@@ -10,29 +10,49 @@
 package org.openmrs.module.ugandaemrsync.fragment.controller;
 
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.ugandaemrsync.server.SyncConstant;
 import org.openmrs.module.ugandaemrsync.server.SyncDataRecord;
+import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.openmrs.ui.framework.page.PageModel;
 
-import java.util.List;
+import java.util.Date;
+
+import static org.openmrs.module.ugandaemrsync.server.SyncConstant.LAST_SYNC_DATE;
 
 /**
  *  * Controller for a fragment that shows all users  
  */
 public class GenerateInitialDataFragmentController {
 	
-	SyncDataRecord syncDataRecord = new SyncDataRecord();
-	
 	public void controller(UiSessionContext sessionContext, FragmentModel model) {
 	}
 	
 	public void get(@SpringBean PageModel pageModel) throws Exception {
+		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+		String facilitySyncId = syncGlobalProperties.getGlobalProperty(SyncConstant.HEALTH_CENTER_SYNC_ID);
+		String serverProtocol = syncGlobalProperties.getGlobalProperty(SyncConstant.SERVER_PROTOCOL);
+		String serverIP = syncGlobalProperties.getGlobalProperty(SyncConstant.SERVER_IP);
+		String maxNoOfRows = syncGlobalProperties.getGlobalProperty(SyncConstant.MAX_NUMBER_OF_ROWS);
+		String lastSyncDate = syncGlobalProperties.getGlobalProperty(LAST_SYNC_DATE);
+		SyncDataRecord syncDataRecord = new SyncDataRecord(serverProtocol, serverIP, facilitySyncId, maxNoOfRows,
+		        lastSyncDate);
+		String folder = syncDataRecord.getAbsoluteBackupFolderPath();
 		
-		List totals = syncDataRecord.syncData();
-		
-		pageModel.put("persons", totals);
-		
+		syncDataRecord.syncData2(folder);
+		String uniqueString = syncDataRecord.zipSplitAndSend(folder);
+		if (uniqueString != null) {
+			syncDataRecord.sendProcessingCommand(uniqueString);
+			Date now = new Date();
+			String newSyncDate = SyncConstant.DEFAULT_DATE_FORMAT.format(now);
+			syncGlobalProperties.setGlobalProperty(LAST_SYNC_DATE, newSyncDate);
+			
+			pageModel.put("persons", "The data was processed and sent successfully");
+		} else {
+			pageModel.put("persons", "A problem occurred, please check your Internet connection");
+			
+		}
 	}
 	
 }
