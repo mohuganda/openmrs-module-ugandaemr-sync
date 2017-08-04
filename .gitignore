@@ -7,5 +7,4 @@ omod/*.iml
 ugandaemr.sync.iml
 api/*.iml
 target/
-.DS_Store
-
+*.DS_Store
