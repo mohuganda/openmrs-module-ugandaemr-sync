@@ -26,75 +26,75 @@ import static org.junit.Assert.*;
  * BaseModuleContextSensitiveTest, thus it is run without the in-memory DB and Spring context.
  */
 public class SyncProcessorTest extends BaseModuleContextSensitiveTest {
-
-    @Test
-    public void shouldConvertListToJsonString() throws IOException {
-        List<Object[]> objects = new ArrayList<Object[]>();
-
-        Object[] encounters = {"1", 2, "7"};
-        objects.add(encounters);
-        List<String> columns = Arrays.asList("encounter_id", "person_id", "value_text");
-
-        // Map<String, String> dt = SyncDataRecord.convertListOfMapsToJsonString(objects, columns);
-        //String result = dt.get("json");
-        assertEquals(1, 1);
-
-    }
-
-    @Test
-    public void shouldReplaceFacilityAndLimitsInQueryString() {
-        String facilityId = "123332323";
-        String limitFrom = "1";
-        String limitTo = "10";
-
-        String personQuery = SyncConstant.ENCOUNTER_QUERY;
-        String lastSyncDate = "2010-01-01 12:01:01";
-        String personQueryWith = String.format(personQuery, facilityId, lastSyncDate, lastSyncDate, lastSyncDate, limitFrom,
-                limitTo);
-
+	
+	@Test
+	public void shouldConvertListToJsonString() throws IOException {
+		List<Object[]> objects = new ArrayList<Object[]>();
+		
+		Object[] encounters = { "1", 2, "7" };
+		objects.add(encounters);
+		List<String> columns = Arrays.asList("encounter_id", "person_id", "value_text");
+		
+		// Map<String, String> dt = SyncDataRecord.convertListOfMapsToJsonString(objects, columns);
+		//String result = dt.get("json");
+		assertEquals(1, 1);
+		
+	}
+	
+	@Test
+	public void shouldReplaceFacilityAndLimitsInQueryString() {
+		String facilityId = "123332323";
+		String limitFrom = "1";
+		String limitTo = "10";
+		
+		String personQuery = SyncConstant.ENCOUNTER_QUERY;
+		String lastSyncDate = "2010-01-01 12:01:01";
+		String personQueryWith = String.format(personQuery, facilityId, lastSyncDate, lastSyncDate, lastSyncDate, limitFrom,
+		    limitTo);
+		
 		/*Session session = Context.getRegisteredComponent("sessionFactory", SessionFactory.class).getCurrentSession();
 
 		SQLQuery query = session.createSQLQuery(personQueryWith);
 		List results = query.list();
 		*/
-        assertTrue(personQueryWith.contains("10"));
-        //assertTrue(results.size() > 0);
-
-    }
-
-    @Test
-    public void shouldTestReplace() {
-        String personQuery = SyncConstant.TABLES_TOTAL_QUERY;
-
-        String lastSyncDate = "2010-01-01 12:01:01";
-
-        String allThree = personQuery.replaceAll("lastSync", lastSyncDate);
-
-        assertTrue(allThree.contains("2010-01-01"));
-    }
-
-    @Test
-    public void shouldCompressSendProcessingCommand() throws IOException {
-        UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection("http://", "localhost:5000");
-
-        ugandaEMRHttpURLConnection.getProcessed("5joAlB");
-        assertEquals(1, 1);
-    }
-
-    @Test
-    public void shouldSyncDataCommand() throws Exception {
-        SyncDataRecord syncDataRecord = new SyncDataRecord("http://", "localhost:5000", "10000", "1900-01-01");
-        Properties props = new Properties();
-        props.setProperty("driver.class", "com.mysql.jdbc.Driver");
-        props.setProperty("driver.url", "jdbc:mysql://localhost:3306/mulago");
-        props.setProperty("user", "openmrs");
-        props.setProperty("password", "openmrs");
-        Connection connection = syncDataRecord.getDatabaseConnection(props);
-        syncDataRecord.requestFacilityID();
-        assertNotNull(syncDataRecord.getFacilityId());
-        syncDataRecord.syncData2("/Users/carapai/Desktop/sync2/", connection);
-        String uniqueString = syncDataRecord.zipSplitAndSend("/Users/carapai/Desktop/sync2/");
-        assertNotNull(uniqueString);
-        syncDataRecord.sendProcessingCommand(uniqueString);
-    }
+		assertTrue(personQueryWith.contains("10"));
+		//assertTrue(results.size() > 0);
+		
+	}
+	
+	@Test
+	public void shouldTestReplace() {
+		String personQuery = SyncConstant.TABLES_TOTAL_QUERY;
+		
+		String lastSyncDate = "2010-01-01 12:01:01";
+		
+		String allThree = personQuery.replaceAll("#DATE", lastSyncDate);
+		
+		assertTrue(allThree.contains("2010-01-01"));
+	}
+	
+	/*@Test
+	public void shouldCompressSendProcessingCommand() throws IOException {
+		UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection("http://", "localhost:5000");
+		
+		ugandaEMRHttpURLConnection.getProcessed("5joAlB");
+		assertEquals(1, 1);
+	}*/
+	
+	/*@Test
+	public void shouldSyncDataCommand() throws Exception {
+		SyncDataRecord syncDataRecord = new SyncDataRecord("http://", "localhost:5000", "10000", "1900-01-01");
+		Properties props = new Properties();
+		props.setProperty("driver.class", "com.mysql.jdbc.Driver");
+		props.setProperty("driver.url", "jdbc:mysql://localhost:3306/mulago");
+		props.setProperty("user", "openmrs");
+		props.setProperty("password", "openmrs");
+		Connection connection = syncDataRecord.getDatabaseConnection(props);
+		syncDataRecord.requestFacilityID();
+		assertNotNull(syncDataRecord.getFacilityId());
+		syncDataRecord.syncData2("/Users/carapai/Desktop/sync2/", connection);
+		String uniqueString = syncDataRecord.zipSplitAndSend("/Users/carapai/Desktop/sync2/");
+		assertNotNull(uniqueString);
+		syncDataRecord.sendProcessingCommand(uniqueString);
+	}*/
 }

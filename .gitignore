@@ -1,10 +1,5 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea/
-api/target/
-omod/target/
-.iml
-omod/*.iml
-ugandaemr.sync.iml
-api/*.iml
+*.iml
 target/
 *.DS_Store

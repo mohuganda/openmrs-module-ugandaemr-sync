@@ -26,41 +26,42 @@ import static org.openmrs.module.ugandaemrsync.server.SyncConstant.LAST_SYNC_DAT
  *  * Controller for a fragment that shows all users  
  */
 public class GenerateInitialDataFragmentController {
-
-    public void controller(UiSessionContext sessionContext, FragmentModel model) {
-    }
-
-    public void get(@SpringBean PageModel pageModel) throws Exception {
-
-        try {
-            Context.openSession();
-            SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-            String facilitySyncId = syncGlobalProperties.getGlobalProperty(SyncConstant.HEALTH_CENTER_SYNC_ID);
-            String serverProtocol = syncGlobalProperties.getGlobalProperty(SyncConstant.SERVER_PROTOCOL);
-            String serverIP = syncGlobalProperties.getGlobalProperty(SyncConstant.SERVER_IP);
-            String maxNoOfRows = syncGlobalProperties.getGlobalProperty(SyncConstant.MAX_NUMBER_OF_ROWS);
-            String lastSyncDate = syncGlobalProperties.getGlobalProperty(LAST_SYNC_DATE);
-
-            SyncDataRecord syncDataRecord = new SyncDataRecord(serverProtocol, serverIP, facilitySyncId, maxNoOfRows,
-                    lastSyncDate);
-            String folder = syncDataRecord.getAbsoluteBackupFolderPath();
-
-            syncDataRecord.syncData2(folder, syncDataRecord.connection());
-            String uniqueString = syncDataRecord.zipSplitAndSend(folder);
-            if (uniqueString != null) {
-                syncDataRecord.sendProcessingCommand(uniqueString);
-                Date now = new Date();
-                String newSyncDate = SyncConstant.DEFAULT_DATE_FORMAT.format(now);
-                syncGlobalProperties.setGlobalProperty(LAST_SYNC_DATE, newSyncDate);
-                pageModel.put("persons", "The data was processed and sent successfully");
-            } else {
-                pageModel.put("persons", "A problem occurred, please check your Internet connection");
-
-            }
-            Context.closeSession();
-        } catch (Exception e) {
-            System.out.println("Error occured");
-        }
-    }
-
+	
+	public void controller(UiSessionContext sessionContext, FragmentModel model) {
+	}
+	
+	public void get(@SpringBean PageModel pageModel) throws Exception {
+		
+		try {
+			Context.openSession();
+			SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+			String facilitySyncId = syncGlobalProperties.getGlobalProperty(SyncConstant.HEALTH_CENTER_SYNC_ID);
+			String serverProtocol = syncGlobalProperties.getGlobalProperty(SyncConstant.SERVER_PROTOCOL);
+			String serverIP = syncGlobalProperties.getGlobalProperty(SyncConstant.SERVER_IP);
+			String maxNoOfRows = syncGlobalProperties.getGlobalProperty(SyncConstant.MAX_NUMBER_OF_ROWS);
+			String lastSyncDate = syncGlobalProperties.getGlobalProperty(LAST_SYNC_DATE);
+			
+			SyncDataRecord syncDataRecord = new SyncDataRecord(serverProtocol, serverIP, facilitySyncId, maxNoOfRows,
+			        lastSyncDate);
+			String folder = syncDataRecord.getAbsoluteBackupFolderPath();
+			
+			syncDataRecord.syncData2(folder, syncDataRecord.connection());
+			String uniqueString = syncDataRecord.zipSplitAndSend(folder);
+			if (uniqueString != null) {
+				syncDataRecord.sendProcessingCommand(uniqueString);
+				Date now = new Date();
+				String newSyncDate = SyncConstant.DEFAULT_DATE_FORMAT.format(now);
+				syncGlobalProperties.setGlobalProperty(LAST_SYNC_DATE, newSyncDate);
+				pageModel.put("persons", "The data was processed and sent successfully");
+			} else {
+				pageModel.put("persons", "A problem occurred, please check your Internet connection");
+				
+			}
+			Context.closeSession();
+		}
+		catch (Exception e) {
+			System.out.println("Error occured");
+		}
+	}
+	
 }

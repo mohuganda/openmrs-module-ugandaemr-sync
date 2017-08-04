@@ -24,7 +24,7 @@ import java.util.*;
  *  * Controller for a fragment that shows all users  
  */
 public class HomeFragmentController {
-
+	
 	public void controller(UiSessionContext sessionContext, FragmentModel model) {
 	}
 	
