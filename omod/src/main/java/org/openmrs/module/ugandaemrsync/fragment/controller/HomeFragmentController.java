@@ -24,26 +24,13 @@ import java.util.*;
  *  * Controller for a fragment that shows all users  
  */
 public class HomeFragmentController {
-	
-	SyncDataRecord syncDataRecord = new SyncDataRecord();
-	
-	UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
-	
-	Integer max = 500;
-	
+
 	public void controller(UiSessionContext sessionContext, FragmentModel model) {
 	}
 	
 	public void get(@SpringBean PageModel pageModel) throws Exception {
 		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 		String facilitySyncId = syncGlobalProperties.getGlobalProperty(SyncConstant.HEALTH_CENTER_SYNC_ID);
-		String initialState = syncGlobalProperties.getGlobalProperty(SyncConstant.INITIAL_SYNC);
-		
-		if (initialState.equalsIgnoreCase("false")) {
-			pageModel.put("initialSync", true);
-		} else {
-			pageModel.put("initialSync", false);
-		}
 		
 		try {
 			UUID uuid = UUID.fromString(facilitySyncId);

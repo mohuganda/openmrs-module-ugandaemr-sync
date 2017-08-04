@@ -1,5 +1,6 @@
 /Users/carapai/openmrs/ugandaemr/temp-project/ugandaemrsync/api/src/main/java/org/openmrs/module/ugandaemrsync/server/Facility.java
 /Users/carapai/openmrs/ugandaemr/temp-project/ugandaemrsync/api/src/main/java/org/openmrs/module/ugandaemrsync/server/UgandaEMRHttpURLConnection.java
+/Users/carapai/openmrs/ugandaemr/temp-project/ugandaemrsync/api/src/main/java/org/openmrs/module/ugandaemrsync/server/Zip.java
 /Users/carapai/openmrs/ugandaemr/temp-project/ugandaemrsync/api/src/main/java/org/openmrs/module/ugandaemrsync/SyncSetting.java
 /Users/carapai/openmrs/ugandaemr/temp-project/ugandaemrsync/api/src/main/java/org/openmrs/module/ugandaemrsync/SyncTask.java
 /Users/carapai/openmrs/ugandaemr/temp-project/ugandaemrsync/api/src/main/java/org/openmrs/module/ugandaemrsync/UgandaEMRSyncActivator.java
@@ -9,6 +10,5 @@
 /Users/carapai/openmrs/ugandaemr/temp-project/ugandaemrsync/api/src/main/java/org/openmrs/module/ugandaemrsync/server/SyncGlobalProperties.java
 /Users/carapai/openmrs/ugandaemr/temp-project/ugandaemrsync/api/src/main/java/org/openmrs/module/ugandaemrsync/api/dao/UgandaEMRSyncDao.java
 /Users/carapai/openmrs/ugandaemr/temp-project/ugandaemrsync/api/src/main/java/org/openmrs/module/ugandaemrsync/api/UgandaEMRSyncService.java
-/Users/carapai/openmrs/ugandaemr/temp-project/ugandaemrsync/api/src/main/java/org/openmrs/module/ugandaemrsync/server/UgandaEMRRecord.java
 /Users/carapai/openmrs/ugandaemr/temp-project/ugandaemrsync/api/src/main/java/org/openmrs/module/ugandaemrsync/server/SyncDataRecord.java
 /Users/carapai/openmrs/ugandaemr/temp-project/ugandaemrsync/api/src/main/java/org/openmrs/module/ugandaemrsync/server/SyncConstant.java

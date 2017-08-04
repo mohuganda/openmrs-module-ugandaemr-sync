@@ -4,6 +4,19 @@ package org.openmrs.module.ugandaemrsync.server;
  * Created by lubwamasamuel on 11/10/16.
  */
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
@@ -13,119 +26,45 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.List;
+import java.net.*;
 import java.util.Map;
 
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.HEALTH_CENTER_SYNC_ID;
+import static org.openmrs.module.ugandaemrsync.server.SyncConstant.SERVER_PROTOCOL_PLACE_HOLDER;
 
 public class UgandaEMRHttpURLConnection {
 	
-	public UgandaEMRHttpURLConnection() {
+	private String serverIP;
+	
+	private String serverProtocol;
+	
+	public UgandaEMRHttpURLConnection(String serverProtocol, String serverIP) {
+		this.serverIP = serverIP;
+		this.serverProtocol = serverProtocol;
 	}
 	
-	private final String USER_AGENT = "Mozilla/5.0";
-	
-	// HTTP GET request
-	public HttpURLConnection sendGet(String content, String protocol) throws Exception {
-		
-		URL obj = new URL(protocol + content);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		
-		// optional default is GET
-		con.setRequestMethod("GET");
-		
-		//add request header
-		con.setRequestProperty("User-Agent", USER_AGENT);
-		
-		return con;
-		
-	}
-	
-	public int getCheckConnection(String url) throws Exception {
-		return sendGet(url, SyncConstant.SERVER_PROTOCOL_PLACE_HOLDER).getResponseCode();
-	}
-	
-	public StringBuffer getResponseString(BufferedReader bufferedReader) throws IOException {
-		String inputLine;
-		
-		StringBuffer response = new StringBuffer();
-		
-		while ((inputLine = bufferedReader.readLine()) != null) {
-			response.append(inputLine);
-		}
-		return response;
-	}
-	
-	// HTTP POST request
-	
-	public Map sendPostBy(String contentType, String content, String facilityId, String url) throws Exception {
-		
+	public boolean testInternet(String site) {
+		Socket sock = new Socket();
+		InetSocketAddress addr = new InetSocketAddress(site, 80);
 		try {
-			URL url1 = new URL(url);
-			URLConnection con = url1.openConnection();
-			
-			// specify that we will send output and accept input
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			con.setConnectTimeout(20000); // long timeout, but not infinite
-			con.setReadTimeout(20000);
-			con.setUseCaches(false);
-			con.setDefaultUseCaches(false);
-			
-			// tell the web server what we are sending
-			con.setRequestProperty("Content-Type", contentType);
-			con.setRequestProperty("User-Agent", USER_AGENT);
-			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-			if (facilityId == null) {
-				facilityId = "";
-			}
-			con.setRequestProperty("Ugandaemr-Sync-Facility-Id", facilityId);
-			
-			OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
-			writer.write(content);
-			writer.flush();
-			writer.close();
-			
-			// reading the response
-			InputStreamReader reader = new InputStreamReader(con.getInputStream());
-			StringBuilder buf = new StringBuilder();
-			char[] cbuf = new char[2048];
-			int num;
-			while (-1 != (num = reader.read(cbuf))) {
-				buf.append(cbuf, 0, num);
-			}
-			String result = buf.toString();
-			
-			ObjectMapper mapper = new ObjectMapper();
-			Map map = mapper.readValue(result, Map.class);
-			return map;
+			sock.connect(addr, 3000);
+			return true;
 		}
-		catch (Throwable t) {
-			t.printStackTrace(System.out);
+		catch (IOException e) {
+			return false;
 		}
-		return null;
-	}
-	
-	public Map sendPostBy(String url, String data) throws Exception {
-		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-		String contentTypeJSON = SyncConstant.JSON_CONTENT_TYPE;
-		
-		String serverIP = syncGlobalProperties.getGlobalProperty(SyncConstant.SERVER_IP);
-		String serverProtocol = syncGlobalProperties.getGlobalProperty(SyncConstant.SERVER_PROTOCOL);
-		String facilitySyncId = syncGlobalProperties.getGlobalProperty(HEALTH_CENTER_SYNC_ID);
-		String facilityURL = serverProtocol + serverIP + "/" + url;
-		
-		return sendPostBy(contentTypeJSON, data, facilitySyncId, facilityURL);
+		finally {
+			try {
+				sock.close();
+			}
+			catch (IOException e) {}
+		}
 	}
 	
 	/*Request for facility Id*/
 	
 	public String requestFacilityId() throws Exception {
 		LocationService service = Context.getLocationService();
-		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 		
 		Location location = service.getLocation(Integer.valueOf(2));
 		
@@ -135,16 +74,81 @@ public class UgandaEMRHttpURLConnection {
 		
 		String jsonInString = mapper.writeValueAsString(facility);
 		
-		Map facilityMap = sendPostBy("api/facility", jsonInString);
+		Map facilityMap = postJson("api/facility", jsonInString);
 		
 		String uuid = String.valueOf(facilityMap.get("uuid"));
 		
 		if (uuid != null) {
-			syncGlobalProperties.setGlobalProperty(HEALTH_CENTER_SYNC_ID, uuid);
-			return "Facility ID Generated Successfully";
+			return uuid;
 			
 		}
-		return "Could not generate Facility ID";
+		return null;
 	}
 	
+	public void postFile(byte[] json, String url, String fileName) throws IOException {
+		String facilityURL = serverProtocol + serverIP + "/" + url;
+		CloseableHttpClient client = HttpClients.createDefault();
+		HttpPost post = new HttpPost(facilityURL);
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+		builder.addBinaryBody("file", json, ContentType.DEFAULT_BINARY, fileName);
+		HttpEntity entity = builder.build();
+		post.setEntity(entity);
+		CloseableHttpResponse response = client.execute(post);
+		
+		if (response.getStatusLine().getStatusCode() == 200 || response.getStatusLine().getStatusCode() == 201) {
+			BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+			String message = IOUtils.toString(br);
+			// Result returnResult = mapper.readValue(message, Result.class);
+			// return returnResult;
+		} else {
+			throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
+		}
+		client.close();
+	}
+	
+	public Map postJson(String url, String json) throws IOException {
+		String facilityURL = serverProtocol + serverIP + "/" + url;
+		CloseableHttpClient client = HttpClients.createDefault();
+		HttpPost httpPost = new HttpPost(facilityURL);
+		StringEntity entity = new StringEntity(json);
+		httpPost.setEntity(entity);
+		httpPost.setHeader("Accept", "application/json");
+		httpPost.setHeader("Content-type", "application/json");
+		CloseableHttpResponse response = client.execute(httpPost);
+		
+		if (response.getStatusLine().getStatusCode() == 200 || response.getStatusLine().getStatusCode() == 201) {
+			BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+			String message = IOUtils.toString(br);
+			ObjectMapper mapper = new ObjectMapper();
+			Map map = mapper.readValue(message, Map.class);
+			client.close();
+			return map;
+		} else {
+			throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
+		}
+	}
+	
+	public void getProcessed(String uniqueId) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		URIBuilder builder = new URIBuilder();
+		builder.setScheme("http").setHost(this.serverIP).setPath("/api/process").setParameter("file_name", uniqueId);
+		try {
+			URI uri = builder.build();
+			System.out.println(uri);
+			HttpGet httpGet = new HttpGet(uri);
+			CloseableHttpResponse response1 = httpclient.execute(httpGet);
+			response1.close();
+		}
+		catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		catch (ClientProtocolException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
 }

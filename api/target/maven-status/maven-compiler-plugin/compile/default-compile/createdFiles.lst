@@ -1,11 +1,12 @@
 org/openmrs/module/ugandaemrsync/Item.class
+org/openmrs/module/ugandaemrsync/server/Zip.class
 org/openmrs/module/ugandaemrsync/UgandaEMRSyncActivator.class
-org/openmrs/module/ugandaemrsync/server/UgandaEMRRecord.class
 org/openmrs/module/ugandaemrsync/server/SyncConstant.class
 org/openmrs/module/ugandaemrsync/server/Facility.class
 org/openmrs/module/ugandaemrsync/server/SyncDataRecord.class
 org/openmrs/module/ugandaemrsync/server/UgandaEMRHttpURLConnection.class
 org/openmrs/module/ugandaemrsync/api/impl/UgandaEMRSyncServiceImpl.class
+org/openmrs/module/ugandaemrsync/server/SyncDataRecord$1.class
 org/openmrs/module/ugandaemrsync/server/SyncGlobalProperties.class
 org/openmrs/module/ugandaemrsync/SyncSetting.class
 org/openmrs/module/ugandaemrsync/api/UgandaEMRSyncService.class
