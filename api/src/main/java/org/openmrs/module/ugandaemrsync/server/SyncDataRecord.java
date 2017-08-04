@@ -161,7 +161,6 @@ public class SyncDataRecord {
 				    SyncConstant.TABLES_TOTAL_QUERY.replaceAll("#DATE", lastSyncDate), connection);
 				Integer encounters = numbers.get("encounter");
 				Integer obs = numbers.get("obs");
-				Integer persons = numbers.get("person");
 				Integer person_names = numbers.get("person_name");
 				Integer person_addresses = numbers.get("person_address");
 				Integer person_attributes = numbers.get("person_attribute");
@@ -174,7 +173,6 @@ public class SyncDataRecord {
 				
 				dumpTable(connection, folder, "encounter_providers.json", ENCOUNTER_PROVIDER_QUERY, encounter_providers);
 				dumpTable(connection, folder, "providers.json", PROVIDER_QUERY, providers);
-				dumpTable(connection, folder, "persons.json", PATIENT_QUERY, persons);
 				dumpTable(connection, folder, "patients.json", PATIENT_QUERY, patients);
 				dumpTable(connection, folder, "person_names.json", PERSON_NAME_QUERY, person_names);
 				dumpTable(connection, folder, "person_addresses.json", PERSON_ADDRESS_QUERY, person_addresses);

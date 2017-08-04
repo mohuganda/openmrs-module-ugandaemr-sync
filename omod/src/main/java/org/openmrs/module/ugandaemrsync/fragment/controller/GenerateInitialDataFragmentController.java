@@ -60,6 +60,7 @@ public class GenerateInitialDataFragmentController {
 			Context.closeSession();
 		}
 		catch (Exception e) {
+			pageModel.put("persons", "A problem occurred, please check your Internet connection");
 			System.out.println("Error occured");
 		}
 	}
