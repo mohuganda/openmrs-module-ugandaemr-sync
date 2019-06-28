@@ -51,6 +51,11 @@ public class SyncGlobalProperties {
 			setGlobalProperty(MAX_NUMBER_OF_ROWS, MAX_NUMBER_OF_ROWS_PLACE_HOLDER);
 			log.info("Place Holder for max number of row is set");
 		}
+
+		if (getGlobalProperty(MIRTH_URL) == null) {
+			setGlobalProperty(MIRTH_URL, MIRTH_URL_PLACE_HOLDER);
+			log.info("Place Holder Mirth URL is set");
+		}
 	}
 	
 	public GlobalProperty setGlobalProperty(String property, String propertyValue) {

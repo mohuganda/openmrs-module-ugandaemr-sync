@@ -14,6 +14,7 @@ import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.scheduler.tasks.AbstractTask;
 
 import java.io.IOException;
@@ -29,6 +30,8 @@ import java.util.Date;
 public class SendRecencyDataToCentralServerTask extends AbstractTask {
 
     protected Log log = LogFactory.getLog(getClass());
+    //TODO: use syncGlobalProperties once it has been persisted on ugandaEMR database
+    // SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 
     @Override
     public void execute() {
