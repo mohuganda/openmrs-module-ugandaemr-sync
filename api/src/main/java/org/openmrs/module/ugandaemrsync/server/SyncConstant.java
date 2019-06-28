@@ -55,9 +55,9 @@ public class SyncConstant {
 	
 	public static final String MAX_NUMBER_OF_ROWS_PLACE_HOLDER = "500";
 
-	public static final String MIRTH_URL = "ugandaemr.mirthurl";
+	public static final String SERVER_URL = "ugandaemr.serverurl";
 
-	public static final String MIRTH_URL_PLACE_HOLDER = "http://mirth-tcp.globalhealthapp.net:6001";
+	public static final String SERVER_URL_PLACE_HOLDER = "http://mirth-tcp.globalhealthapp.net:6001";
 	
 	public static final String PERSON_QUERY = "SELECT\n" + "  gender,\n" + "  birthdate,\n" + "  birthdate_estimated,\n"
 	        + "  dead,\n" + "  death_date,\n" + "  (SELECT c.uuid\n" + "   FROM concept c\n"

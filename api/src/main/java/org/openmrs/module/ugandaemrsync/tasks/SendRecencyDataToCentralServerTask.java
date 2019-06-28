@@ -45,13 +45,13 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
             // Data Successfully uploaded
             /* Check internet connectivity */
             if (netServerIsAvailable(UgandaEMRSyncConfig.GOOGLE_COM, UgandaEMRSyncConfig.GOOGLE_SUCCESS, UgandaEMRSyncConfig.GOOGLE_FAILED)
-                    && netServerIsAvailable(UgandaEMRSyncConfig.SERVER_URL, UgandaEMRSyncConfig.MIRHT_SUCCESS, UgandaEMRSyncConfig.MIRTH_FAILED)) {
+                    && netServerIsAvailable(UgandaEMRSyncConfig.SERVER_URL, UgandaEMRSyncConfig.SERVER_SUCCESS, UgandaEMRSyncConfig.SERVER_FAILED)) {
                 HttpClient client = new DefaultHttpClient();
-                HttpPost post = new HttpPost(UgandaEMRSyncConfig.MIRTH_URL);
+                HttpPost post = new HttpPost(UgandaEMRSyncConfig.SENDNG_SERVER_URL);
                 post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
 
                 UsernamePasswordCredentials credentials
-                        = new UsernamePasswordCredentials(UgandaEMRSyncConfig.MIRTH_USERNAME, UgandaEMRSyncConfig.MIRTH_PASSWORD);
+                        = new UsernamePasswordCredentials(UgandaEMRSyncConfig.SERVER_USERNAME, UgandaEMRSyncConfig.SERVER_PASSWORD);
                 post.addHeader(new BasicScheme().authenticate(credentials, post, null));
 
                 String bodyText = getRecencyData();

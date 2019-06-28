@@ -52,9 +52,9 @@ public class SyncGlobalProperties {
 			log.info("Place Holder for max number of row is set");
 		}
 
-		if (getGlobalProperty(MIRTH_URL) == null) {
-			setGlobalProperty(MIRTH_URL, MIRTH_URL_PLACE_HOLDER);
-			log.info("Place Holder Mirth URL is set");
+		if (getGlobalProperty(SERVER_URL) == null) {
+			setGlobalProperty(SERVER_URL, SERVER_URL_PLACE_HOLDER);
+			log.info("Place Holder server URL is set");
 		}
 	}
 	
