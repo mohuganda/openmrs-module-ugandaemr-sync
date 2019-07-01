@@ -15,6 +15,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
+import org.openmrs.module.ugandaemrsync.server.UgandaEMRHttpURLConnection;
 import org.openmrs.scheduler.tasks.AbstractTask;
 
 import java.io.IOException;
@@ -30,6 +31,7 @@ import java.util.Date;
 public class SendRecencyDataToCentralServerTask extends AbstractTask {
 
     protected Log log = LogFactory.getLog(getClass());
+    UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
     //TODO: use syncGlobalProperties once it has been persisted on ugandaEMR database
     // SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 
@@ -44,8 +46,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
             // Uploading data....
             // Data Successfully uploaded
             /* Check internet connectivity */
-            if (netServerIsAvailable(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_URL, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_SUCCESS, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_FAILED)
-                    && netServerIsAvailable(UgandaEMRSyncConfig.SERVER_URL, UgandaEMRSyncConfig.SERVER_SUCCESS, UgandaEMRSyncConfig.SERVER_FAILED)) {
+            if (ugandaEMRHttpURLConnection.netServerIsAvailable(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_URL, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_SUCCESS, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_FAILED)
+                    && ugandaEMRHttpURLConnection.netServerIsAvailable(UgandaEMRSyncConfig.SERVER_URL, UgandaEMRSyncConfig.SERVER_SUCCESS, UgandaEMRSyncConfig.SERVER_FAILED)) {
                 HttpClient client = new DefaultHttpClient();
                 HttpPost post = new HttpPost(UgandaEMRSyncConfig.SENDNG_SERVER_URL);
                 post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
@@ -76,21 +78,5 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 
     private String getRecencyData() {
         return "patient_id, patient_creator, encounter_id, gravida, para$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0";
-    }
-
-    private boolean netServerIsAvailable(String strUrl, String strSuccess, String strFail) {
-        try {
-            final URL url = new URL(strUrl);
-            final URLConnection conn = url.openConnection();
-            conn.connect();
-            conn.getInputStream().close();
-            System.out.println(strSuccess);
-            return true;
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            System.out.println(strFail);
-            return false;
-        }
     }
 }

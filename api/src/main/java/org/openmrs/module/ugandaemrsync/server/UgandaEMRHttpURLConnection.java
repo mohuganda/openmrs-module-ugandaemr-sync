@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -145,6 +146,22 @@ public class UgandaEMRHttpURLConnection {
 			
 		}
 		return "Could not generate Facility ID";
+	}
+
+	public boolean netServerIsAvailable(String strUrl, String strSuccess, String strFail) {
+		try {
+			final URL url = new URL(strUrl);
+			final URLConnection conn = url.openConnection();
+			conn.connect();
+			conn.getInputStream().close();
+			System.out.println(strSuccess);
+			return true;
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			System.out.println(strFail);
+			return false;
+		}
 	}
 	
 }
