@@ -44,7 +44,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
             // Uploading data....
             // Data Successfully uploaded
             /* Check internet connectivity */
-            if (netServerIsAvailable(UgandaEMRSyncConfig.GOOGLE_COM, UgandaEMRSyncConfig.GOOGLE_SUCCESS, UgandaEMRSyncConfig.GOOGLE_FAILED)
+            if (netServerIsAvailable(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_URL, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_SUCCESS, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_FAILED)
                     && netServerIsAvailable(UgandaEMRSyncConfig.SERVER_URL, UgandaEMRSyncConfig.SERVER_SUCCESS, UgandaEMRSyncConfig.SERVER_FAILED)) {
                 HttpClient client = new DefaultHttpClient();
                 HttpPost post = new HttpPost(UgandaEMRSyncConfig.SENDNG_SERVER_URL);
