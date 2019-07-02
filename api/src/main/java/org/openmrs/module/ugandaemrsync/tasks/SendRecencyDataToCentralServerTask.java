@@ -61,7 +61,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
                 HttpEntity multipart = MultipartEntityBuilder.create()
                         .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
                         .addTextBody("facility_uuid", UgandaEMRSyncConfig.FACILITY_UUID)
-                        .addTextBody("data", bodyText, ContentType.TEXT_PLAIN)
+                        .addTextBody("data", bodyText, ContentType.TEXT_PLAIN) // Current implementation uses plain text due to decoding challenges on the receiving server.
                         .build();
                 post.setEntity(multipart);
 
