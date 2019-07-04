@@ -9,7 +9,6 @@ public class UgandaEMRHttpURLConnectionTest {
 
     @Test
     public void netServerIsAvailable() {
-        UgandaEMRHttpURLConnection connectionRequest = new UgandaEMRHttpURLConnection();
         UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
         assertEquals(
                 ugandaEMRHttpURLConnection.netServerIsAvailable("http://www.google.com", "Success", "Fail"), true);

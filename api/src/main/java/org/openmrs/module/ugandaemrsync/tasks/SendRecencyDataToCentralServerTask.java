@@ -41,8 +41,6 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
         System.out.println("Executing");
         try {
             // TODO: Add code to verify if there is internet connection and if MIRTH Server is available (log this if not)
-            // Ensuring connectivity
-            // Contacting MIRTH server
             // Uploading data....
             // Data Successfully uploaded
             /* Check internet connectivity */
