@@ -39,19 +39,20 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
     public void execute() {
         log.info("Executing");
         System.out.println("Executing");
+        SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
         try {
             // TODO: Add code to verify if there is internet connection and if MIRTH Server is available (log this if not)
             // Uploading data....
             // Data Successfully uploaded
             /* Check internet connectivity */
             if (ugandaEMRHttpURLConnection.netServerIsAvailable(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_URL, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_SUCCESS, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_FAILED)
-                    && ugandaEMRHttpURLConnection.netServerIsAvailable(UgandaEMRSyncConfig.SERVER_URL, UgandaEMRSyncConfig.SERVER_SUCCESS, UgandaEMRSyncConfig.SERVER_FAILED)) {
+                    && ugandaEMRHttpURLConnection.netServerIsAvailable(UgandaEMRSyncConfig.RECENCY_SERVER_TEST_CONNECTION_URL, UgandaEMRSyncConfig.RECENCY_SERVER_SUCCESS, UgandaEMRSyncConfig.RECENCY_SERVER_FAILED)) {
                 HttpClient client = new DefaultHttpClient();
-                HttpPost post = new HttpPost(UgandaEMRSyncConfig.SENDNG_SERVER_URL);
+                HttpPost post = new HttpPost(UgandaEMRSyncConfig.RECENCY_SERVER_URL);
                 post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
 
                 UsernamePasswordCredentials credentials
-                        = new UsernamePasswordCredentials(UgandaEMRSyncConfig.SERVER_USERNAME, UgandaEMRSyncConfig.SERVER_PASSWORD);
+                        = new UsernamePasswordCredentials(UgandaEMRSyncConfig.RECENCY_SERVER_USERNAME, UgandaEMRSyncConfig.RECENCY_SERVER_PASSWORD);
                 post.addHeader(new BasicScheme().authenticate(credentials, post, null));
 
                 String bodyText = getRecencyData();
@@ -59,6 +60,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
                 HttpEntity multipart = MultipartEntityBuilder.create()
                         .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
                         .addTextBody("facility_uuid", UgandaEMRSyncConfig.FACILITY_UUID)
+                        //TODO: Uncomment below to replace above
+                        //.addTextBody("dhis2_organization_uuid", syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.DHIS2_ORGANIZATION_UUID))
                         .addTextBody("data", bodyText, ContentType.TEXT_PLAIN) // Current implementation uses plain text due to decoding challenges on the receiving server.
                         .build();
                 post.setEntity(multipart);
