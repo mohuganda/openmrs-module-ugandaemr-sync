@@ -56,24 +56,26 @@ public class SendRecencyDataToCentralServerTaskTest extends Mockito {
     }
 
     @Test
-    public void testUsernameAuthentication() {
+    public void testUsernameAndPasswordMatches() {
         //given:
         UsernamePasswordCredentials credentials = mock(UsernamePasswordCredentials.class);
         //and:
         when(credentials.getUserName()).thenReturn("admin");
+        when(credentials.getPassword()).thenReturn("admin");
         //then:
         assertEquals("admin", credentials.getUserName());
-        assertNotSame("admin", "Admin", credentials.getUserName());
+        assertEquals("admin", credentials.getPassword());
     }
 
     @Test
-    public void testPasswordAuthentication() {
+    public void testUsernameAndPasswordDoesNotMatch() {
         //given:
         UsernamePasswordCredentials credentials = mock(UsernamePasswordCredentials.class);
         //and:
+        when(credentials.getUserName()).thenReturn("admin");
         when(credentials.getPassword()).thenReturn("admin");
         //then:
-        assertEquals("admin", credentials.getPassword());
-        assertNotSame("admin", "Admin123", credentials.getPassword());
+        assertNotSame("admin", "Admin", credentials.getUserName());
+        assertNotSame("admin", "admin123", credentials.getPassword());
     }
 }
