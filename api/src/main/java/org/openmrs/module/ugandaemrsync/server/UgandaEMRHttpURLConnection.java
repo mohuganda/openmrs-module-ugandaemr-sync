@@ -151,7 +151,7 @@ public class UgandaEMRHttpURLConnection {
 		return "Could not generate Facility ID";
 	}
 
-	public boolean netServerIsAvailable(String strUrl, String strSuccess, String strFail) {
+	public boolean isInternetConnectionAndRecencyServerAvailable(String strUrl, String strSuccess, String strFail) {
 		try {
 			final URL url = new URL(strUrl);
 			final URLConnection conn = url.openConnection();

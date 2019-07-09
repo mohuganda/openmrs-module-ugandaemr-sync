@@ -8,9 +8,9 @@ import static org.junit.Assert.*;
 public class UgandaEMRHttpURLConnectionTest {
 
     @Test
-    public void netServerIsAvailable() {
+    public void isInternetConnectionAndRecencyServerAvailable() {
         UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
         assertEquals(
-                ugandaEMRHttpURLConnection.netServerIsAvailable("http://www.google.com", "Success", "Fail"), true);
+                ugandaEMRHttpURLConnection.isInternetConnectionAndRecencyServerAvailable("http://www.google.com", "Success", "Fail"), true);
     }
 }

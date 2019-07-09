@@ -45,8 +45,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
             // Uploading data....
             // Data Successfully uploaded
             /* Check internet connectivity */
-            if (ugandaEMRHttpURLConnection.netServerIsAvailable(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_URL, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_SUCCESS, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_FAILED)
-                    && ugandaEMRHttpURLConnection.netServerIsAvailable(UgandaEMRSyncConfig.RECENCY_SERVER_TEST_CONNECTION_URL, UgandaEMRSyncConfig.RECENCY_SERVER_SUCCESS, UgandaEMRSyncConfig.RECENCY_SERVER_FAILED)) {
+            if (ugandaEMRHttpURLConnection.isInternetConnectionAndRecencyServerAvailable(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_URL, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_SUCCESS, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_FAILED)
+                    && ugandaEMRHttpURLConnection.isInternetConnectionAndRecencyServerAvailable(UgandaEMRSyncConfig.RECENCY_SERVER_TEST_CONNECTION_URL, UgandaEMRSyncConfig.RECENCY_SERVER_SUCCESS, UgandaEMRSyncConfig.RECENCY_SERVER_FAILED)) {
                 HttpClient client = new DefaultHttpClient();
                 HttpPost post = new HttpPost(UgandaEMRSyncConfig.RECENCY_SERVER_URL);
                 post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
