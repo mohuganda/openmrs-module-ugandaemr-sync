@@ -4,6 +4,8 @@ package org.openmrs.module.ugandaemrsync.server;
  * Created by lubwamasamuel on 11/10/16.
  */
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
@@ -28,6 +30,7 @@ public class UgandaEMRHttpURLConnection {
 	}
 	
 	private final String USER_AGENT = "Mozilla/5.0";
+	protected Log log = LogFactory.getLog(getClass());
 	
 	// HTTP GET request
 	public HttpURLConnection sendGet(String content, String protocol) throws Exception {
@@ -154,12 +157,12 @@ public class UgandaEMRHttpURLConnection {
 			final URLConnection conn = url.openConnection();
 			conn.connect();
 			conn.getInputStream().close();
-			System.out.println(strSuccess);
+			log.info(strSuccess);
 			return true;
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
-			System.out.println(strFail);
+			log.info(strFail);
 			return false;
 		}
 	}
