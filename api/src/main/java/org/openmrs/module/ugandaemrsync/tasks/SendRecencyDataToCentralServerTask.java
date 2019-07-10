@@ -45,8 +45,13 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
             // Uploading data....
             // Data Successfully uploaded
             /* Check internet connectivity */
-            if (ugandaEMRHttpURLConnection.isInternetConnectionAndRecencyServerAvailable(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_URL, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_SUCCESS, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_FAILED)
-                    && ugandaEMRHttpURLConnection.isInternetConnectionAndRecencyServerAvailable(UgandaEMRSyncConfig.RECENCY_SERVER_TEST_CONNECTION_URL, UgandaEMRSyncConfig.RECENCY_SERVER_SUCCESS, UgandaEMRSyncConfig.RECENCY_SERVER_FAILED)) {
+            if (!ugandaEMRHttpURLConnection.isInternetConnectionAndRecencyServerAvailable(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_URL, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_SUCCESS, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_FAILED)){
+                return;
+            }
+            if (!ugandaEMRHttpURLConnection.isInternetConnectionAndRecencyServerAvailable(UgandaEMRSyncConfig.RECENCY_SERVER_TEST_CONNECTION_URL, UgandaEMRSyncConfig.RECENCY_SERVER_SUCCESS, UgandaEMRSyncConfig.RECENCY_SERVER_FAILED)){
+                return;
+            }
+
                 HttpClient client = new DefaultHttpClient();
                 HttpPost post = new HttpPost(UgandaEMRSyncConfig.RECENCY_SERVER_URL);
                 post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
@@ -60,7 +65,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
                 HttpEntity multipart = MultipartEntityBuilder.create()
                         .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
                         .addTextBody("facility_uuid", UgandaEMRSyncConfig.FACILITY_UUID)
-                        //TODO: Uncomment below to replace above
+                        //TODO: Uncomment below to replace above when ready for production
                         //.addTextBody("dhis2_organization_uuid", syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.DHIS2_ORGANIZATION_UUID))
                         .addTextBody("data", bodyText, ContentType.TEXT_PLAIN) // Current implementation uses plain text due to decoding challenges on the receiving server.
                         .build();
@@ -69,7 +74,6 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
                 HttpResponse response = client.execute(post);
 
                 System.out.println(response.toString());
-            }
 
         } catch (IOException | AuthenticationException e) {
             e.printStackTrace();

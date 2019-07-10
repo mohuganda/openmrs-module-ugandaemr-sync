@@ -30,5 +30,5 @@ public class UgandaEMRSyncConfig {
 	public static final String HEADER_EMR_DATE = "x-emr-date";
 	public static final String FACILITY_UUID = "ugandaemr.dhis2.organizationuuid";
 	public static final String DHIS2_ORGANIZATION_UUID = "ugandaemr.dhis2.organizationuuid";
-	public static String EndPoint = "";
+	public static String END_POINT = "";
 }
