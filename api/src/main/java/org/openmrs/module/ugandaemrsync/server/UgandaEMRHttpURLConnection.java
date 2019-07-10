@@ -10,6 +10,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -151,20 +152,35 @@ public class UgandaEMRHttpURLConnection {
 		return "Could not generate Facility ID";
 	}
 
-	public boolean isInternetConnectionAndRecencyServerAvailable(String strUrl, String strSuccess, String strFail) {
+	public boolean isConnectionAvailable() {
+		try {
+			final URL url = new URL(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_URL);
+			final URLConnection conn = url.openConnection();
+			conn.connect();
+			conn.getInputStream().close();
+			log.info(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_SUCCESS);
+			return true;
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			log.info(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_FAILED);
+			return false;
+		}
+	}
+	public boolean isServerAvailable(String strUrl) {
 		try {
 			final URL url = new URL(strUrl);
 			final URLConnection conn = url.openConnection();
 			conn.connect();
 			conn.getInputStream().close();
-			log.info(strSuccess);
+			log.info(UgandaEMRSyncConfig.RECENCY_SERVER_SUCCESS);
 			return true;
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
-			log.info(strFail);
+			log.info(UgandaEMRSyncConfig.RECENCY_SERVER_FAILED);
 			return false;
 		}
 	}
-	
+
 }

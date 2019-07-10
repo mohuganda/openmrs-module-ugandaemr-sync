@@ -8,9 +8,15 @@ import static org.junit.Assert.assertEquals;
 public class UgandaEMRHttpURLConnectionTest {
 
     @Test
-    public void isInternetConnectionAndRecencyServerAvailable() {
+    public void isConnectionAvailable() {
         UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
         assertEquals(
-                ugandaEMRHttpURLConnection.isInternetConnectionAndRecencyServerAvailable("http://www.google.com", "Success", "Fail"), true);
+                ugandaEMRHttpURLConnection.isConnectionAvailable(), true);
+    }
+    @Test
+    public void isServerAvailable() {
+        UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
+        assertEquals(
+                ugandaEMRHttpURLConnection.isServerAvailable("http://mirth-tcp.globalhealthapp.net"), true);
     }
 }

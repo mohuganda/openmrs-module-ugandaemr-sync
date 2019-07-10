@@ -46,11 +46,11 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
             // Data Successfully uploaded
 
             //Check internet connectivity
-            if (!ugandaEMRHttpURLConnection.isInternetConnectionAndRecencyServerAvailable(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_URL, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_SUCCESS, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_FAILED)){
+            if (!ugandaEMRHttpURLConnection.isConnectionAvailable()){
                 return;
             }
             //Check destination server availability
-            if (!ugandaEMRHttpURLConnection.isInternetConnectionAndRecencyServerAvailable(UgandaEMRSyncConfig.RECENCY_SERVER_TEST_CONNECTION_URL, UgandaEMRSyncConfig.RECENCY_SERVER_SUCCESS, UgandaEMRSyncConfig.RECENCY_SERVER_FAILED)){
+            if (!ugandaEMRHttpURLConnection.isServerAvailable(UgandaEMRSyncConfig.RECENCY_SERVER_TEST_CONNECTION_URL)){
                 return;
             }
 
