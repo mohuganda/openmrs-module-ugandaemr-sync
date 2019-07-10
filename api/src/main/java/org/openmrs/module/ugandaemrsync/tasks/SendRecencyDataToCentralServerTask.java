@@ -44,10 +44,12 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
             // TODO: Add code to verify if there is internet connection and if MIRTH Server is available (log this if not)
             // Uploading data....
             // Data Successfully uploaded
-            /* Check internet connectivity */
+
+            //Check internet connectivity
             if (!ugandaEMRHttpURLConnection.isInternetConnectionAndRecencyServerAvailable(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_URL, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_SUCCESS, UgandaEMRSyncConfig.CONNECTIVITY_CHECK_FAILED)){
                 return;
             }
+            //Check destination server availability
             if (!ugandaEMRHttpURLConnection.isInternetConnectionAndRecencyServerAvailable(UgandaEMRSyncConfig.RECENCY_SERVER_TEST_CONNECTION_URL, UgandaEMRSyncConfig.RECENCY_SERVER_SUCCESS, UgandaEMRSyncConfig.RECENCY_SERVER_FAILED)){
                 return;
             }
