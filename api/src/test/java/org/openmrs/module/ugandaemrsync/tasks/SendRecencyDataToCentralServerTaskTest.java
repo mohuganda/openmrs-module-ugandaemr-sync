@@ -1,6 +1,8 @@
 package org.openmrs.module.ugandaemrsync.tasks;
 
+import com.sun.tools.internal.ws.wsdl.document.http.HTTPConstants;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -40,9 +42,9 @@ public class SendRecencyDataToCentralServerTaskTest extends Mockito {
         //given:
         StatusLine statusLine = mock(StatusLine.class);
         //and:
-        when(statusLine.getStatusCode()).thenReturn(200);
+        when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
         //then:
-        assertEquals(200, statusLine.getStatusCode());
+        assertEquals(HttpStatus.SC_OK, statusLine.getStatusCode());
     }
 
 @Test
@@ -50,9 +52,9 @@ public class SendRecencyDataToCentralServerTaskTest extends Mockito {
         //given:
         StatusLine statusLine = mock(StatusLine.class);
         //and:
-        when(statusLine.getStatusCode()).thenReturn(401);
+        when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_UNAUTHORIZED);
         //then:
-        assertEquals(401, statusLine.getStatusCode());
+        assertEquals(HttpStatus.SC_UNAUTHORIZED, statusLine.getStatusCode());
     }
 
     @Test
