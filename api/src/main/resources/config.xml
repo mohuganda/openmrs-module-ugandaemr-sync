@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module configVersion="1.2">
+
+    <!-- Base Module Properties -->
+    <id>${project.parent.artifactId}</id>
+    <name>${project.parent.name}</name>
+    <version>${project.parent.version}</version>
+    <package>org.openmrs.module.ugandaemrsync</package>
+    <author>carapai</author>
+    <description>
+        ${project.parent.description}
+    </description>
+
+    <activator>org.openmrs.module.ugandaemrsync.UgandaEMRSyncActivator</activator>
+
+    <!-- <updateURL>https://modules.openmrs.org/modules/download/@MODULE_ID@/update.rdf</updateURL> -->
+    <!-- /Base Module Properties -->
+
+    <require_version>${openmrsPlatformVersion}</require_version>
+
+    <require_modules>
+        <require_module version="${appframeworkVersion}">
+            org.openmrs.module.appframework
+        </require_module>
+        <require_module version="${uiframeworkVersion}">
+            org.openmrs.module.uiframework
+        </require_module>
+        <require_module version="${uicommonsModuleVersion}">
+            org.openmrs.module.uicommons
+        </require_module>
+        <require_module version="${appuiVersion}">
+            org.openmrs.module.appui
+        </require_module>
+    </require_modules>
+
+    <aware_of_modules>
+        <aware_of_module>org.openmrs.module.legacyui</aware_of_module>
+    </aware_of_modules>
+
+    <globalProperty>
+        <property>ugandaemrsync.server.username</property>
+        <defaultValue></defaultValue>
+        <description>
+            This is the username for server that the system would like to connect to
+        </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>ugandaemrsync.server.password</property>
+        <defaultValue></defaultValue>
+        <description>
+            This is the password for server that the system would like to connect to
+        </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>ugandaemr.recency.serverurl</property>
+        <defaultValue></defaultValue>
+        <description> </description>
+    </globalProperty>
+    <globalProperty>
+        <property>ugandaemr.recency.endpoint</property>
+        <defaultValue></defaultValue>
+        <description> </description>
+    </globalProperty>
+    <globalProperty>
+        <property>ugandaemr.dhis2.organizationuuid</property>
+        <description>The organization code in DHIS2</description>
+        <defaultValue></defaultValue>
+    </globalProperty>
+    <!-- Internationalization -->
+    <!-- All message codes should start with @MODULE_ID@.* -->
+
+    <sync_task_type>
+        <sync_task_type_id>1</sync_task_type_id>
+        <name>Encounter</name>
+        <creator>1</creator>
+        <date_created>2019-07-01 13:17:11</date_created>
+        <voided>0</voided>
+        <uuid>3551ca84-06c0-432b-9064-fcfeefd6f4ec</uuid>
+    </sync_task_type>
+
+    <sync_task_type>
+        <sync_task_type_id>2</sync_task_type_id>
+        <name>Observation</name>
+        <creator>1</creator>
+        <date_created>2019-07-01 13:17:11</date_created>
+        <voided>0</voided>
+        <uuid>71deaf48-0247-46a3-a0b5-971a6f669d52</uuid>
+    </sync_task_type>
+
+    <sync_task_type>
+        <sync_task_type_id>3</sync_task_type_id>
+        <name>Patient Attribute</name>
+        <creator>1</creator>
+        <date_created>2019-07-01 13:17:11</date_created>
+        <voided>0</voided>
+        <uuid>392ae412-96ec-417d-9e80-0b3f33c25fe1</uuid>
+    </sync_task_type>
+    <messages>
+        <lang>en</lang>
+        <file>messages.properties</file>
+    </messages>
+    <messages>
+        <lang>fr</lang>
+        <file>messages_fr.properties</file>
+    </messages>
+    <messages>
+        <lang>es</lang>
+        <file>messages_es.properties</file>
+    </messages>
+    <!-- /Internationalization -->
+
+</module>

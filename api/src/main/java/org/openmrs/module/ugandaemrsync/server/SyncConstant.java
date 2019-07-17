@@ -57,7 +57,11 @@ public class SyncConstant {
 
 	public static final String RECENCY_SERVER_URL = "ugandaemr.recency.serverurl";
 
-	public static final String RECENCY_SERVER_URL_PLACE_HOLDER = "http://mirth-tcp.globalhealthapp.net:6001";
+	public static final String RECENCY_SERVER_URL_PLACE_HOLDER = "https://ughim.cphluganda.org/";
+
+	public static final String END_POINT = "ugandaemr.recency.endpoint";
+
+	public static final String END_POINT_PLACE_HOLDER = "recency/";
 	
 	public static final String PERSON_QUERY = "SELECT\n" + "  gender,\n" + "  birthdate,\n" + "  birthdate_estimated,\n"
 	        + "  dead,\n" + "  death_date,\n" + "  (SELECT c.uuid\n" + "   FROM concept c\n"

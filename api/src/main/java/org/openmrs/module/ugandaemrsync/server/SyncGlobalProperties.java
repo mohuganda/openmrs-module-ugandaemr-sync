@@ -56,6 +56,11 @@ public class SyncGlobalProperties {
 			setGlobalProperty(RECENCY_SERVER_URL, RECENCY_SERVER_URL_PLACE_HOLDER);
 			log.info("Place Holder server URL is set");
 		}
+
+		if (getGlobalProperty(END_POINT) == null) {
+			setGlobalProperty(END_POINT, END_POINT_PLACE_HOLDER);
+			log.info("Place Holder for recency endpoing is set");
+		}
 	}
 	
 	public GlobalProperty setGlobalProperty(String property, String propertyValue) {
