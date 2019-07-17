@@ -1,6 +1,5 @@
 package org.openmrs.module.ugandaemrsync.server;
 
-import org.apache.poi.hssf.record.formula.functions.True;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

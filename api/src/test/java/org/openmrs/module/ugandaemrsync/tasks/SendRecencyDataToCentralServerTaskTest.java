@@ -1,21 +1,11 @@
 package org.openmrs.module.ugandaemrsync.tasks;
 
-import com.sun.tools.internal.ws.wsdl.document.http.HTTPConstants;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.auth.BasicScheme;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.openmrs.module.ugandaemrsync.server.UgandaEMRHttpURLConnection;
-
-import java.io.IOException;
 
 import static junit.framework.Assert.assertNotSame;
 import static junit.framework.TestCase.assertEquals;
