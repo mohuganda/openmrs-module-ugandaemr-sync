@@ -55,12 +55,22 @@
     </globalProperty>
 
     <globalProperty>
-        <property>ugandaemr.recency.serverurl</property>
+        <property>ugandaemrsync.recency.server.url</property>
         <defaultValue></defaultValue>
         <description> </description>
     </globalProperty>
     <globalProperty>
-        <property>ugandaemr.recency.endpoint</property>
+        <property>ugandaemrsync.recency.server.username</property>
+        <defaultValue></defaultValue>
+        <description> This is the recency username that the system will connect to </description>
+    </globalProperty>
+    <globalProperty>
+        <property>ugandaemrsync.recency.server.password</property>
+        <defaultValue></defaultValue>
+        <description>This is the recency password that the system will connect to</description>
+    </globalProperty>
+    <globalProperty>
+        <property>ugandaemrsync.recency.server.endpoint</property>
         <defaultValue></defaultValue>
         <description> </description>
     </globalProperty>
@@ -70,7 +80,8 @@
         <defaultValue></defaultValue>
     </globalProperty>
     <!-- Internationalization -->
-    <!-- All message codes should start with @MODULE_ID@.* -->
+    <!-- All message codes should start with @MODULE_ID@.*
+	-->
 
     <sync_task_type>
         <sync_task_type_id>1</sync_task_type_id>
