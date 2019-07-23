@@ -34,7 +34,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 
     @Override
     public void execute() {
-        log.info("Executing");
+        log.info("Sending recency data to central server ");
         SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
         //String recencyServerUrl = syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.RECENCY_SERVER_URL);
         String recencyServerUrl = UgandaEMRSyncConfig.RECENCY_SERVER_URL;
