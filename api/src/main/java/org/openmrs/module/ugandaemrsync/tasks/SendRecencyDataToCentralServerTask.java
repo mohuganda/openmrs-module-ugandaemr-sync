@@ -76,8 +76,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
                 log.info(response.toString());
 
         } catch (IOException | AuthenticationException e) {
-            log.info(e.getMessage());
-            e.printStackTrace();
+            log.info("Exception sending Recency data "+ e.getMessage());
         }
 
     }
