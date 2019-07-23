@@ -55,11 +55,11 @@ public class SyncConstant {
 	
 	public static final String MAX_NUMBER_OF_ROWS_PLACE_HOLDER = "500";
 
-	public static final String RECENCY_SERVER_URL = "ugandaemr.recency.serverurl";
+	public static final String RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
 
 	public static final String RECENCY_SERVER_URL_PLACE_HOLDER = "https://ughim.cphluganda.org/";
 
-	public static final String END_POINT = "ugandaemr.recency.endpoint";
+	public static final String END_POINT = "ugandaemrsync.recency.server.endpoint";
 
 	public static final String END_POINT_PLACE_HOLDER = "recency/";
 	
