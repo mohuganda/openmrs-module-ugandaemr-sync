@@ -57,12 +57,6 @@ public class SyncConstant {
 
 	public static final String RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
 
-	public static final String RECENCY_SERVER_URL_PLACE_HOLDER = "https://ughim.cphluganda.org/";
-
-	public static final String END_POINT = "ugandaemrsync.recency.server.endpoint";
-
-	public static final String END_POINT_PLACE_HOLDER = "recency/";
-	
 	public static final String PERSON_QUERY = "SELECT\n" + "  gender,\n" + "  birthdate,\n" + "  birthdate_estimated,\n"
 	        + "  dead,\n" + "  death_date,\n" + "  (SELECT c.uuid\n" + "   FROM concept c\n"
 	        + "   WHERE c.concept_id = p.cause_of_death) AS cause_of_death,\n" + "  (SELECT u.uuid\n" + "   FROM users u\n"

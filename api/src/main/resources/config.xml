@@ -70,11 +70,6 @@
         <description>This is the recency password that the system will connect to</description>
     </globalProperty>
     <globalProperty>
-        <property>ugandaemrsync.recency.server.endpoint</property>
-        <defaultValue></defaultValue>
-        <description> </description>
-    </globalProperty>
-    <globalProperty>
         <property>ugandaemrsync.serverIP</property>
         <defaultValue></defaultValue>
         <description> </description>

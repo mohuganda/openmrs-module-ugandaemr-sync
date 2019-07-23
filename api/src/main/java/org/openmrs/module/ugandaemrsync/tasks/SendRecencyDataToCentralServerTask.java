@@ -35,13 +35,11 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
     @Override
     public void execute() {
         log.info("Executing");
-        System.out.println("Executing");
         SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
         //String recencyServerUrl = syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.RECENCY_SERVER_URL);
         String recencyServerUrl = UgandaEMRSyncConfig.RECENCY_SERVER_URL;
         try {
             // TODO: Add code to verify if there is internet connection and if MIRTH Server is available (log this if not)
-            // Uploading data....
             // Data Successfully uploaded
 
             //Check internet connectivity
@@ -49,12 +47,12 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
                 return;
             }
             //Check destination server availability
-            if (!ugandaEMRHttpURLConnection.isServerAvailable(recencyServerUrl+UgandaEMRSyncConfig.END_POINT)){
+            if (!ugandaEMRHttpURLConnection.isServerAvailable(recencyServerUrl)){
                 return;
             }
 
                 HttpClient client = new DefaultHttpClient();
-                HttpPost post = new HttpPost(recencyServerUrl+UgandaEMRSyncConfig.END_POINT);
+                HttpPost post = new HttpPost(recencyServerUrl);
                 // HttpPost post = new HttpPost(Str+syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.RECENCY_SERVER_URL));
                 post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
 
@@ -75,7 +73,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 
                 HttpResponse response = client.execute(post);
 
-                System.out.println(response.toString());
+                log.info(response.toString());
 
         } catch (IOException | AuthenticationException e) {
             e.printStackTrace();
