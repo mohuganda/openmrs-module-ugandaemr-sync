@@ -1,4 +1,6 @@
 package org.openmrs.module.ugandaemrsync.tasks;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
 
 import org.apache.commons.logging.Log;
@@ -51,7 +53,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
                 return;
             }
 
-                HttpClient client = new DefaultHttpClient();
+                HttpClient client = HttpClientBuilder.create().build();
                 HttpPost post = new HttpPost(recencyServerUrl);
                 // HttpPost post = new HttpPost(Str+syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.RECENCY_SERVER_URL));
                 post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
