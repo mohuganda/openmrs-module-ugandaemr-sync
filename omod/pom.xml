@@ -62,6 +62,11 @@
             <artifactId>appui-omod</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>ugandaemrreports</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
