@@ -18,14 +18,24 @@ import org.springframework.stereotype.Component;
 public class UgandaEMRSyncConfig {
 	
 	public final static String MODULE_PRIVILEGE = "UgandaemrSync Privilege";
+	
 	public static final String RECENCY_SERVER_URL = "https://ughim.cphluganda.org/recency/uploads/";
+	
 	public static final String CONNECTIVITY_CHECK_URL = "http://www.google.com";
+	
 	public static final String CONNECTIVITY_CHECK_SUCCESS = "Successful connection to the internet.";
+	
 	public static final String RECENCY_SERVER_SUCCESS = "Successfully established connecton to the server.";
+	
 	public static final String CONNECTIVITY_CHECK_FAILED = "Cannot establish internet connectivity.";
+	
 	public static final String RECENCY_SERVER_FAILED = "Cannot establish connection to the server.";
+	
 	public static final String RECENCY_SERVER_USERNAME = "admin";
+	
 	public static final String RECENCY_SERVER_PASSWORD = "admin";
+	
 	public static final String HEADER_EMR_DATE = "x-emr-date";
+	
 	public static final String DHIS2_ORGANIZATION_UUID = "ugandaemr.dhis2.organizationuuid";
 }

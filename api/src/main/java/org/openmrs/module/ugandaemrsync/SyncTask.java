@@ -12,7 +12,7 @@ public class SyncTask extends AbstractTask {
 	public void execute() {
 		Context.openSession();
 		if (!Context.isAuthenticated()) {
-			authenticate();
+			//authenticate();
 		}
 		
 		SyncDataRecord syncDataRecord = new SyncDataRecord();

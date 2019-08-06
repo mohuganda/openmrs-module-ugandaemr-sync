@@ -1,4 +1,5 @@
 package org.openmrs.module.ugandaemrsync.tasks;
+
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
@@ -28,13 +29,15 @@ import java.util.Date;
  */
 
 public class SendRecencyDataToCentralServerTask extends AbstractTask {
-
-    protected Log log = LogFactory.getLog(getClass());
-    UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
-    //TODO: use syncGlobalProperties once it has been persisted on ugandaEMR database
-    // SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-
-    @Override
+	
+	protected Log log = LogFactory.getLog(getClass());
+	
+	UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
+	
+	//TODO: use syncGlobalProperties once it has been persisted on ugandaEMR database
+	// SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+	
+	@Override
     public void execute() {
         log.info("Sending recency data to central server ");
         SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
@@ -82,8 +85,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
         }
 
     }
-
-    private String getRecencyData() {
-        return "patient_id, patient_creator, encounter_id, gravida, para$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0";
-    }
+	
+	private String getRecencyData() {
+		return "patient_id, patient_creator, encounter_id, gravida, para$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0";
+	}
 }

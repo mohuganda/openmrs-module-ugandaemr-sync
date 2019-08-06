@@ -30,6 +30,7 @@ public class UgandaEMRHttpURLConnection {
 	}
 	
 	private final String USER_AGENT = "Mozilla/5.0";
+	
 	protected Log log = LogFactory.getLog(getClass());
 	
 	// HTTP GET request
@@ -150,7 +151,7 @@ public class UgandaEMRHttpURLConnection {
 		}
 		return "Could not generate Facility ID";
 	}
-
+	
 	public boolean isConnectionAvailable() {
 		try {
 			final URL url = new URL(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_URL);
@@ -159,13 +160,16 @@ public class UgandaEMRHttpURLConnection {
 			conn.getInputStream().close();
 			log.info(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_SUCCESS);
 			return true;
-		} catch (MalformedURLException e) {
+		}
+		catch (MalformedURLException e) {
 			throw new RuntimeException(e);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			log.info(UgandaEMRSyncConfig.CONNECTIVITY_CHECK_FAILED);
 			return false;
 		}
 	}
+	
 	public boolean isServerAvailable(String strUrl) {
 		try {
 			final URL url = new URL(strUrl);
@@ -174,12 +178,14 @@ public class UgandaEMRHttpURLConnection {
 			conn.getInputStream().close();
 			log.info(UgandaEMRSyncConfig.RECENCY_SERVER_SUCCESS);
 			return true;
-		} catch (MalformedURLException e) {
+		}
+		catch (MalformedURLException e) {
 			throw new RuntimeException(e);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			log.info(UgandaEMRSyncConfig.RECENCY_SERVER_FAILED);
 			return false;
 		}
 	}
-
+	
 }
