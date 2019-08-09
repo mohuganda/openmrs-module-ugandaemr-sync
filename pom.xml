@@ -121,6 +121,12 @@
                 <version>${serialization.xstreamVersion}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>serialization.xstream-api-2.0</artifactId>
+                <version>${serialization.xstreamVersion}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>
@@ -157,6 +163,6 @@
         <ugandaemrReportsVersion>2.0.12-SNAPSHOT</ugandaemrReportsVersion>
         <reportingVersion>1.13.0</reportingVersion>
         <calculationVersion>1.1</calculationVersion>
-        <serialization.xstreamVersion>0.2.10</serialization.xstreamVersion>
+        <serialization.xstreamVersion>0.2.14</serialization.xstreamVersion>
     </properties>
 </project>

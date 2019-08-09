@@ -20,13 +20,15 @@ public abstract class StandaloneContextSensitiveTest extends BaseModuleContextSe
 	 */
 	@Override
 	public Properties getRuntimeProperties() {
-//		Properties p = super.getRuntimeProperties();
+		//Properties p = super.getRuntimeProperties();
 		Properties p = new Properties();
-	 	p.setProperty("connection.url", "jdbc:mysql://localhost:3306/ugandaemr?autoReconnect=true&sessionVariables=storage_engine%3DInnoDB&useUnicode=true&characterEncoding=UTF-8");
+		p.setProperty(
+		    "connection.url",
+		    "jdbc:mysql://localhost:3306/ugandaemr?autoReconnect=true&sessionVariables=storage_engine%3DInnoDB&useUnicode=true&characterEncoding=UTF-8");
 		p.setProperty("connection.username", "openmrs");
 		p.setProperty("connection.password", "openmrs");
 		p.setProperty("junit.username", "admin");
-		p.setProperty("junit.password", "test");
+		p.setProperty("junit.password", "Admin123");
 		
 		return p;
 	}
@@ -37,10 +39,10 @@ public abstract class StandaloneContextSensitiveTest extends BaseModuleContextSe
 			Context.openSession();
 		}
 		Context.clearSession();
-		authenticate();
+		//authenticate();
 	}
 	
-	//	@Override
-	//	public void deleteAllData() throws Exception {
-	//	}
+	@Override
+	public void deleteAllData() throws Exception {
+	}
 }

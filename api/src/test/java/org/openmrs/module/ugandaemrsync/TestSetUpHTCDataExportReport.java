@@ -18,7 +18,8 @@ import static org.junit.Assert.assertTrue;
 public class TestSetUpHTCDataExportReport extends StandaloneContextSensitiveTest {
 	
 	@Autowired
-	protected ReportDefinitionService reportingReportDefinationService;
+	@Qualifier("reportingReportDefinitionService")
+	protected ReportDefinitionService reportingReportDefinitionService;
 	
 	@Autowired
 	private SetUpHTCDataExportReport reportManager;
@@ -27,11 +28,11 @@ public class TestSetUpHTCDataExportReport extends StandaloneContextSensitiveTest
 	public void testHTCDataExport() throws Exception {
 		
 		EvaluationContext context = new EvaluationContext();
-		context.addParameterValue("startDate", DateUtil.parseDate("2018-01-01", "yyyy-MM-dd"));
-		context.addParameterValue("endDate", DateUtil.parseDate("2018-03-31", "yyyy-MM-dd"));
+		context.addParameterValue("startDate", DateUtil.parseDate("2018-11-01", "yyyy-MM-dd"));
+		context.addParameterValue("endDate", DateUtil.parseDate("2018-11-30", "yyyy-MM-dd"));
 		
 		ReportDefinition reportDefinition = reportManager.constructReportDefinition();
-		ReportData reportData = reportingReportDefinationService.evaluate(reportDefinition, context);
+		ReportData reportData = reportingReportDefinitionService.evaluate(reportDefinition, context);
 		
 		System.out.println(reportData.toString());
 		
