@@ -39,7 +39,7 @@ public abstract class StandaloneContextSensitiveTest extends BaseModuleContextSe
 			Context.openSession();
 		}
 		Context.clearSession();
-		//authenticate();
+		authenticate();
 	}
 	
 	@Override

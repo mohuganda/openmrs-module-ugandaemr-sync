@@ -21,10 +21,9 @@ public class SendRecencyDataToCentralServerTaskTest extends Mockito {
 	}
 	
 	@Test
-	public void testTaskSending() throws Exception {
+	public void testTaskSending() {
 		sendRecencyDataToCentralServerTask.execute();
 		assertTrue(true);
-		
 	}
 	
 	@Test

@@ -127,6 +127,27 @@
                 <version>${serialization.xstreamVersion}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>metadatadeploy-api</artifactId>
+                <version>${metadatadeployVersion}</version>
+                <type>jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>metadatasharing-api</artifactId>
+                <version>${metadatasharingVersion}</version>
+                <type>jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>metadatamapping-api</artifactId>
+                <version>${metadatamappingVersion}</version>
+                <type>jar</type>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>
@@ -164,5 +185,8 @@
         <reportingVersion>1.13.0</reportingVersion>
         <calculationVersion>1.1</calculationVersion>
         <serialization.xstreamVersion>0.2.14</serialization.xstreamVersion>
+        <metadatadeployVersion>1.6</metadatadeployVersion>
+        <metadatasharingVersion>1.1.9</metadatasharingVersion>
+        <metadatamappingVersion>1.0.2</metadatamappingVersion>
     </properties>
 </project>

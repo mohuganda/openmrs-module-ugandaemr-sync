@@ -4,12 +4,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.DateUtil;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
-import org.openmrs.module.ugandaemrreports.reports.SetUpHTCDataExportReport;
+import org.openmrs.module.ugandaemrreports.reports.SetUpHTSClientCardDataExportReport2019;
 import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
 
 import org.apache.commons.logging.Log;
@@ -52,14 +53,15 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	protected ReportDefinitionService reportingReportDefinitionService;
 	
 	@Autowired
-	private SetUpHTCDataExportReport reportManager;
+	private SetUpHTSClientCardDataExportReport2019 htsReportManager;
 	
 	@Override
     public void execute() {
         log.info("Sending recency data to central server ");
-        SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+        //SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
         //String recencyServerUrl = syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.RECENCY_UPLOADS_SERVER_URL);
         String recencyServerUrl = UgandaEMRSyncConfig.RECENCY_SERVER_URL;
+        String testUrl = recencyServerUrl.substring(recencyServerUrl.indexOf("https://"), recencyServerUrl.indexOf("recency"));
         try {
             // TODO: Add code to verify if there is internet connection and if MIRTH Server is available (log this if not)
             // Data Successfully uploaded
@@ -70,7 +72,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
                 return;
             }
             //Check destination server availability
-            if (!ugandaEMRHttpURLConnection.isServerAvailable(recencyServerUrl.substring(recencyServerUrl.indexOf("https://"), recencyServerUrl.indexOf("recency")))){
+            if (!ugandaEMRHttpURLConnection.isServerAvailable(testUrl)){
                 return;
             }
 
@@ -106,22 +108,21 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	
 	public String getRecencyData() {
 		//return "patient_id, patient_creator, encounter_id, gravida, para$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0$$$232,5,0,0,0$$$248,10,0,0,0$$$334,10,0,0,0$$$336,10,0,0,0$$$401,7,0,0,0";
-		ReportDefinition reportDefinition = reportManager.constructReportDefinition();
-		ReportData reportData = new ReportData();
+		
 		try {
 			EvaluationContext context = new EvaluationContext();
 			context.addParameterValue("startDate", DateUtil.parseDate("2018-11-01", "yyyy-MM-dd"));
 			context.addParameterValue("endDate", DateUtil.parseDate("2018-11-30", "yyyy-MM-dd"));
 			
-			reportData = reportingReportDefinitionService.evaluate(reportDefinition, context);
+			ReportDefinition reportDefinition = htsReportManager.constructReportDefinition();
+			ReportData reportData = reportingReportDefinitionService.evaluate(reportDefinition, context);
 			
 			System.out.println(reportData.toString());
 			return reportData.toString();
-			
 		}
 		catch (Exception e) {
 			log.info(e.toString());
 		}
-		return reportData.toString();
+		return "";
 	}
 }
