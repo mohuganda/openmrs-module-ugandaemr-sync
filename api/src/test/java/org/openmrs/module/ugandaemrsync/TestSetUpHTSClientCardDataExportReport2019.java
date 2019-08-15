@@ -38,18 +38,19 @@ public class TestSetUpHTSClientCardDataExportReport2019 extends StandaloneContex
 	
 	@Test
 	public void testHTSClientDataExport() throws Exception {
-//		ReportRenderer renderer;
+		//		ReportRenderer renderer;
 		EvaluationContext context = new EvaluationContext();
 		context.addParameterValue("startDate", DateUtil.parseDate("2018-11-01", "yyyy-MM-dd"));
 		context.addParameterValue("endDate", DateUtil.parseDate("2018-11-30", "yyyy-MM-dd"));
 		
 		ReportDefinition reportDefinition = reportManager.constructReportDefinition();
 		ReportData reportData = reportingReportDefinitionService.evaluate(reportDefinition, context);
-		//new CsvReportRenderer().render(reportData, null, System.out);
-//		renderer.getRenderingModes();
+		new CsvReportRenderer().render(reportData, "7c8301e3-439e-4084-a9f1-dad1a2b6e3c3", System.out);
+		//		renderer.getRenderingModes();
 		//System.out.println(reportData.getDataSets());
 		//System.out.println(new CsvReportRenderer().canRender(reportDefinition));
 		System.out.println(reportData.toString());
 		assertTrue(true);
 	}
+	
 }

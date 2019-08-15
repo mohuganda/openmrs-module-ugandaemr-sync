@@ -3,13 +3,16 @@ package org.openmrs.module.ugandaemrsync.tasks;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 import static junit.framework.Assert.assertNotSame;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 public class SendRecencyDataToCentralServerTaskTest extends Mockito {
 	
@@ -68,5 +71,30 @@ public class SendRecencyDataToCentralServerTaskTest extends Mockito {
 		//then:
 		assertNotSame("admin", "Admin", credentials.getUserName());
 		assertNotSame("admin", "admin123", credentials.getPassword());
+	}
+	
+	@Test
+	public void getRecencyDataFromREST() throws Exception {
+		System.out.println(sendRecencyDataToCentralServerTask.getRecencyDataFromREST());
+		assertNotNull("Not null");
+		
+	}
+	
+	//	@Test
+	//	public void testGetResponseBody() throws Exception {
+	//		System.out.println(sendRecencyDataToCentralServerTask.getResponseBody());
+	//		assertNotNull("Not null");
+	//	}
+	
+	@Test
+	public void testGetRecencyData() {
+		assertNotNull(sendRecencyDataToCentralServerTask.getRecencyData());
+		Assert.assertTrue(true);
+	}
+	
+	@Test
+	public void testRenderReport() {
+		sendRecencyDataToCentralServerTask.renderReport();
+		Assert.assertTrue(true);
 	}
 }
