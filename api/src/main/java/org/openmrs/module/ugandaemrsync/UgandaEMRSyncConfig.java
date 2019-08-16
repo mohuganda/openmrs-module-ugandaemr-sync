@@ -38,4 +38,11 @@ public class UgandaEMRSyncConfig {
 	public static final String HEADER_EMR_DATE = "x-emr-date";
 	
 	public static final String DHIS2_ORGANIZATION_UUID = "ugandaemr.dhis2.organizationuuid";
+	
+	public static final String RECENCY_CSV_FILE_NAME = "HTS_Recency_Client_Card_Data_Export_2019.csv";
+	
+	public static final String RECENCY_DEFININATION_UUID = "96e0926d-1606-4de6-943f-cb036bdc15ad";
+	
+	public static final String REPORT_RENDERING_MODE = "org.openmrs.module.reporting.report.renderer.CsvReportRenderer!7c8301e3-439e-4084-a9f1-dad1a2b6e3c3";
+	
 }

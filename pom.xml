@@ -148,17 +148,6 @@
                 <type>jar</type>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>4.1.6.RELEASE</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>4.1.6.RELEASE</version>
-                <scope>provided</scope>
-            </dependency>
         </dependencies>
 
     </dependencyManagement>
