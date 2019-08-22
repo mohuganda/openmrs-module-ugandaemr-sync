@@ -9,7 +9,6 @@ import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.renderer.RenderingMode;
-import org.openmrs.module.ugandaemrreports.reports.SetUpHTSClientCardDataExportReport2019;
 import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
 
 import org.apache.commons.logging.Log;
@@ -32,7 +31,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 
-import java.rmi.activation.UnknownGroupException;
 import java.util.Date;
 
 /**
@@ -53,9 +51,6 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	@Qualifier("reportingReportDefinitionService")
 	protected ReportDefinitionService reportingReportDefinitionService;
 	
-	@Autowired
-	private SetUpHTSClientCardDataExportReport2019 htsReportManager;
-	
 	@Override
     public void execute() {
         log.info("Sending recency data to central server ");
@@ -73,7 +68,6 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
             }
             //Check destination server availability
             if (!ugandaEMRHttpURLConnection.isServerAvailable(testUrl)){
-				System.out.println("Server is not available!!");
 				return;
             }
 
@@ -107,7 +101,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 
     }
 	
-	public String renderReport() {
+	private String renderReport() {
 		ReportDefinitionService reportDefinitionService = Context.getService(ReportDefinitionService.class);
 		String strOutput = new String();
 		try {
@@ -130,13 +124,13 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			FileOutputStream fileOutputStream = new FileOutputStream(UgandaEMRSyncConfig.RECENCY_CSV_FILE_NAME);
 			renderingMode.getRenderer().render(reportData, renderingMode.getArgument(), fileOutputStream);
 			
-			return this.readOutputFile(strOutput);
+			 strOutput = this.readOutputFile(strOutput);
 		}
 		catch (Exception e) {
 			log.info(e.toString());
 		}
 		
-		return null;
+		return strOutput;
 	}
 	
 	public String readOutputFile(String strOutput) throws Exception {
@@ -146,7 +140,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		String phraseItem;
 		
 		while ((phraseItem = brItem.readLine()) != null) {
-			strOutput = strOutput + phraseItem + "\n"; /* consider using $$$ as the delimiter if Mirth is unable to read newline */
+			strOutput = strOutput + phraseItem + System.lineSeparator(); /* consider using $$$ as the delimiter if Mirth is unable to read newline */
 		}
 		System.out.println(strOutput);
 		brItem.close();
