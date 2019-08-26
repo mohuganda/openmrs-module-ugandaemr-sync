@@ -6,6 +6,17 @@ package org.openmrs.module.ugandaemrsync.server;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
@@ -20,6 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 import java.util.Map;
 
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.HEALTH_CENTER_SYNC_ID;
@@ -188,4 +200,33 @@ public class UgandaEMRHttpURLConnection {
 		}
 	}
 	
+	public void httpPost(String recencyServerUrl, String bodyText)
+	{
+		HttpResponse response;
+		HttpClient client = HttpClientBuilder.create().build();
+		HttpPost post = new HttpPost(recencyServerUrl);
+		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+		try{
+
+		// HttpPost post = new HttpPost(Str+syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.recencyServerUrl));
+		post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
+
+		UsernamePasswordCredentials credentials
+				= new UsernamePasswordCredentials(UgandaEMRSyncConfig.RECENCY_SERVER_USERNAME, UgandaEMRSyncConfig.RECENCY_SERVER_PASSWORD);
+		post.addHeader(new BasicScheme().authenticate(credentials, post, null));
+
+		HttpEntity multipart = MultipartEntityBuilder.create()
+				.setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
+				.addTextBody("dhis2_organization_uuid", syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.DHIS2_ORGANIZATION_UUID))
+				.addTextBody("data", bodyText, ContentType.TEXT_PLAIN) // Current implementation uses plain text due to decoding challenges on the receiving server.
+				.build();
+		post.setEntity(multipart);
+
+		response = client.execute(post);
+
+		log.info(response.toString());
+		} catch (IOException | AuthenticationException e) {
+			log.info("Exception sending Recency data "+ e.getMessage());
+		}
+	}
 }
