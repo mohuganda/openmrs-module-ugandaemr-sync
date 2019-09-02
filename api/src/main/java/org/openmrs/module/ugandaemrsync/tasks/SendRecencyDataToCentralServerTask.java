@@ -1,6 +1,8 @@
 package org.openmrs.module.ugandaemrsync.tasks;
 
+import org.apache.http.HttpStatus;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.ReportingConstants;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.report.ReportData;
@@ -8,17 +10,23 @@ import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.renderer.RenderingMode;
+import org.openmrs.module.reporting.report.util.ReportUtil;
 import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.module.ugandaemrsync.server.UgandaEMRHttpURLConnection;
 import org.openmrs.scheduler.tasks.AbstractTask;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Posts recency data to the central server
@@ -48,9 +56,6 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		String recencyServerUrl = UgandaEMRSyncConfig.RECENCY_SERVER_URL;
 		String testUrl = recencyServerUrl.substring(recencyServerUrl.indexOf("https://"),
 		    recencyServerUrl.indexOf("recency"));
-		//        try {
-		// TODO: Add code to verify if there is internet connection and if MIRTH Server is available (log this if not)
-		// Data Successfully uploaded
 		
 		//Check internet connectivity
 		if (!ugandaEMRHttpURLConnection.isConnectionAvailable()) {
@@ -84,8 +89,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setReportDefinition(new Mapped<ReportDefinition>(rd, context.getParameterValues()));
 			reportRequest.setRenderingMode(renderingMode);
-			
-			FileOutputStream fileOutputStream = new FileOutputStream(UgandaEMRSyncConfig.RECENCY_CSV_FILE_NAME);
+			File file = new File(OpenmrsUtil.getApplicationDataDirectory() + UgandaEMRSyncConfig.RECENCY_CSV_FILE_NAME);
+			FileOutputStream fileOutputStream = new FileOutputStream(file);
 			renderingMode.getRenderer().render(reportData, renderingMode.getArgument(), fileOutputStream);
 			
 			strOutput = this.readOutputFile(strOutput);
@@ -98,16 +103,25 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	}
 	
 	public String readOutputFile(String strOutput) throws Exception {
+		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 		FileInputStream fstreamItem = new FileInputStream(UgandaEMRSyncConfig.RECENCY_CSV_FILE_NAME);
 		DataInputStream inItem = new DataInputStream(fstreamItem);
 		BufferedReader brItem = new BufferedReader(new InputStreamReader(inItem));
 		String phraseItem;
 		
-		while ((phraseItem = brItem.readLine()) != null) {
-			strOutput = strOutput + phraseItem + System.lineSeparator(); /* consider using $$$ as the delimiter if Mirth is unable to read newline */
+		if (!(phraseItem = brItem.readLine()).isEmpty()) {
+			strOutput = strOutput + "\"dhis2_orgunit_uuid\"," + "\"encounter_uuid\"," + phraseItem + System.lineSeparator();
+			while ((phraseItem = brItem.readLine()) != null) {
+				strOutput = strOutput
+				        + "\""
+				        + syncGlobalProperties.getGlobalProperty(OpenmrsUtil.getApplicationDataDirectory()
+				                + UgandaEMRSyncConfig.DHIS2_ORGANIZATION_UUID) + "\",\"\"," + phraseItem
+				        + System.lineSeparator();
+			}
 		}
+		
 		System.out.println(strOutput);
-		brItem.close();
+		fstreamItem.close();
 		
 		return strOutput;
 	}

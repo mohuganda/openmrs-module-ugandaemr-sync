@@ -35,14 +35,16 @@ public class UgandaEMRSyncConfig {
 	
 	public static final String RECENCY_SERVER_PASSWORD = "admin";
 	
+	//	public static final String RECENCY_SERVER_PASSWORD = "zJGdaC9(E_n_"; //TODO: Uncomment
+	
 	public static final String HEADER_EMR_DATE = "x-emr-date";
 	
 	public static final String DHIS2_ORGANIZATION_UUID = "ugandaemr.dhis2.organizationuuid";
 	
 	public static final String RECENCY_CSV_FILE_NAME = "HTS_Recency_Client_Card_Data_Export_2019.csv";
 	
-	public static final String RECENCY_DEFININATION_UUID = "fca24a48-c72d-4508-ad29-5c1fbd2271c1";
-	
-	public static final String REPORT_RENDERING_MODE = "org.openmrs.module.reporting.report.renderer.CsvReportRenderer!dc766b50-eb86-425a-b42e-cb5fc3f3a76d";
+	public static final String RECENCY_DEFININATION_UUID = "662d4c00-d6bb-4494-8180-48776f415802";
+
+	public static final String REPORT_RENDERING_MODE = "org.openmrs.module.reporting.report.renderer.CsvReportRenderer!152a4845-37e1-40c0-8fa8-5ef343e65ba5";
 	
 }
