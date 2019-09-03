@@ -209,11 +209,10 @@ public class UgandaEMRHttpURLConnection {
 		int	 iStatusCode = 0;
 		try{
 
-		// HttpPost post = new HttpPost(Str+syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.recencyServerUrl));
 		post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
 
 		UsernamePasswordCredentials credentials
-				= new UsernamePasswordCredentials(UgandaEMRSyncConfig.RECENCY_SERVER_USERNAME, UgandaEMRSyncConfig.RECENCY_SERVER_PASSWORD);
+				= new UsernamePasswordCredentials(syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.RECENCY_SERVER_USERNAME), syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.RECENCY_SERVER_PASSWORD));
 		post.addHeader(new BasicScheme().authenticate(credentials, post, null));
 
 		HttpEntity multipart = MultipartEntityBuilder.create()
