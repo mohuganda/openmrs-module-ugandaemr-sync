@@ -18,9 +18,7 @@ import org.springframework.stereotype.Component;
 public class UgandaEMRSyncConfig {
 	
 	public final static String MODULE_PRIVILEGE = "UgandaemrSync Privilege";
-	
-	//	public static final String RECENCY_SERVER_URL = "https://ughim.cphluganda.org/recency/uploads/";
-	
+
 	public static final String RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
 	
 	public static final String CONNECTIVITY_CHECK_URL = "http://www.google.com";
@@ -32,17 +30,11 @@ public class UgandaEMRSyncConfig {
 	public static final String CONNECTIVITY_CHECK_FAILED = "Cannot establish internet connectivity.";
 	
 	public static final String RECENCY_SERVER_FAILED = "Cannot establish connection to the server.";
-	
-	//	public static final String RECENCY_SERVER_USERNAME = "admin";
-	
+
 	public static final String RECENCY_SERVER_USERNAME = "ugandaemrsync.recency.server.username";
-	
-	//	public static final String RECENCY_SERVER_PASSWORD = "admin";
-	
+
 	public static final String RECENCY_SERVER_PASSWORD = "ugandaemrsync.recency.server.password";
-	
-	//	public static final String RECENCY_SERVER_PASSWORD = "zJGdaC9(E_n_"; //TODO: Uncomment
-	
+
 	public static final String HEADER_EMR_DATE = "x-emr-date";
 	
 	public static final String DHIS2_ORGANIZATION_UUID = "ugandaemr.dhis2.organizationuuid";
@@ -53,5 +45,5 @@ public class UgandaEMRSyncConfig {
 	
 	public static final String REPORT_RENDERING_MODE = "org.openmrs.module.reporting.report.renderer.CsvReportRenderer!152a4845-37e1-40c0-8fa8-5ef343e65ba5";
 	
-	public static final String RECENCY_SEND_DATA_TASK_RUN = "ugandaemr.sync.lastsuccessfulsubmissiondate";
+	public static final String RECENCY_SEND_DATA_TASK_RUN = "ugandaemrsync.lastsuccessfulsubmissiondate";
 }
