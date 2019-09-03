@@ -56,25 +56,5 @@
             <column name="uuid" value="89a805c4-0bd3-4eee-a43d-f3e264fbf0c7" />
         </insert>
     </changeSet>
-
-    <changeSet id="20190901-1740" author="echiteri">
-        <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">
-                SELECT COUNT(*) FROM global_property
-                WHERE property = 'ugandaemr.sync.lastsuccessfulsubmissiondate'
-            </sqlCheck>
-        </preConditions>
-        <comment>Create ugandaemr.sync.lastsuccessfulsubmissiondate global property to log The last successful submission date for recency send data task scheduler</comment>
-        <insert tableName="global_property">
-            <column name="property" value="ugandaemr.sync.lastsuccessfulsubmissiondate" />
-            <column name="property_value" value="" />
-            <column name="description" value="The last successful submission date for recency send data task scheduler" />
-            <column name="uuid" value="2ba6e696-5ed6-4975-a285-ac4eac562394" />
-            <column name="datatype" valueDate="Null" />
-            <column name="datatype_config" value="Null" />
-            <column name="date_created" valueDate="Null" />
-            <column name="preferred_handler" value="Null" />
-        </insert>
-    </changeSet>
  
 </databaseChangeLog>
