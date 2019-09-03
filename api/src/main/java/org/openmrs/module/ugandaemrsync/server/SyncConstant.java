@@ -55,8 +55,6 @@ public class SyncConstant {
 	
 	public static final String MAX_NUMBER_OF_ROWS_PLACE_HOLDER = "500";
 	
-	public static final String RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
-	
 	public static final String PERSON_QUERY = "SELECT\n" + "  gender,\n" + "  birthdate,\n" + "  birthdate_estimated,\n"
 	        + "  dead,\n" + "  death_date,\n" + "  (SELECT c.uuid\n" + "   FROM concept c\n"
 	        + "   WHERE c.concept_id = p.cause_of_death) AS cause_of_death,\n" + "  (SELECT u.uuid\n" + "   FROM users u\n"

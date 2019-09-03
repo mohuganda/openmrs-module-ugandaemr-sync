@@ -61,17 +61,42 @@
      /Required Privileges -->
 
 
-    <!-- Required Global Properties
+    <!-- Required Global Properties-->
     <globalProperty>
-        <property>@MODULE_ID@.someProperty</property>
+        <property>ugandaemrsync.recency.server.url</property>
         <defaultValue></defaultValue>
-        <description>
-            A description of the global property goes here.  The description
-            should explain enough for administrators to understand the purpose
-            and possible values for the global property.
-        </description>
+        <description> </description>
     </globalProperty>
-    /Required Global Properties -->
+    <globalProperty>
+        <property>ugandaemrsync.recency.server.username</property>
+        <defaultValue></defaultValue>
+        <description> This is the recency username that the system will connect to </description>
+    </globalProperty>
+    <globalProperty>
+        <property>ugandaemrsync.recency.server.password</property>
+        <defaultValue></defaultValue>
+        <description>This is the recency password that the system will connect to</description>
+    </globalProperty>
+    <globalProperty>
+        <property>ugandaemrsync.serverIP</property>
+        <defaultValue></defaultValue>
+        <description> </description>
+    </globalProperty>
+    <globalProperty>
+        <property>ugandaemrsync.healthCenterSyncId</property>
+        <defaultValue></defaultValue>
+        <description> </description>
+    </globalProperty>
+    <globalProperty>
+        <property>ugandaemrsync.protocol</property>
+        <defaultValue></defaultValue>
+        <description> </description>
+    </globalProperty>
+    <globalProperty>
+        <property>ugandaemr.sync.lastsuccessfulsubmissiondate</property>
+        <defaultValue></defaultValue>
+        <description>The last successful submission date for recency send data task scheduler</description>
+    </globalProperty>
 
     <!--
     <dwr>

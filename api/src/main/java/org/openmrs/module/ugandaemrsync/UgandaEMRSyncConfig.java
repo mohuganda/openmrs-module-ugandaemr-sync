@@ -19,7 +19,9 @@ public class UgandaEMRSyncConfig {
 	
 	public final static String MODULE_PRIVILEGE = "UgandaemrSync Privilege";
 	
-	public static final String RECENCY_SERVER_URL = "https://ughim.cphluganda.org/recency/uploads/";
+	//	public static final String RECENCY_SERVER_URL = "https://ughim.cphluganda.org/recency/uploads/";
+	
+	public static final String RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
 	
 	public static final String CONNECTIVITY_CHECK_URL = "http://www.google.com";
 	
@@ -31,9 +33,13 @@ public class UgandaEMRSyncConfig {
 	
 	public static final String RECENCY_SERVER_FAILED = "Cannot establish connection to the server.";
 	
-	public static final String RECENCY_SERVER_USERNAME = "admin";
+	//	public static final String RECENCY_SERVER_USERNAME = "admin";
 	
-	public static final String RECENCY_SERVER_PASSWORD = "admin";
+	public static final String RECENCY_SERVER_USERNAME = "ugandaemrsync.recency.server.username";
+	
+	//	public static final String RECENCY_SERVER_PASSWORD = "admin";
+	
+	public static final String RECENCY_SERVER_PASSWORD = "ugandaemrsync.recency.server.password";
 	
 	//	public static final String RECENCY_SERVER_PASSWORD = "zJGdaC9(E_n_"; //TODO: Uncomment
 	

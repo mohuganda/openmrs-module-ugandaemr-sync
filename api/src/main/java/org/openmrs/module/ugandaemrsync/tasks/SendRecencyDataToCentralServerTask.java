@@ -43,6 +43,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	
 	UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
 	
+	SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+	
 	//TODO: use syncGlobalProperties once it has been persisted on ugandaEMR database
 	// SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 	
@@ -56,8 +58,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		//SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-		//String recencyServerUrl = syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.RECENCY_UPLOADS_SERVER_URL);
-		String recencyServerUrl = UgandaEMRSyncConfig.RECENCY_SERVER_URL;
+		String recencyServerUrl = syncGlobalProperties.getGlobalProperty(RECENCY_SERVER_URL);
+		//		String recencyServerUrl = UgandaEMRSyncConfig.RECENCY_SERVER_URL;
 		String testUrl = recencyServerUrl.substring(recencyServerUrl.indexOf("https://"),
 		    recencyServerUrl.indexOf("recency"));
 		
