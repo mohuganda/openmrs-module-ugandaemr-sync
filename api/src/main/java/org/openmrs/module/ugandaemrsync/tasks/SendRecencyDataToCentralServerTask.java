@@ -1,8 +1,9 @@
 package org.openmrs.module.ugandaemrsync.tasks;
 
 import org.apache.http.HttpStatus;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.ReportingConstants;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.report.ReportData;
@@ -28,6 +29,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
+import static org.openmrs.module.ugandaemrsync.server.SyncConstant.DEFAULT_DATE_FORMAT;
+
 /**
  * Posts recency data to the central server
  */
@@ -48,8 +52,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	
 	@Override
 	public void execute() {
-		log.info("Sending recency data to central server ");
-		System.out.println("Sending recency data to central server");
+		Date date = new Date();
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		//SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 		//String recencyServerUrl = syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.RECENCY_UPLOADS_SERVER_URL);
@@ -57,28 +61,45 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		String testUrl = recencyServerUrl.substring(recencyServerUrl.indexOf("https://"),
 		    recencyServerUrl.indexOf("recency"));
 		
+		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
+		    UgandaEMRSyncConfig.RECENCY_SEND_DATA_TASK_RUN);
+		if (gp.getPropertyValue().equals(dateFormat.format(date))) {
+			log.info("Last successful submission date is the same as today. No more data is being sent"
+			        + System.lineSeparator());
+			return;
+		}
+		
+		log.info("Sending recency data to central server ");
+		
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
 		//Check internet connectivity
 		if (!ugandaEMRHttpURLConnection.isConnectionAvailable()) {
 			return;
 		}
+		
 		//Check destination server availability
 		if (!ugandaEMRHttpURLConnection.isServerAvailable(testUrl)) {
 			return;
 		}
-		String bodyText = renderReport();
-		ugandaEMRHttpURLConnection.httpPost(recencyServerUrl, bodyText);
 		
+		String bodyText = renderReport();
+		if (ugandaEMRHttpURLConnection.httpPost(recencyServerUrl, bodyText) == HttpStatus.SC_OK) {
+			ReportUtil.updateGlobalProperty(UgandaEMRSyncConfig.RECENCY_SEND_DATA_TASK_RUN, dateFormat.format(date));
+		}
 	}
 	
 	private String renderReport() {
 		ReportDefinitionService reportDefinitionService = Context.getService(ReportDefinitionService.class);
 		String strOutput = new String();
+		
 		try {
 			ReportDefinition rd = reportDefinitionService.getDefinitionByUuid(UgandaEMRSyncConfig.RECENCY_DEFININATION_UUID);
 			if (rd == null) {
 				throw new IllegalArgumentException("Unable to find report with passed uuid = "
 				        + UgandaEMRSyncConfig.RECENCY_DEFININATION_UUID);
 			}
+			
 			RenderingMode renderingMode = new RenderingMode(UgandaEMRSyncConfig.REPORT_RENDERING_MODE);
 			if (!renderingMode.getRenderer().canRender(rd)) {
 				throw new IllegalArgumentException("Rendering mode chosen cannot render passed report definition");
@@ -104,7 +125,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	
 	public String readOutputFile(String strOutput) throws Exception {
 		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-		FileInputStream fstreamItem = new FileInputStream(UgandaEMRSyncConfig.RECENCY_CSV_FILE_NAME);
+		FileInputStream fstreamItem = new FileInputStream(OpenmrsUtil.getApplicationDataDirectory()
+		        + UgandaEMRSyncConfig.RECENCY_CSV_FILE_NAME);
 		DataInputStream inItem = new DataInputStream(fstreamItem);
 		BufferedReader brItem = new BufferedReader(new InputStreamReader(inItem));
 		String phraseItem;
@@ -112,11 +134,9 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		if (!(phraseItem = brItem.readLine()).isEmpty()) {
 			strOutput = strOutput + "\"dhis2_orgunit_uuid\"," + "\"encounter_uuid\"," + phraseItem + System.lineSeparator();
 			while ((phraseItem = brItem.readLine()) != null) {
-				strOutput = strOutput
-				        + "\""
-				        + syncGlobalProperties.getGlobalProperty(OpenmrsUtil.getApplicationDataDirectory()
-				                + UgandaEMRSyncConfig.DHIS2_ORGANIZATION_UUID) + "\",\"\"," + phraseItem
-				        + System.lineSeparator();
+				strOutput = strOutput + "\""
+				        + syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.DHIS2_ORGANIZATION_UUID) + "\",\"\","
+				        + phraseItem + System.lineSeparator();
 			}
 		}
 		

@@ -200,12 +200,13 @@ public class UgandaEMRHttpURLConnection {
 		}
 	}
 	
-	public void httpPost(String recencyServerUrl, String bodyText)
+	public int httpPost(String recencyServerUrl, String bodyText)
 	{
 		HttpResponse response;
 		HttpClient client = HttpClientBuilder.create().build();
 		HttpPost post = new HttpPost(recencyServerUrl);
 		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+		int	 iStatusCode = 0;
 		try{
 
 		// HttpPost post = new HttpPost(Str+syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.recencyServerUrl));
@@ -223,10 +224,11 @@ public class UgandaEMRHttpURLConnection {
 		post.setEntity(multipart);
 
 		response = client.execute(post);
-
+		iStatusCode = response.getStatusLine().getStatusCode();
 		log.info(response.toString());
 		} catch (IOException | AuthenticationException e) {
 			log.info("Exception sending Recency data "+ e.getMessage());
 		}
+		return iStatusCode;
 	}
 }
