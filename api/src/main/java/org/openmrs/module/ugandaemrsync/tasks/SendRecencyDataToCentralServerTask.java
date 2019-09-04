@@ -2,7 +2,6 @@ package org.openmrs.module.ugandaemrsync.tasks;
 
 import org.apache.http.HttpStatus;
 import org.openmrs.GlobalProperty;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -30,7 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
-import static org.openmrs.module.ugandaemrsync.server.SyncConstant.DEFAULT_DATE_FORMAT;
 
 /**
  * Posts recency data to the central server
