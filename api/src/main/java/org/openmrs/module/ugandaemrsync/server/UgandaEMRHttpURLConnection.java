@@ -188,14 +188,14 @@ public class UgandaEMRHttpURLConnection {
 			final URLConnection conn = url.openConnection();
 			conn.connect();
 			conn.getInputStream().close();
-			log.info(UgandaEMRSyncConfig.RECENCY_SERVER_SUCCESS);
+			log.info(UgandaEMRSyncConfig.SERVER_CONNECTION_SUCCESS);
 			return true;
 		}
 		catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
 		catch (IOException e) {
-			log.info(UgandaEMRSyncConfig.RECENCY_SERVER_FAILED);
+			log.info(UgandaEMRSyncConfig.SERVER_CONNECTION_FAILED);
 			return false;
 		}
 	}
