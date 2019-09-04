@@ -48,4 +48,8 @@ public class UgandaEMRSyncConfig {
 	public static final String REPORT_RENDERING_MODE = "org.openmrs.module.reporting.report.renderer.CsvReportRenderer!152a4845-37e1-40c0-8fa8-5ef343e65ba5";
 	
 	public static final String RECENCY_SEND_DATA_TASK_RUN = "ugandaemrsync.lastsuccessfulsubmissiondate";
+
+	public static final String DHIS_ORGANIZATION_UUID = "dhis2_organization_uuid";
+
+	public static final String DATA_TYPE = "data";
 }

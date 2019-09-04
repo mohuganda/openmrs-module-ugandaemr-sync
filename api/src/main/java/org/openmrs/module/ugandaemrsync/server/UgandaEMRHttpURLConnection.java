@@ -34,6 +34,7 @@ import java.net.URLConnection;
 import java.util.Date;
 import java.util.Map;
 
+import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.HEALTH_CENTER_SYNC_ID;
 
 public class UgandaEMRHttpURLConnection {
@@ -217,8 +218,8 @@ public class UgandaEMRHttpURLConnection {
 
 		HttpEntity multipart = MultipartEntityBuilder.create()
 				.setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
-				.addTextBody("dhis2_organization_uuid", syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.DHIS2_ORGANIZATION_UUID))
-				.addTextBody("data", bodyText, ContentType.TEXT_PLAIN) // Current implementation uses plain text due to decoding challenges on the receiving server.
+				.addTextBody(DHIS_ORGANIZATION_UUID, syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.DHIS2_ORGANIZATION_UUID))
+				.addTextBody(DATA_TYPE, bodyText, ContentType.TEXT_PLAIN) // Current implementation uses plain text due to decoding challenges on the receiving server.
 				.build();
 		post.setEntity(multipart);
 
