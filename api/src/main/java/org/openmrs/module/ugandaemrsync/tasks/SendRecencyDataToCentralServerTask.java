@@ -124,10 +124,12 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		return strOutput;
 	}
 	/*
+	Method: readOutputFile
 	Pre condition: empty strOutput initialized
-	* Read the recency exported report file in csv
-	* Create a string and prefix the dhis2_orgunit_uuid
-	* and encounter_uuid columns to the final output
+	Description:
+		Read the recency exported report file in csv
+		Create a string and prefix the dhis2_orgunit_uuid
+		and encounter_uuid columns to the final output
 	Post condition: strOutput assigned with csv file data prefixed with two additional columns
 	* */
 
