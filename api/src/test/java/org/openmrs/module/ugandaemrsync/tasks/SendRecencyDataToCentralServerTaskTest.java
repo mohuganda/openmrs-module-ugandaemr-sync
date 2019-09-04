@@ -9,7 +9,6 @@ import org.mockito.Mockito;
 
 import static junit.framework.Assert.assertNotSame;
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
 
 public class SendRecencyDataToCentralServerTaskTest extends Mockito {
 	
@@ -18,12 +17,6 @@ public class SendRecencyDataToCentralServerTaskTest extends Mockito {
 	@Before
 	public void setUp() {
 		sendRecencyDataToCentralServerTask = new SendRecencyDataToCentralServerTask();
-	}
-	
-	@Test
-	public void testTaskSending() {
-		//sendRecencyDataToCentralServerTask.execute();
-		assertTrue(true);
 	}
 	
 	@Test
