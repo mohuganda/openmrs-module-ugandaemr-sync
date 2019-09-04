@@ -29,9 +29,9 @@ public class UgandaEMRSyncConfig {
 	
 	public static final String SERVER_CONNECTION_SUCCESS = "Successfully established connecton to the server.";
 	
-	public static final String CONNECTIVITY_CHECK_FAILED = "Cannot establish internet connectivity.";
+	public static final String CONNECTIVITY_CHECK_FAILED = "Internet connection is not available at this time, will try again in an hour";
 	
-	public static final String SERVER_CONNECTION_FAILED = "Cannot establish connection to the server.";
+	public static final String SERVER_CONNECTION_FAILED = "Server is not available at this time, will try again in an hour";
 
 	public static final String RECENCY_SERVER_USERNAME = "ugandaemrsync.recency.server.username";
 
