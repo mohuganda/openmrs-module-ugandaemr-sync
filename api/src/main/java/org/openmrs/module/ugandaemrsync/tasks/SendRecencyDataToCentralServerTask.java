@@ -61,7 +61,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		
 		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE);
 		if (gp.getPropertyValue().equals(dateFormat.format(date))) {
-			log.info("Last successful submission date is the same as today. No more data is being sent"
+			log.info("Last successful submission was on {global property value} so this task will not run again today. If you need to send data, run the task manually.t"
 			        + System.lineSeparator());
 			return;
 		}
