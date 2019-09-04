@@ -56,7 +56,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	
 	@Override
 	public void execute() {
-		Date date = new Date();
+		Date todayDate = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
@@ -66,7 +66,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(RECENCY_SUBDIRECTORY)));
 		
 		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE);
-		if (gp.getPropertyValue().equals(dateFormat.format(date))) {
+		if (gp.getPropertyValue().equals(dateFormat.format(todayDate))) {
 			log.info("Last successful submission was on {global property value} so this task will not run again today. If you need to send data, run the task manually.t"
 			        + System.lineSeparator());
 			return;
@@ -86,7 +86,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		
 		String bodyText = getRecencyDataExport();
 		if (ugandaEMRHttpURLConnection.httpPost(recencyServerUrlEndPoint, bodyText) == HttpStatus.SC_OK) {
-			ReportUtil.updateGlobalProperty(RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE, dateFormat.format(date));
+			ReportUtil.updateGlobalProperty(RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE, dateFormat.format(todayDate));
 			log.info("Recency data has been sent to central server");
 		}
 	}
