@@ -20,7 +20,7 @@ public class UgandaEMRHttpURLConnectionTest {
 	}
 	
 	@Test
-	public void thisServerDoesNotExist() {
+	public void serverIsNotAvailable() {
 		UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
 		assertFalse(ugandaEMRHttpURLConnection.isServerAvailable("http://no-server.exists.ug"));
 	}
