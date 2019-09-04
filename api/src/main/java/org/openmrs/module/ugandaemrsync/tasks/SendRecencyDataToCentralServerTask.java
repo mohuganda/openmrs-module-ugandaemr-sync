@@ -78,14 +78,14 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			return;
 		}
 		
-		String bodyText = renderReport();
+		String bodyText = getRecencyDataExport();
 		if (ugandaEMRHttpURLConnection.httpPost(recencyServerUrlEndPoint, bodyText) == HttpStatus.SC_OK) {
 			ReportUtil.updateGlobalProperty(RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE, dateFormat.format(date));
 			log.info("Recency data has been sent to central server");
 		}
 	}
-	
-	private String renderReport() {
+
+	private String getRecencyDataExport() {
 		ReportDefinitionService reportDefinitionService = Context.getService(ReportDefinitionService.class);
 		String strOutput = new String();
 		
