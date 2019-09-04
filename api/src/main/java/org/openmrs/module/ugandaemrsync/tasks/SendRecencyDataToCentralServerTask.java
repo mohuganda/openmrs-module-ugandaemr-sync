@@ -11,7 +11,6 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.reporting.report.util.ReportUtil;
-import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
+import static org.openmrs.module.ugandaemrsync.server.SyncConstant.SERVER_PROTOCOL;
 
 /**
  * Posts recency data to the central server
@@ -54,12 +54,12 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-		String recencyServerUrl = syncGlobalProperties.getGlobalProperty(RECENCY_SERVER_URL);
-		String testUrl = recencyServerUrl.substring(recencyServerUrl.indexOf("https://"),
-		    recencyServerUrl.indexOf("recency"));
+		String recencyServerUrlEndPoint = syncGlobalProperties.getGlobalProperty(RECENCY_SERVER_URL);
+		String testUrl = recencyServerUrlEndPoint.substring(
+		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(SERVER_PROTOCOL)),
+		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(RECENCY_SUBDIRECTORY)));
 		
-		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
-		    UgandaEMRSyncConfig.RECENCY_SEND_DATA_TASK_RUN);
+		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(RECENCY_SEND_DATA_TASK_RUN);
 		if (gp.getPropertyValue().equals(dateFormat.format(date))) {
 			log.info("Last successful submission date is the same as today. No more data is being sent"
 			        + System.lineSeparator());
@@ -67,7 +67,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		}
 		
 		log.info("Sending recency data to central server ");
-
+		
 		//Check internet connectivity
 		if (!ugandaEMRHttpURLConnection.isConnectionAvailable()) {
 			return;
@@ -79,8 +79,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		}
 		
 		String bodyText = renderReport();
-		if (ugandaEMRHttpURLConnection.httpPost(recencyServerUrl, bodyText) == HttpStatus.SC_OK) {
-			ReportUtil.updateGlobalProperty(UgandaEMRSyncConfig.RECENCY_SEND_DATA_TASK_RUN, dateFormat.format(date));
+		if (ugandaEMRHttpURLConnection.httpPost(recencyServerUrlEndPoint, bodyText) == HttpStatus.SC_OK) {
+			ReportUtil.updateGlobalProperty(RECENCY_SEND_DATA_TASK_RUN, dateFormat.format(date));
 			log.info("Recency data has been sent to central server");
 		}
 	}
@@ -90,13 +90,12 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		String strOutput = new String();
 		
 		try {
-			ReportDefinition rd = reportDefinitionService.getDefinitionByUuid(UgandaEMRSyncConfig.RECENCY_DEFININATION_UUID);
+			ReportDefinition rd = reportDefinitionService.getDefinitionByUuid(RECENCY_DEFININATION_UUID);
 			if (rd == null) {
-				throw new IllegalArgumentException("Unable to find report with passed uuid = "
-				        + UgandaEMRSyncConfig.RECENCY_DEFININATION_UUID);
+				throw new IllegalArgumentException("Unable to find report with passed uuid = " + RECENCY_DEFININATION_UUID);
 			}
 			
-			RenderingMode renderingMode = new RenderingMode(UgandaEMRSyncConfig.REPORT_RENDERING_MODE);
+			RenderingMode renderingMode = new RenderingMode(REPORT_RENDERING_MODE);
 			if (!renderingMode.getRenderer().canRender(rd)) {
 				throw new IllegalArgumentException("Rendering mode chosen cannot render passed report definition");
 			}
@@ -106,7 +105,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setReportDefinition(new Mapped<ReportDefinition>(rd, context.getParameterValues()));
 			reportRequest.setRenderingMode(renderingMode);
-			File file = new File(OpenmrsUtil.getApplicationDataDirectory() + UgandaEMRSyncConfig.RECENCY_CSV_FILE_NAME);
+			File file = new File(OpenmrsUtil.getApplicationDataDirectory() + RECENCY_CSV_FILE_NAME);
 			FileOutputStream fileOutputStream = new FileOutputStream(file);
 			renderingMode.getRenderer().render(reportData, renderingMode.getArgument(), fileOutputStream);
 			
@@ -121,8 +120,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	
 	public String readOutputFile(String strOutput) throws Exception {
 		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-		FileInputStream fstreamItem = new FileInputStream(OpenmrsUtil.getApplicationDataDirectory()
-		        + UgandaEMRSyncConfig.RECENCY_CSV_FILE_NAME);
+		FileInputStream fstreamItem = new FileInputStream(OpenmrsUtil.getApplicationDataDirectory() + RECENCY_CSV_FILE_NAME);
 		DataInputStream inItem = new DataInputStream(fstreamItem);
 		BufferedReader brItem = new BufferedReader(new InputStreamReader(inItem));
 		String phraseItem;
@@ -130,8 +128,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		if (!(phraseItem = brItem.readLine()).isEmpty()) {
 			strOutput = strOutput + "\"dhis2_orgunit_uuid\"," + "\"encounter_uuid\"," + phraseItem + System.lineSeparator();
 			while ((phraseItem = brItem.readLine()) != null) {
-				strOutput = strOutput + "\""
-				        + syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.DHIS2_ORGANIZATION_UUID) + "\",\"\","
+				strOutput = strOutput + "\"" + syncGlobalProperties.getGlobalProperty(DHIS2_ORGANIZATION_UUID) + "\",\"\","
 				        + phraseItem + System.lineSeparator();
 			}
 		}

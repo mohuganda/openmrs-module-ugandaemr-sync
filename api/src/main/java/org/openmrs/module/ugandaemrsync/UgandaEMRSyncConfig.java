@@ -21,6 +21,8 @@ public class UgandaEMRSyncConfig {
 
 	public static final String RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
 	
+	public static final String RECENCY_SUBDIRECTORY = "ugandaemrsync.subdirectory";
+	
 	public static final String CONNECTIVITY_CHECK_URL = "http://www.google.com";
 	
 	public static final String CONNECTIVITY_CHECK_SUCCESS = "Successful connection to the internet.";

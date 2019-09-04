@@ -97,6 +97,11 @@
         <defaultValue></defaultValue>
         <description>The last successful submission date for recency send data task scheduler</description>
     </globalProperty>
+    <globalProperty>
+        <property>ugandaemrsync.subdirectory</property>
+        <defaultValue></defaultValue>
+        <description>The sub directory to a domain name</description>
+    </globalProperty>
 
     <!--
     <dwr>
