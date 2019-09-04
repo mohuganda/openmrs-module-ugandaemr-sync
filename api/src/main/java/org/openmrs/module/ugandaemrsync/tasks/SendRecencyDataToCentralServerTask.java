@@ -65,7 +65,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(SERVER_PROTOCOL)),
 		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(RECENCY_SUBDIRECTORY)));
 		
-		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE);
+		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
+		    RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE);
 		if (gp.getPropertyValue().equals(dateFormat.format(todayDate))) {
 			log.info("Last successful submission was on {global property value} so this task will not run again today. If you need to send data, run the task manually.t"
 			        + System.lineSeparator());
@@ -90,7 +91,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			log.info("Recency data has been sent to central server");
 		}
 	}
-
+	
 	private String getRecencyDataExport() {
 		ReportDefinitionService reportDefinitionService = Context.getService(ReportDefinitionService.class);
 		String strOutput = new String();
@@ -98,7 +99,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		try {
 			ReportDefinition rd = reportDefinitionService.getDefinitionByUuid(RECENCY_DEFININATION_UUID);
 			if (rd == null) {
-				throw new IllegalArgumentException("unable to find Recency Data Export report with uuid " + RECENCY_DEFININATION_UUID);
+				throw new IllegalArgumentException("unable to find Recency Data Export report with uuid "
+				        + RECENCY_DEFININATION_UUID);
 			}
 			
 			RenderingMode renderingMode = new RenderingMode(REPORT_RENDERING_MODE);
@@ -123,6 +125,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		
 		return strOutput;
 	}
+	
 	/*
 	Method: readOutputFile
 	Pre condition: empty strOutput initialized
@@ -132,7 +135,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		and encounter_uuid columns to the final output
 	Post condition: strOutput assigned with csv file data prefixed with two additional columns
 	* */
-
+	
 	public String readOutputFile(String strOutput) throws Exception {
 		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 		FileInputStream fstreamItem = new FileInputStream(OpenmrsUtil.getApplicationDataDirectory() + RECENCY_CSV_FILE_NAME);

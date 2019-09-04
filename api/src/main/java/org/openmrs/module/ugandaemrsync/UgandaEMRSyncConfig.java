@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class UgandaEMRSyncConfig {
 	
 	public final static String MODULE_PRIVILEGE = "UgandaemrSync Privilege";
-
+	
 	public static final String RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
 	
 	public static final String RECENCY_SUBDIRECTORY = "ugandaemrsync.subdirectory";
@@ -32,11 +32,11 @@ public class UgandaEMRSyncConfig {
 	public static final String CONNECTIVITY_CHECK_FAILED = "Internet connection is not available at this time, will try again in an hour";
 	
 	public static final String SERVER_CONNECTION_FAILED = "Server is not available at this time, will try again in an hour";
-
+	
 	public static final String RECENCY_SERVER_USERNAME = "ugandaemrsync.recency.server.username";
-
+	
 	public static final String RECENCY_SERVER_PASSWORD = "ugandaemrsync.recency.server.password";
-
+	
 	public static final String HEADER_EMR_DATE = "x-emr-date";
 	
 	public static final String DHIS2_ORGANIZATION_UUID = "ugandaemr.dhis2.organizationuuid";
@@ -48,8 +48,8 @@ public class UgandaEMRSyncConfig {
 	public static final String REPORT_RENDERING_MODE = "org.openmrs.module.reporting.report.renderer.CsvReportRenderer!152a4845-37e1-40c0-8fa8-5ef343e65ba5";
 	
 	public static final String RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE = "ugandaemrsync.lastsuccessfulsubmissiondate";
-
+	
 	public static final String DHIS_ORGANIZATION_UUID = "dhis2_organization_uuid";
-
+	
 	public static final String DATA_TYPE = "data";
 }

@@ -38,8 +38,8 @@ public class SendRecencyDataToCentralServerTaskTest extends Mockito {
 		//then:
 		assertEquals(HttpStatus.SC_UNAUTHORIZED, statusLine.getStatusCode());
 	}
+	
 	@Test
-
 	public void testInternalServerErrorStatus() {
 		//given:
 		StatusLine statusLine = mock(StatusLine.class);
