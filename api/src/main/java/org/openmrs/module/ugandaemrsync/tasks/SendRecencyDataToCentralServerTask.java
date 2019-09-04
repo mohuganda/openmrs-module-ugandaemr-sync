@@ -98,7 +98,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		try {
 			ReportDefinition rd = reportDefinitionService.getDefinitionByUuid(RECENCY_DEFININATION_UUID);
 			if (rd == null) {
-				throw new IllegalArgumentException("Unable to find report with passed uuid = " + RECENCY_DEFININATION_UUID);
+				throw new IllegalArgumentException("unable to find Recency Data Export report with uuid " + RECENCY_DEFININATION_UUID);
 			}
 			
 			RenderingMode renderingMode = new RenderingMode(REPORT_RENDERING_MODE);
