@@ -59,7 +59,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(SERVER_PROTOCOL)),
 		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(RECENCY_SUBDIRECTORY)));
 		
-		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(RECENCY_SEND_DATA_TASK_RUN);
+		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE);
 		if (gp.getPropertyValue().equals(dateFormat.format(date))) {
 			log.info("Last successful submission date is the same as today. No more data is being sent"
 			        + System.lineSeparator());
@@ -80,7 +80,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		
 		String bodyText = renderReport();
 		if (ugandaEMRHttpURLConnection.httpPost(recencyServerUrlEndPoint, bodyText) == HttpStatus.SC_OK) {
-			ReportUtil.updateGlobalProperty(RECENCY_SEND_DATA_TASK_RUN, dateFormat.format(date));
+			ReportUtil.updateGlobalProperty(RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE, dateFormat.format(date));
 			log.info("Recency data has been sent to central server");
 		}
 	}
