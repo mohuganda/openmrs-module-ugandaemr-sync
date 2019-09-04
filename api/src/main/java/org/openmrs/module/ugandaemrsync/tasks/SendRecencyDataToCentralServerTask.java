@@ -103,7 +103,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			
 			RenderingMode renderingMode = new RenderingMode(REPORT_RENDERING_MODE);
 			if (!renderingMode.getRenderer().canRender(rd)) {
-				throw new IllegalArgumentException("Rendering mode chosen cannot render passed report definition");
+				throw new IllegalArgumentException("Unable to render Recency Data Export with " + REPORT_RENDERING_MODE);
 			}
 			
 			EvaluationContext context = new EvaluationContext();
