@@ -100,10 +100,10 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		String strOutput = new String();
 		
 		try {
-			ReportDefinition rd = reportDefinitionService.getDefinitionByUuid(RECENCY_DEFININATION_UUID);
+			ReportDefinition rd = reportDefinitionService.getDefinitionByUuid(RECENCY_DATA_EXPORT_REPORT_DEFINITION_UUID);
 			if (rd == null) {
 				throw new IllegalArgumentException("unable to find Recency Data Export report with uuid "
-				        + RECENCY_DEFININATION_UUID);
+				        + RECENCY_DATA_EXPORT_REPORT_DEFINITION_UUID);
 			}
 			
 			RenderingMode renderingMode = new RenderingMode(REPORT_RENDERING_MODE);
