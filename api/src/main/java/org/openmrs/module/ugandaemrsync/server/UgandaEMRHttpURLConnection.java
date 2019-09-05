@@ -19,9 +19,11 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.Location;
+import org.openmrs.User;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
+import org.openmrs.notification.Alert;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,6 +34,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
@@ -230,5 +233,15 @@ public class UgandaEMRHttpURLConnection {
 			log.info("Exception sending Recency data "+ e.getMessage());
 		}
 		return iStatusCode;
+	}
+	
+	public void setAlertForAllUsers(String alertMessage) {
+		List<User> userList = Context.getUserService().getAllUsers();
+		Alert alert = new Alert();
+		for (User user : userList) {
+			alert.addRecipient(user);
+		}
+		alert.setText(alertMessage);
+		Context.getAlertService().saveAlert(alert);
 	}
 }

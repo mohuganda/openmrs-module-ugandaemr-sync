@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.SERVER_PROTOCOL;
@@ -46,10 +47,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	protected Log log = LogFactory.getLog(getClass());
 	
 	UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
-	
-	//TODO: use syncGlobalProperties once it has been persisted on ugandaEMR database
-	// SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-	
+
 	@Autowired
 	@Qualifier("reportingReportDefinitionService")
 	protected ReportDefinitionService reportingReportDefinitionService;
@@ -86,9 +84,14 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		}
 		
 		String bodyText = getRecencyDataExport();
-		if (ugandaEMRHttpURLConnection.httpPost(recencyServerUrlEndPoint, bodyText) == HttpStatus.SC_OK) {
+		int httpResponseStatus = ugandaEMRHttpURLConnection.httpPost(recencyServerUrlEndPoint, bodyText);
+		if (httpResponseStatus == HttpStatus.SC_OK) {
 			ReportUtil.updateGlobalProperty(RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE, dateFormat.format(todayDate));
 			log.info("Recency data has been sent to central server");
+		} else {
+			log.info(httpResponseStatus);
+			ugandaEMRHttpURLConnection.setAlertForAllUsers("Http request has returned a response status: "
+			        + httpResponseStatus);
 		}
 	}
 	
