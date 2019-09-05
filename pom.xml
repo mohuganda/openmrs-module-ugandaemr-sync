@@ -178,7 +178,6 @@
 
     <properties>
         <openMRSVersion>2.0.6</openMRSVersion>
-        <openmrsPlatformVersion>2.0.6</openmrsPlatformVersion>
         <appuiVersion>1.7</appuiVersion>
         <uiframeworkVersion>3.15.0</uiframeworkVersion>
         <ugandaemrReportsVersion>2.0.12-SNAPSHOT</ugandaemrReportsVersion>
