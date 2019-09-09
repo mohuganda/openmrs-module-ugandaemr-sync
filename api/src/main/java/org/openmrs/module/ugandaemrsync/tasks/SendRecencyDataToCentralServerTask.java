@@ -47,7 +47,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	protected Log log = LogFactory.getLog(getClass());
 	
 	UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
-
+	
 	@Autowired
 	@Qualifier("reportingReportDefinitionService")
 	protected ReportDefinitionService reportingReportDefinitionService;
@@ -105,10 +105,10 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 				throw new IllegalArgumentException("unable to find Recency Data Export report with uuid "
 				        + RECENCY_DATA_EXPORT_REPORT_DEFINITION_UUID);
 			}
-			
-			RenderingMode renderingMode = new RenderingMode(REPORT_RENDERING_MODE);
+			String reportRendergingMode = REPORT_RENDERER_TYPE + "!" + REPORT_CSV_DESIGN_UUID;
+			RenderingMode renderingMode = new RenderingMode(reportRendergingMode);
 			if (!renderingMode.getRenderer().canRender(rd)) {
-				throw new IllegalArgumentException("Unable to render Recency Data Export with " + REPORT_RENDERING_MODE);
+				throw new IllegalArgumentException("Unable to render Recency Data Export with " + reportRendergingMode);
 			}
 			
 			EvaluationContext context = new EvaluationContext();
