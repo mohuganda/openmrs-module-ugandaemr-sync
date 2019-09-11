@@ -128,7 +128,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			strOutput = this.readOutputFile(strOutput);
 		}
 		catch (Exception e) {
-			log.info(e.toString());
+			log.info("Error rendering the contents of the Recency data export report to"+
+					OpenmrsUtil.getApplicationDataDirectory() + RECENCY_CSV_FILE_NAME + e.toString());
 		}
 		
 		return strOutput;
