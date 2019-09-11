@@ -1,5 +1,7 @@
 package org.openmrs.module.ugandaemrsync.tasks;
 
+import javafx.util.Pair;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
@@ -32,6 +34,7 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
@@ -84,14 +87,16 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		}
 		
 		String bodyText = getRecencyDataExport();
-		int httpResponseStatus = ugandaEMRHttpURLConnection.httpPost(recencyServerUrlEndPoint, bodyText);
-		if (httpResponseStatus == HttpStatus.SC_OK) {
+		HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(recencyServerUrlEndPoint, bodyText);
+		if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			ReportUtil.updateGlobalProperty(RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE, dateFormat.format(todayDate));
 			log.info("Recency data has been sent to central server");
 		} else {
-			log.info(httpResponseStatus);
+			log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
+			        + httpResponse.getStatusLine().getReasonPhrase());
 			ugandaEMRHttpURLConnection.setAlertForAllUsers("Http request has returned a response status: "
-			        + httpResponseStatus);
+			        + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase()
+			        + " error");
 		}
 	}
 	
