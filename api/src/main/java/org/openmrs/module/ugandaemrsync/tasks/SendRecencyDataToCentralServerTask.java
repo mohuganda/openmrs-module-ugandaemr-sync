@@ -1,6 +1,5 @@
 package org.openmrs.module.ugandaemrsync.tasks;
 
-import javafx.util.Pair;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.openmrs.GlobalProperty;
@@ -34,8 +33,6 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.SERVER_PROTOCOL;
@@ -54,15 +51,12 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	@Autowired
 	@Qualifier("reportingReportDefinitionService")
 	protected ReportDefinitionService reportingReportDefinitionService;
-
-	@Autowired
-	SyncGlobalProperties syncGlobalProperties;
 	
 	@Override
 	public void execute() {
 		Date todayDate = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		
+		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 		String recencyServerUrlEndPoint = syncGlobalProperties.getGlobalProperty(RECENCY_SERVER_URL);
 		String recencyDomainUrl = recencyServerUrlEndPoint.substring(
 		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(SERVER_PROTOCOL)),
@@ -130,8 +124,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			strOutput = this.readOutputFile(strOutput);
 		}
 		catch (Exception e) {
-			log.info("Error rendering the contents of the Recency data export report to"+
-					OpenmrsUtil.getApplicationDataDirectory() + RECENCY_CSV_FILE_NAME + e.toString());
+			log.info("Error rendering the contents of the Recency data export report to"
+			        + OpenmrsUtil.getApplicationDataDirectory() + RECENCY_CSV_FILE_NAME + e.toString());
 		}
 		
 		return strOutput;
