@@ -54,13 +54,15 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	@Autowired
 	@Qualifier("reportingReportDefinitionService")
 	protected ReportDefinitionService reportingReportDefinitionService;
+
+	@Autowired
+	SyncGlobalProperties syncGlobalProperties;
 	
 	@Override
 	public void execute() {
 		Date todayDate = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
-		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 		String recencyServerUrlEndPoint = syncGlobalProperties.getGlobalProperty(RECENCY_SERVER_URL);
 		String recencyDomainUrl = recencyServerUrlEndPoint.substring(
 		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(SERVER_PROTOCOL)),
