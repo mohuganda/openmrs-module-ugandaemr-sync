@@ -30,14 +30,11 @@ import java.io.DataInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
-import static org.openmrs.module.ugandaemrsync.server.SyncConstant.SERVER_PROTOCOL;
 
 /**
  * Posts recency data to the central server
