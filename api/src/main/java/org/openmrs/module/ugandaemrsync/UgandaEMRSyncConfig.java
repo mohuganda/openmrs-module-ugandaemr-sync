@@ -19,7 +19,7 @@ public class UgandaEMRSyncConfig {
 	
 	public final static String MODULE_PRIVILEGE = "UgandaemrSync Privilege";
 	
-	public static final String RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
+	public static final String GP_RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
 	
 	public static final String CONNECTIVITY_CHECK_URL = "http://www.google.com";
 	
@@ -31,13 +31,13 @@ public class UgandaEMRSyncConfig {
 	
 	public static final String SERVER_CONNECTION_FAILED = "Server is not available at this time, will try again later";
 	
-	public static final String RECENCY_SERVER_USERNAME = "ugandaemrsync.recency.server.username";
+	public static final String GP_RECENCY_SERVER_USERNAME = "ugandaemrsync.recency.server.username";
 	
-	public static final String RECENCY_SERVER_PASSWORD = "ugandaemrsync.recency.server.password";
+	public static final String GP_RECENCY_SERVER_PASSWORD = "ugandaemrsync.recency.server.password";
 	
 	public static final String HEADER_EMR_DATE = "x-emr-date";
 	
-	public static final String DHIS2_ORGANIZATION_UUID = "ugandaemr.dhis2.organizationuuid";
+	public static final String GP_DHIS2_ORGANIZATION_UUID = "ugandaemr.dhis2.organizationuuid";
 	
 	public static final String RECENCY_CSV_FILE_NAME = "HTS_Recency_Client_Card_Data_Export_2019.csv";
 	
@@ -47,7 +47,7 @@ public class UgandaEMRSyncConfig {
 	
 	public static final String REPORT_RENDERER_TYPE = "org.openmrs.module.reporting.report.renderer.CsvReportRenderer";
 	
-	public static final String RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE = "ugandaemrsync.last.successful.submission.date";
+	public static final String GP_RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE = "ugandaemrsync.last.successful.submission.date";
 	
 	public static final String DHIS_ORGANIZATION_UUID = "dhis2_organization_uuid";
 	
