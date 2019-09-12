@@ -20,7 +20,7 @@ public class UgandaEMRSyncConfig {
 	public final static String MODULE_PRIVILEGE = "UgandaemrSync Privilege";
 	
 	public static final String RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
-
+	
 	public static final String CONNECTIVITY_CHECK_URL = "http://www.google.com";
 	
 	public static final String CONNECTIVITY_CHECK_SUCCESS = "Successful connection to the internet.";
@@ -47,7 +47,7 @@ public class UgandaEMRSyncConfig {
 	
 	public static final String REPORT_RENDERER_TYPE = "org.openmrs.module.reporting.report.renderer.CsvReportRenderer";
 	
-	public static final String RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE = "ugandaemrsync.lastsuccessfulsubmissiondate";
+	public static final String RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE = "ugandaemrsync.last.successful.submission.date";
 	
 	public static final String DHIS_ORGANIZATION_UUID = "dhis2_organization_uuid";
 	

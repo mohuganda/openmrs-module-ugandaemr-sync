@@ -91,7 +91,7 @@
         <description> </description>
     </globalProperty>
     <globalProperty>
-        <property>ugandaemrsync.lastsuccessfulsubmissiondate</property>
+        <property>ugandaemrsync.last.successful.submission.date</property>
         <defaultValue></defaultValue>
         <description>The last successful submission date for recency send data task scheduler</description>
     </globalProperty>
