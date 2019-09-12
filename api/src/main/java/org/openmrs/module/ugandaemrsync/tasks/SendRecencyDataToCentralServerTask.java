@@ -58,11 +58,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 		String recencyServerUrlEndPoint = syncGlobalProperties.getGlobalProperty(RECENCY_SERVER_URL);
 		String recencyBaseUrl = ugandaEMRHttpURLConnection.getBaseURL(recencyServerUrlEndPoint);
-		
-		//		recencyDomainUrl = recencyServerUrlEndPoint.substring(
-		//		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(SERVER_PROTOCOL)),
-		//		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(RECENCY_SUBDIRECTORY)));
-		
+
 		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
 		    RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE);
 		if (gp.getPropertyValue().equals(dateFormat.format(todayDate))) {
