@@ -2,8 +2,7 @@ package org.openmrs.module.ugandaemrsync.server;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 public class UgandaEMRHttpURLConnectionTest {
 	
@@ -23,5 +22,12 @@ public class UgandaEMRHttpURLConnectionTest {
 	public void serverIsNotAvailable() {
 		UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
 		assertFalse(ugandaEMRHttpURLConnection.isServerAvailable("http://no-server.exists.ug"));
+	}
+	
+	@Test
+	public void shouldBeEqualToTheProvidedBaseURL() {
+		UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
+		assertEquals("https://ughim.cphluganda.org",
+		    ugandaEMRHttpURLConnection.getBaseURL("https://ughim.cphluganda.org/recency/upload/"));
 	}
 }

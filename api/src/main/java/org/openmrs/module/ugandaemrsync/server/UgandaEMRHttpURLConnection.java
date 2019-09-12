@@ -240,4 +240,15 @@ public class UgandaEMRHttpURLConnection {
 		alert.setText(alertMessage);
 		Context.getAlertService().saveAlert(alert);
 	}
+	
+	public String getBaseURL(String serverUrl) {
+		try {
+			URL url = new URL(serverUrl);
+			serverUrl = url.getProtocol() + "://" + url.getHost();
+		}
+		catch (MalformedURLException e) {
+			log.info("Unknown Protocol" + e);
+		}
+		return serverUrl;
+	}
 }

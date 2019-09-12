@@ -30,6 +30,8 @@ import java.io.DataInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -58,9 +60,11 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 		String recencyServerUrlEndPoint = syncGlobalProperties.getGlobalProperty(RECENCY_SERVER_URL);
-		String recencyDomainUrl = recencyServerUrlEndPoint.substring(
-		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(SERVER_PROTOCOL)),
-		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(RECENCY_SUBDIRECTORY)));
+		String recencyBaseUrl = ugandaEMRHttpURLConnection.getBaseURL(recencyServerUrlEndPoint);
+		
+		//		recencyDomainUrl = recencyServerUrlEndPoint.substring(
+		//		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(SERVER_PROTOCOL)),
+		//		    recencyServerUrlEndPoint.indexOf(syncGlobalProperties.getGlobalProperty(RECENCY_SUBDIRECTORY)));
 		
 		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
 		    RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE);
@@ -78,7 +82,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		}
 		
 		//Check destination server availability
-		if (!ugandaEMRHttpURLConnection.isServerAvailable(recencyDomainUrl)) {
+		if (!ugandaEMRHttpURLConnection.isServerAvailable(recencyBaseUrl)) {
 			return;
 		}
 		
