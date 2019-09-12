@@ -16,7 +16,7 @@ public class UgandaEMRHttpURLConnectionTest {
 	@Test
 	public void isServerAvailable() {
 		UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
-		assertTrue(ugandaEMRHttpURLConnection.isServerAvailable("http://www.google.com"));
+		assertTrue(ugandaEMRHttpURLConnection.isServerAvailable("https://ughim.cphluganda.org/"));
 	}
 	
 	@Test
