@@ -58,9 +58,9 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 		String recencyServerUrlEndPoint = syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_URL);
 		String recencyBaseUrl = ugandaEMRHttpURLConnection.getBaseURL(recencyServerUrlEndPoint);
-
+		
 		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
-				GP_RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE);
+		    GP_RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE);
 		if (gp.getPropertyValue().equals(dateFormat.format(todayDate))) {
 			log.info("Last successful submission was on {global property value} so this task will not run again today. If you need to send data, run the task manually.t"
 			        + System.lineSeparator());
@@ -148,8 +148,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		if (!(phraseItem = brItem.readLine()).isEmpty()) {
 			strOutput = strOutput + "\"dhis2_orgunit_uuid\"," + "\"encounter_uuid\"," + phraseItem + System.lineSeparator();
 			while ((phraseItem = brItem.readLine()) != null) {
-				strOutput = strOutput + "\"" + syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID) + "\",\"\","
-				        + phraseItem + System.lineSeparator();
+				strOutput = strOutput + "\"" + syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID)
+				        + "\",\"\"," + phraseItem + System.lineSeparator();
 			}
 		}
 		

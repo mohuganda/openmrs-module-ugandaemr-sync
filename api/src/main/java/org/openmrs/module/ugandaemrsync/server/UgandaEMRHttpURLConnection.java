@@ -214,12 +214,12 @@ public class UgandaEMRHttpURLConnection {
 		post.addHeader(HEADER_EMR_DATE, new Date().toString());
 
 		UsernamePasswordCredentials credentials
-				= new UsernamePasswordCredentials(syncGlobalProperties.getGlobalProperty(RECENCY_SERVER_USERNAME), syncGlobalProperties.getGlobalProperty(RECENCY_SERVER_PASSWORD));
+				= new UsernamePasswordCredentials(syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_USERNAME), syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_PASSWORD));
 		post.addHeader(new BasicScheme().authenticate(credentials, post, null));
 
 		HttpEntity multipart = MultipartEntityBuilder.create()
 				.setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
-				.addTextBody(DHIS_ORGANIZATION_UUID, syncGlobalProperties.getGlobalProperty(DHIS2_ORGANIZATION_UUID))
+				.addTextBody(DHIS_ORGANIZATION_UUID, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID))
 				.addTextBody(HTTP_TEXT_BODY_DATA_TYPE_KEY, bodyText, ContentType.TEXT_PLAIN) // Current implementation uses plain text due to decoding challenges on the receiving server.
 				.build();
 		post.setEntity(multipart);
