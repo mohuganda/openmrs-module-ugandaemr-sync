@@ -47,7 +47,7 @@ public class UgandaEMRSyncConfig {
 	
 	public static final String REPORT_RENDERER_TYPE = "org.openmrs.module.reporting.report.renderer.CsvReportRenderer";
 	
-	public static final String GP_RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE = "ugandaemrsync.last.successful.submission.date";
+	public static final String GP_RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE = "ugandaemrsync.recency.last.successful.submission.date";
 	
 	public static final String DHIS_ORGANIZATION_UUID = "dhis2_organization_uuid";
 	

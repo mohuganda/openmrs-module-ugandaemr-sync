@@ -34,6 +34,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
 
 /**
@@ -47,6 +48,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	
 	UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
 	
+	SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+	
 	@Autowired
 	@Qualifier("reportingReportDefinitionService")
 	protected ReportDefinitionService reportingReportDefinitionService;
@@ -55,7 +58,10 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	public void execute() {
 		Date todayDate = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+		//		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+		if (!globalPropertiesAreSet()) {
+			return;
+		}
 		String recencyServerUrlEndPoint = syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_URL);
 		String recencyBaseUrl = ugandaEMRHttpURLConnection.getBaseURL(recencyServerUrlEndPoint);
 		
@@ -67,8 +73,6 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			return;
 		}
 		
-		log.info("Sending recency data to central server ");
-		
 		//Check internet connectivity
 		if (!ugandaEMRHttpURLConnection.isConnectionAvailable()) {
 			return;
@@ -78,7 +82,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		if (!ugandaEMRHttpURLConnection.isServerAvailable(recencyBaseUrl)) {
 			return;
 		}
-		
+		log.info("Sending recency data to central server ");
 		String bodyText = getRecencyDataExport();
 		HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(recencyServerUrlEndPoint, bodyText);
 		if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -156,5 +160,33 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		fstreamItem.close();
 		
 		return strOutput;
+	}
+	
+	public boolean globalPropertiesAreSet() {
+		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_URL))) {
+			log.info("Recency server URL is not set");
+			ugandaEMRHttpURLConnection
+			        .setAlertForAllUsers("Recency server URL is not set please go to admin then Settings then Ugandaemrsync and set it");
+			return false;
+		}
+		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID))) {
+			log.info("DHIS2 Organization UUID is not set");
+			ugandaEMRHttpURLConnection
+			        .setAlertForAllUsers("DHIS2 Organization UUID is not set please go to admin then Settings then Ugandaemr and set it");
+			return false;
+		}
+		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_USERNAME))) {
+			log.info("Recency server username is not set");
+			ugandaEMRHttpURLConnection
+			        .setAlertForAllUsers("Recency server username is not set please go to admin then Settings then Ugandaemrsync and set it");
+			return false;
+		}
+		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_PASSWORD))) {
+			log.info("Recency server URL is not set");
+			ugandaEMRHttpURLConnection
+			        .setAlertForAllUsers("Recency server password is not set please go to admin then Settings then Ugandaemrsync and set it");
+			return false;
+		}
+		return true;
 	}
 }
