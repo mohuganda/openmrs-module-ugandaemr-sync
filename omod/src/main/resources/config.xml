@@ -90,6 +90,11 @@
         <defaultValue></defaultValue>
         <description>The last successful submission date for recency send data task scheduler</description>
     </globalProperty>
+    <globalProperty>
+        <property>ugandaemrsync.submit.recency.data.once.daily</property>
+        <defaultValue>false</defaultValue>
+        <description>Turns on and off the submission of recency data once daily or multiple time in specified interval</description>
+    </globalProperty>
 
     <!--
     <dwr>

@@ -65,10 +65,14 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		String recencyServerUrlEndPoint = syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_URL);
 		String recencyBaseUrl = ugandaEMRHttpURLConnection.getBaseURL(recencyServerUrlEndPoint);
 		
-		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
-		    GP_RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE);
-		if (gp.getPropertyValue().equals(dateFormat.format(todayDate))) {
-			log.info("Last successful submission was on {global property value} so this task will not run again today. If you need to send data, run the task manually.t"
+		String strSubmissionDate = Context.getAdministrationService().getGlobalPropertyObject(
+		    GP_RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE).getPropertyValue();
+		String strSubmitOnceDaily = Context.getAdministrationService().getGlobalPropertyObject(
+				GP_SUBMIT_RECENCY_DATA_ONCE_DAILY).getPropertyValue();
+
+		if (strSubmissionDate.equals(dateFormat.format(todayDate)) && strSubmitOnceDaily.equals("true")) {
+			log.info("Last successful submission was on"+ strSubmissionDate + " and once data submission daily is set as "
+					+  strSubmitOnceDaily + "so this task will not run again today. If you need to send data, run the task manually."
 			        + System.lineSeparator());
 			return;
 		}
