@@ -175,12 +175,6 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			        .setAlertForAllUsers("DHIS2 Organization UUID is not set please go to admin then Settings then Ugandaemr and set it");
 			return false;
 		}
-		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_USERNAME))) {
-			log.info("Recency server username is not set");
-			ugandaEMRHttpURLConnection
-			        .setAlertForAllUsers("Recency server username is not set please go to admin then Settings then Ugandaemrsync and set it");
-			return false;
-		}
 		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_PASSWORD))) {
 			log.info("Recency server URL is not set");
 			ugandaEMRHttpURLConnection

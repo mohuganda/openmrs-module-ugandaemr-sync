@@ -66,11 +66,6 @@
         <description> </description>
     </globalProperty>
     <globalProperty>
-        <property>ugandaemrsync.recency.server.username</property>
-        <defaultValue></defaultValue>
-        <description> This is the recency username that the system will connect to </description>
-    </globalProperty>
-    <globalProperty>
         <property>ugandaemrsync.recency.server.password</property>
         <defaultValue></defaultValue>
         <description>This is the recency password that the system will connect to</description>

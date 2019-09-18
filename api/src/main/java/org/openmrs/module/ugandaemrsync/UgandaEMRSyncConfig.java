@@ -31,8 +31,6 @@ public class UgandaEMRSyncConfig {
 	
 	public static final String SERVER_CONNECTION_FAILED = "Server is not available at this time, will try again later";
 	
-	public static final String GP_RECENCY_SERVER_USERNAME = "ugandaemrsync.recency.server.username";
-	
 	public static final String GP_RECENCY_SERVER_PASSWORD = "ugandaemrsync.recency.server.password";
 	
 	public static final String HEADER_EMR_DATE = "x-emr-date";
