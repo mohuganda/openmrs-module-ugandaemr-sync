@@ -75,10 +75,6 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			        + strSubmitOnceDaily
 			        + "so this task will not run again today. If you need to send data, run the task manually."
 			        + System.lineSeparator());
-			System.out.println("Last successful submission was on" + strSubmissionDate + " and once data submission daily is set as "
-					+ strSubmitOnceDaily
-					+ "so this task will not run again today. If you need to send data, run the task manually."
-					+ System.lineSeparator());
 			return;
 		}
 		
