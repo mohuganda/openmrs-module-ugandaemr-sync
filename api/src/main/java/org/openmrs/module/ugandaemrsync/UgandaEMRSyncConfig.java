@@ -51,5 +51,5 @@ public class UgandaEMRSyncConfig {
 	
 	public static final String HTTP_TEXT_BODY_DATA_TYPE_KEY = "data";
 	
-	public static final String GP_SUBMIT_RECENCY_DATA_ONCE_DAILY = "ugandaemrsync.submit.recency.data.once.daily";
+	public static final String GP_SUBMIT_RECENCY_DATA_ONCE_DAILY = "ugandaemrsync.recency.submit.data.once.daily";
 }
