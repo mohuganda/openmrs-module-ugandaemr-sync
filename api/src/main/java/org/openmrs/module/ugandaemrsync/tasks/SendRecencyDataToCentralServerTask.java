@@ -2,7 +2,6 @@ package org.openmrs.module.ugandaemrsync.tasks;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -58,10 +57,16 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	public void execute() {
 		Date todayDate = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		//		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-		if (!globalPropertiesAreSet()) {
+		if (!isGpRecencyServerUrlSet()) {
 			return;
 		}
+		if (!isGpDhis2OrganizationUuidSet()) {
+			return;
+		}
+		if (!isGpRecencyServerPasswordSet()) {
+			return;
+		}
+		
 		String recencyServerUrlEndPoint = syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_URL);
 		String recencyBaseUrl = ugandaEMRHttpURLConnection.getBaseURL(recencyServerUrlEndPoint);
 		
@@ -70,14 +75,16 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		String strSubmitOnceDaily = Context.getAdministrationService()
 		        .getGlobalPropertyObject(GP_SUBMIT_RECENCY_DATA_ONCE_DAILY).getPropertyValue();
 		
-		if (strSubmissionDate.equals(dateFormat.format(todayDate)) && strSubmitOnceDaily.equals("true")) {
-			log.info("Last successful submission was on" + strSubmissionDate + " and once data submission daily is set as "
-			        + strSubmitOnceDaily
-			        + "so this task will not run again today. If you need to send data, run the task manually."
-			        + System.lineSeparator());
-			return;
+		if (!isBlank(strSubmissionDate)) {
+			
+			if (strSubmissionDate.equals(dateFormat.format(todayDate)) && strSubmitOnceDaily.equals("true")) {
+				log.info("Last successful submission was on" + strSubmissionDate
+				        + " and once data submission daily is set as " + strSubmitOnceDaily
+				        + "so this task will not run again today. If you need to send data, run the task manually."
+				        + System.lineSeparator());
+				return;
+			}
 		}
-		
 		//Check internet connectivity
 		if (!ugandaEMRHttpURLConnection.isConnectionAvailable()) {
 			return;
@@ -167,19 +174,27 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		return strOutput;
 	}
 	
-	public boolean globalPropertiesAreSet() {
+	public boolean isGpRecencyServerUrlSet() {
 		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_URL))) {
 			log.info("Recency server URL is not set");
 			ugandaEMRHttpURLConnection
 			        .setAlertForAllUsers("Recency server URL is not set please go to admin then Settings then Ugandaemrsync and set it");
 			return false;
 		}
+		return true;
+	}
+	
+	public boolean isGpDhis2OrganizationUuidSet() {
 		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID))) {
 			log.info("DHIS2 Organization UUID is not set");
 			ugandaEMRHttpURLConnection
 			        .setAlertForAllUsers("DHIS2 Organization UUID is not set please go to admin then Settings then Ugandaemr and set it");
 			return false;
 		}
+		return true;
+	}
+	
+	public boolean isGpRecencyServerPasswordSet() {
 		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_PASSWORD))) {
 			log.info("Recency server URL is not set");
 			ugandaEMRHttpURLConnection
