@@ -92,7 +92,7 @@
     </globalProperty>
     <globalProperty>
         <property>ugandaemrsync.recency.submit.data.once.daily</property>
-        <defaultValue>false</defaultValue>
+        <defaultValue>true</defaultValue>
         <description>Turns on and off the submission of recency data once daily or multiple time in specified interval</description>
     </globalProperty>
 
