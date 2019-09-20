@@ -34,9 +34,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.Map;
+import java.util.List;
+import java.util.Date;
 
-import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.HEALTH_CENTER_SYNC_ID;
 
 public class UgandaEMRHttpURLConnection {
@@ -211,16 +212,16 @@ public class UgandaEMRHttpURLConnection {
 		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 		try{
 
-		post.addHeader(HEADER_EMR_DATE, new Date().toString());
+		post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
 
 		UsernamePasswordCredentials credentials
-				= new UsernamePasswordCredentials(syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_PASSWORD));
+				= new UsernamePasswordCredentials(syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.GP_RECENCY_SERVER_PASSWORD));
 		post.addHeader(new BasicScheme().authenticate(credentials, post, null));
 
 		HttpEntity multipart = MultipartEntityBuilder.create()
 				.setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
-				.addTextBody(DHIS_ORGANIZATION_UUID, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID))
-				.addTextBody(HTTP_TEXT_BODY_DATA_TYPE_KEY, bodyText, ContentType.TEXT_PLAIN) // Current implementation uses plain text due to decoding challenges on the receiving server.
+				.addTextBody(UgandaEMRSyncConfig.DHIS_ORGANIZATION_UUID, syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.GP_DHIS2_ORGANIZATION_UUID))
+				.addTextBody(UgandaEMRSyncConfig.HTTP_TEXT_BODY_DATA_TYPE_KEY, bodyText, ContentType.TEXT_PLAIN) // Current implementation uses plain text due to decoding challenges on the receiving server.
 				.build();
 		post.setEntity(multipart);
 
