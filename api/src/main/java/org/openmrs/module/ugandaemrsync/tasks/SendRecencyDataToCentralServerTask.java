@@ -57,6 +57,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 	public void execute() {
 		Date todayDate = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		if (!isGpRecencyServerUrlSet()) {
 			return;
 		}
@@ -98,7 +99,8 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		String bodyText = getRecencyDataExport();
 		HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(recencyServerUrlEndPoint, bodyText);
 		if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			ReportUtil.updateGlobalProperty(GP_RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE, dateFormat.format(todayDate));
+			ReportUtil.updateGlobalProperty(GP_RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE,
+			    dateTimeFormat.format(todayDate));
 			log.info("Recency data has been sent to central server");
 		} else {
 			log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
