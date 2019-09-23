@@ -30,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -77,8 +78,16 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		        .getGlobalPropertyObject(GP_SUBMIT_RECENCY_DATA_ONCE_DAILY).getPropertyValue();
 		
 		if (!isBlank(strSubmissionDate)) {
-			
-			if (strSubmissionDate.equals(dateFormat.format(todayDate)) && strSubmitOnceDaily.equals("true")) {
+			Date gpSubmissionDate = null;
+			try {
+				gpSubmissionDate = new SimpleDateFormat("yyyy-MM-dd").parse(strSubmissionDate);
+			}
+			catch (ParseException e) {
+				e.printStackTrace();
+			}
+			System.out.println("submission date: " + gpSubmissionDate);
+			if (dateFormat.format(gpSubmissionDate).equals(dateFormat.format(todayDate))
+			        && strSubmitOnceDaily.equals("true")) {
 				log.info("Last successful submission was on" + strSubmissionDate
 				        + " and once data submission daily is set as " + strSubmitOnceDaily
 				        + "so this task will not run again today. If you need to send data, run the task manually."
