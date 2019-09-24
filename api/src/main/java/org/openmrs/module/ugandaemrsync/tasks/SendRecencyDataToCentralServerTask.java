@@ -83,7 +83,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 				gpSubmissionDate = new SimpleDateFormat("yyyy-MM-dd").parse(strSubmissionDate);
 			}
 			catch (ParseException e) {
-				log.info("Error parsing date." + e.getMessage());
+				log.info("Error parsing last successful submission date " + strSubmissionDate + e);
 				e.printStackTrace();
 			}
 			System.out.println("submission date: " + gpSubmissionDate);
