@@ -73,12 +73,12 @@
 
     <globalProperty>
         <property>ugandaemrsync.analytics.server.url</property>
-        <defaultValue></defaultValue>
+        <defaultValue>https://ugisl.mets.or.ug:5000/emr-analytics</defaultValue>
         <description> </description>
     </globalProperty>
     <globalProperty>
         <property>ugandaemrsync.analytics.server.password</property>
-        <defaultValue></defaultValue>
+        <defaultValue>METS4321!</defaultValue>
         <description>This is the analytics password that the system will connect to</description>
     </globalProperty>
     <globalProperty>
