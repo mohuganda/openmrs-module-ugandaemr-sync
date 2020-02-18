@@ -13,11 +13,17 @@ import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.Location;
 import org.openmrs.User;
@@ -26,6 +32,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
 import org.openmrs.notification.Alert;
 
+import javax.net.ssl.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -34,10 +41,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.List;
 import java.util.Date;
 
+import static org.openmrs.module.ugandaemrsync.api.impl.HttpClientAcceptSelfSignedCertificate.createAcceptSelfSignedCertificateClient;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.HEALTH_CENTER_SYNC_ID;
 
 public class UgandaEMRHttpURLConnection {
@@ -228,6 +239,34 @@ public class UgandaEMRHttpURLConnection {
 		response = client.execute(post);
 		} catch (IOException | AuthenticationException e) {
 			log.info("Exception sending Recency data "+ e.getMessage());
+		}
+		return response;
+	}
+
+	public HttpResponse httpPost(String serverUrl, String bodyText,String username)
+	{
+		HttpResponse response = null;
+
+		HttpPost post = new HttpPost(serverUrl);
+		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+		try{
+			CloseableHttpClient client = createAcceptSelfSignedCertificateClient();
+			post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
+
+			UsernamePasswordCredentials credentials
+					= new UsernamePasswordCredentials(username, syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.GP_ANALYTICS_SERVER_PASSWORD));
+			post.addHeader(new BasicScheme().authenticate(credentials, post, null));
+
+			HttpEntity multipart = MultipartEntityBuilder.create()
+					.setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
+					.addTextBody(UgandaEMRSyncConfig.DHIS_ORGANIZATION_UUID, syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.GP_DHIS2_ORGANIZATION_UUID))
+					.addTextBody(UgandaEMRSyncConfig.HTTP_TEXT_BODY_DATA_TYPE_KEY, bodyText, ContentType.TEXT_PLAIN) // Current implementation uses plain text due to decoding challenges on the receiving server.
+					.build();
+			post.setEntity(multipart);
+
+			response = client.execute(post);
+		} catch (Exception e) {
+			log.error("Exception sending Analytics data "+ e.getMessage());
 		}
 		return response;
 	}

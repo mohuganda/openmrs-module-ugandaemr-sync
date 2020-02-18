@@ -329,7 +329,7 @@
         <appuiVersion>1.7</appuiVersion>
         <uiframeworkVersion>3.15.0</uiframeworkVersion>
         <ugandaemrReportsVersion>2.0.12-SNAPSHOT</ugandaemrReportsVersion>
-        <reportingVersion>1.13.0</reportingVersion>
+        <reportingVersion>1.20.0-SNAPSHOT</reportingVersion>
         <calculationVersion>1.1</calculationVersion>
         <serialization.xstreamVersion>0.2.14</serialization.xstreamVersion>
         <metadatadeployVersion>1.6</metadatadeployVersion>

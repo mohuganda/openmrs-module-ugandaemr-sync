@@ -56,5 +56,28 @@
             <column name="uuid" value="89a805c4-0bd3-4eee-a43d-f3e264fbf0c7" />
         </insert>
     </changeSet>
+
+    <changeSet id="20200216-1144" author="dbaluku">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM scheduler_task_config
+                WHERE schedulable_class = 'org.openmrs.module.ugandaemrsync.tasks.SendAnalyticsDataToCentralServerTask'
+            </sqlCheck>
+        </preConditions>
+        <comment>Inserting Send Analytical data to a central server Task into 'schedule_task_config' table</comment>
+        <insert tableName="scheduler_task_config">
+            <column name="name" value="Send Analytics data to a central server" />
+            <column name="description" value="Send Analytics data to a central server" />
+            <column name="schedulable_class" value="org.openmrs.module.ugandaemrsync.tasks.SendAnalyticsDataToCentralServerTask" />
+            <column name="start_time_pattern" value="MM/dd/yyyy HH:mm:ss" />
+            <column name="start_time" valueDate="2020-02-16T11:59:59" />
+            <column name="repeat_interval" value="300" />
+            <column name="date_created" valueDate="CURRENT_TIMESTAMP" />
+            <column name="created_by" value="1" />
+            <column name="start_on_startup" value="1"/>
+            <column name="started" value="1"/>
+            <column name="uuid" value="0587c85c-aeec-4bd5-98a8-50684b160526" />
+        </insert>
+    </changeSet>
  
 </databaseChangeLog>

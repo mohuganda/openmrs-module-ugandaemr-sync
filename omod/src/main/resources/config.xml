@@ -70,6 +70,22 @@
         <defaultValue></defaultValue>
         <description>This is the recency password that the system will connect to</description>
     </globalProperty>
+
+    <globalProperty>
+        <property>ugandaemrsync.analytics.server.url</property>
+        <defaultValue></defaultValue>
+        <description> </description>
+    </globalProperty>
+    <globalProperty>
+        <property>ugandaemrsync.analytics.server.password</property>
+        <defaultValue></defaultValue>
+        <description>This is the analytics password that the system will connect to</description>
+    </globalProperty>
+    <globalProperty>
+        <property>ugandaemrsync.analytics.last.successful.submission.date</property>
+        <defaultValue></defaultValue>
+        <description>The last successful submission date for analytics send data task scheduler</description>
+    </globalProperty>
     <globalProperty>
         <property>ugandaemrsync.serverIP</property>
         <defaultValue></defaultValue>
