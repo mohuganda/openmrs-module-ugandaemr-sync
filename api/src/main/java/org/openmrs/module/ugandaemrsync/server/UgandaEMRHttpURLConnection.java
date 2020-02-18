@@ -17,6 +17,7 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.auth.BasicScheme;
@@ -257,12 +258,9 @@ public class UgandaEMRHttpURLConnection {
 					= new UsernamePasswordCredentials(username, syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.GP_ANALYTICS_SERVER_PASSWORD));
 			post.addHeader(new BasicScheme().authenticate(credentials, post, null));
 
-			HttpEntity multipart = MultipartEntityBuilder.create()
-					.setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
-					.addTextBody(UgandaEMRSyncConfig.DHIS_ORGANIZATION_UUID, syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.GP_DHIS2_ORGANIZATION_UUID))
-					.addTextBody(UgandaEMRSyncConfig.HTTP_TEXT_BODY_DATA_TYPE_KEY, bodyText, ContentType.TEXT_PLAIN) // Current implementation uses plain text due to decoding challenges on the receiving server.
-					.build();
-			post.setEntity(multipart);
+			HttpEntity httpEntity= new StringEntity(bodyText,ContentType.APPLICATION_JSON);
+
+			post.setEntity(httpEntity);
 
 			response = client.execute(post);
 		} catch (Exception e) {

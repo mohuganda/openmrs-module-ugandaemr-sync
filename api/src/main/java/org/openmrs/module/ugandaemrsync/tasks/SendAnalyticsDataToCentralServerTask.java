@@ -170,10 +170,9 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 		String phraseItem;
 		
 		if (!(phraseItem = brItem.readLine()).isEmpty()) {
-			strOutput = strOutput + "\"dhis2_orgunit_uuid\"," + "\"encounter_uuid\"," + phraseItem + System.lineSeparator();
+			strOutput = strOutput  + phraseItem + System.lineSeparator();
 			while ((phraseItem = brItem.readLine()) != null) {
-				strOutput = strOutput + "\"" + syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID)
-				        + "\",\"\"," + phraseItem + System.lineSeparator();
+				strOutput = strOutput +  phraseItem + System.lineSeparator();
 			}
 		}
 		
