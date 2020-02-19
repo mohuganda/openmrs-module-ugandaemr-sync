@@ -172,6 +172,13 @@
                 <type>jar</type>
                 <scope>test</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.openmrs.module</groupId>
+                <artifactId>uiframework-api</artifactId>
+                <version>${uiframeworkModuleVersion}</version>
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>
@@ -335,5 +342,6 @@
         <metadatadeployVersion>1.6</metadatadeployVersion>
         <metadatasharingVersion>1.1.9</metadatasharingVersion>
         <metadatamappingVersion>1.0.2</metadatamappingVersion>
+        <uiframeworkModuleVersion>3.6</uiframeworkModuleVersion>
     </properties>
 </project>
