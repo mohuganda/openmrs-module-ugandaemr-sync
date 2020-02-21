@@ -4,7 +4,7 @@ package org.openmrs.module.ugandaemrsync.server;
  * Created by lubwamasamuel on 11/10/16.
  */
 
-import javafx.util.Pair;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -33,7 +33,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
 import org.openmrs.notification.Alert;
 
-import javax.net.ssl.*;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,14 +44,13 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.*;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.List;
 import java.util.Date;
 
-import static org.openmrs.module.ugandaemrsync.api.impl.HttpClientAcceptSelfSignedCertificate.createAcceptSelfSignedCertificateClient;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.HEALTH_CENTER_SYNC_ID;
 
 public class UgandaEMRHttpURLConnection {
@@ -288,5 +289,29 @@ public class UgandaEMRHttpURLConnection {
 			log.info("Unknown Protocol" + e);
 		}
 		return serverUrl;
+	}
+
+	public static CloseableHttpClient createAcceptSelfSignedCertificateClient()
+			throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+
+		// use the TrustSelfSignedStrategy to allow Self Signed Certificates
+		SSLContext sslContext = SSLContextBuilder
+				.create()
+				.loadTrustMaterial(new TrustSelfSignedStrategy())
+				.build();
+
+		// we can optionally disable hostname verification.
+		// if you don't want to further weaken the security, you don't have to include this.
+		HostnameVerifier allowAllHosts = new NoopHostnameVerifier();
+
+		// create an SSL Socket Factory to use the SSLContext with the trust self signed certificate strategy
+		// and allow all hosts verifier.
+		SSLConnectionSocketFactory connectionFactory = new SSLConnectionSocketFactory(sslContext, allowAllHosts);
+
+		// finally create the HttpClient using HttpClient factory methods and assign the ssl socket factory
+		return HttpClients
+				.custom()
+				.setSSLSocketFactory(connectionFactory)
+				.build();
 	}
 }

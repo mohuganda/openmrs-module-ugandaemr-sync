@@ -70,8 +70,6 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 		String strSubmissionDate = Context.getAdministrationService()
 		        .getGlobalPropertyObject(GP_ANALYTICS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE).getPropertyValue();
 
-		String strSubmitOnceDaily = Context.getAdministrationService()
-		        .getGlobalPropertyObject(GP_SUBMIT_RECENCY_DATA_ONCE_DAILY).getPropertyValue();
 
 		if (!isBlank(strSubmissionDate)) {
 			Date gpSubmissionDate = null;
@@ -82,14 +80,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 				log.error("Error parsing last successful submission date " + strSubmissionDate + e);
 				e.printStackTrace();
 			}
-			if (dateFormat.format(gpSubmissionDate).equals(dateFormat.format(todayDate))
-			        && strSubmitOnceDaily.equals("true")) {
-				log.error("Last successful submission was on" + strSubmissionDate
-				        + " and once data submission daily is set as " + strSubmitOnceDaily
-				        + "so this task will not run again today. If you need to send data, run the task manually."
-				        + System.lineSeparator());
-				return;
-			}
+
 		}
 		//Check internet connectivity
 		if (!ugandaEMRHttpURLConnection.isConnectionAvailable()) {
@@ -152,18 +143,9 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 		return strOutput;
 	}
 	
-	/*
-	Method: readOutputFile
-	Pre condition: empty strOutput initialized
-	Description:
-		Read the analytics exported report file in csv
-		Create a string and prefix the dhis2_orgunit_uuid
-		and encounter_uuid columns to the final output
-	Post condition: strOutput assigned with csv file data prefixed with two additional columns
-	* */
+
 	
 	public String readOutputFile(String strOutput) throws Exception {
-		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 		FileInputStream fstreamItem = new FileInputStream(OpenmrsUtil.getApplicationDataDirectory() +  ANALYTICS_JSON_FILE_NAME);
 		DataInputStream inItem = new DataInputStream(fstreamItem);
 		BufferedReader brItem = new BufferedReader(new InputStreamReader(inItem));

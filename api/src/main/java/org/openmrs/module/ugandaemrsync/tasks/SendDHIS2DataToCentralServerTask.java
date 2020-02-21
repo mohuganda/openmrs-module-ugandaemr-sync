@@ -4,35 +4,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.parameter.Mapped;
-import org.openmrs.module.reporting.report.ReportData;
-import org.openmrs.module.reporting.report.ReportRequest;
-import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
-import org.openmrs.module.reporting.report.renderer.RenderingMode;
-import org.openmrs.module.reporting.report.util.ReportUtil;
-import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.module.ugandaemrsync.server.UgandaEMRHttpURLConnection;
-import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.ui.framework.SimpleObject;
-import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
 
 /**
  * Posts DHIS 2 data data to the central server
@@ -53,8 +36,7 @@ public class SendDHIS2DataToCentralServerTask extends AbstractTask {
 	SimpleObject simpleObject;
 
 	UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
-	
-	SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+
 	
 	@Autowired
 	@Qualifier("reportingReportDefinitionService")
