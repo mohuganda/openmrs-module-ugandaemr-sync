@@ -24,16 +24,16 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @Component
 public class SendDHIS2DataToCentralServerTask extends AbstractTask {
 
+	protected Log log = LogFactory.getLog(getClass());
+	protected byte[] data ;
+	SimpleObject simpleObject;
+
 	public SendDHIS2DataToCentralServerTask() {}
 
 	public SendDHIS2DataToCentralServerTask(byte[] data, SimpleObject simpleObject) {
 		this.data = data;
 		this.simpleObject= simpleObject;
 	}
-
-	protected Log log = LogFactory.getLog(getClass());
-	protected byte[] data ;
-	SimpleObject simpleObject;
 
 	UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
 
