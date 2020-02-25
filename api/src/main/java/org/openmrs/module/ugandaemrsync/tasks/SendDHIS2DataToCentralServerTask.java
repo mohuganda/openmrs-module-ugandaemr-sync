@@ -22,28 +22,31 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  */
 
 @Component
-public class SendDHIS2DataToCentralServerTask  {
+public class SendDHIS2DataToCentralServerTask extends AbstractTask  {
+
+	protected Log log = LogFactory.getLog(getClass());
+	protected byte[] data ;
+	SimpleObject serverResponseObject;
+
+     public SimpleObject getServerResponseObject(){
+     	return serverResponseObject;
+	 }
+	UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
+
 
 	public SendDHIS2DataToCentralServerTask() {}
 
 	public SendDHIS2DataToCentralServerTask(byte[] data, SimpleObject simpleObject) {
 		this.data = data;
-		this.simpleObject= simpleObject;
+		this.serverResponseObject= simpleObject;
 	}
 
-	protected Log log = LogFactory.getLog(getClass());
-	protected byte[] data ;
-	SimpleObject simpleObject;
-
-	UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
-
-	
 	@Autowired
 	@Qualifier("reportingReportDefinitionService")
 	protected ReportDefinitionService reportingReportDefinitionService;
 	
 
-	public SimpleObject execute() {
+	public void execute() {
 		Map map = new HashMap();
 		final String  url = "https://ugisl.mets.or.ug:5000/ehmis";
 
@@ -53,17 +56,17 @@ public class SendDHIS2DataToCentralServerTask  {
 			log.error("DHIS 2 server URL is not set");
 			ugandaEMRHttpURLConnection
 					.setAlertForAllUsers("DHIS 2 server URL is not set please go to admin then Settings then Ugandaemrsync and set it");
-			return null;
+			return;
 		}
 
 		//Check internet connectivity
 		if (!ugandaEMRHttpURLConnection.isConnectionAvailable()) {
-			return null;
+			return;
 		}
 
 		//Check destination server availability
 		if (!ugandaEMRHttpURLConnection.isServerAvailable(baseUrl)) {
-			return null;
+			return;
 		}
 
 		log.error("Sending DHIS2 data to central server ");
@@ -81,8 +84,7 @@ public class SendDHIS2DataToCentralServerTask  {
 			        + " error");
 			map.put("responseCode", httpResponse.getStatusLine().getStatusCode());
 		}
-		simpleObject=SimpleObject.create("message",httpResponse.getStatusLine().getReasonPhrase());
-		simpleObject.put("responsedata",responseCode);
-		return simpleObject;
+		serverResponseObject=SimpleObject.create("message",httpResponse.getStatusLine().getReasonPhrase());
+		serverResponseObject.put("responsedata",responseCode);
 	}
 }
