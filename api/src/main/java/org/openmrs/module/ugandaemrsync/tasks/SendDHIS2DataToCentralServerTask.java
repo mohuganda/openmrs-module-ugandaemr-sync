@@ -22,7 +22,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  */
 
 @Component
-public class SendDHIS2DataToCentralServerTask extends AbstractTask {
+public class SendDHIS2DataToCentralServerTask  {
 
 	public SendDHIS2DataToCentralServerTask() {}
 
@@ -42,8 +42,8 @@ public class SendDHIS2DataToCentralServerTask extends AbstractTask {
 	@Qualifier("reportingReportDefinitionService")
 	protected ReportDefinitionService reportingReportDefinitionService;
 	
-	@Override
-	public void execute() {
+
+	public SimpleObject execute() {
 		Map map = new HashMap();
 		final String  url = "https://ugisl.mets.or.ug:5000/ehmis";
 
@@ -53,17 +53,17 @@ public class SendDHIS2DataToCentralServerTask extends AbstractTask {
 			log.error("DHIS 2 server URL is not set");
 			ugandaEMRHttpURLConnection
 					.setAlertForAllUsers("DHIS 2 server URL is not set please go to admin then Settings then Ugandaemrsync and set it");
-			return ;
+			return null;
 		}
 
 		//Check internet connectivity
 		if (!ugandaEMRHttpURLConnection.isConnectionAvailable()) {
-			return;
+			return null;
 		}
 
 		//Check destination server availability
 		if (!ugandaEMRHttpURLConnection.isServerAvailable(baseUrl)) {
-			return;
+			return null;
 		}
 
 		log.error("Sending DHIS2 data to central server ");
@@ -74,14 +74,15 @@ public class SendDHIS2DataToCentralServerTask extends AbstractTask {
 			map.put("responseCode", output1);
 			log.error("DHIS2 data has been sent to central server");
 		} else {
-			log.error("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
+			log.error("Data Has not been sent to DHIS2: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
 			        + httpResponse.getStatusLine().getReasonPhrase());
-			ugandaEMRHttpURLConnection.setAlertForAllUsers("Http request has returned a response status: "
+			ugandaEMRHttpURLConnection.setAlertForAllUsers("Data Has not been sent to DHIS2: "
 			        + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase()
 			        + " error");
 			map.put("responseCode", httpResponse.getStatusLine().getStatusCode());
 		}
 		simpleObject=SimpleObject.create("message",httpResponse.getStatusLine().getReasonPhrase());
-		simpleObject.put("responseCode",responseCode);
+		simpleObject.put("responsedata",responseCode);
+		return simpleObject;
 	}
 }
