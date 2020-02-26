@@ -22,6 +22,10 @@ public class UgandaEMRSyncConfig {
 	public static final String GP_RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
 
 	public static final String GP_ANALYTICS_SERVER_URL = "ugandaemrsync.analytics.server.url";
+	public static final String GP_DHIS2_SERVER_URL = "ugandaemrsync.sendtoDHIS2.server.url";
+	public static final String GP_DHIS2_SERVER_PASSWORD = "ugandaemrsync.sendtoDHIS2.server.password";
+	public static final String GP_DHIS2_SERVER_USERNAME = "ugandaemrsync.sendtoDHIS2.server.username";
+
 
 	public static final String CONNECTIVITY_CHECK_URL = "http://www.google.com";
 	

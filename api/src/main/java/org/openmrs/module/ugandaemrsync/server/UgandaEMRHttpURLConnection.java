@@ -256,7 +256,7 @@ public class UgandaEMRHttpURLConnection {
 			post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
 
 			UsernamePasswordCredentials credentials
-					= new UsernamePasswordCredentials(username, syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.GP_ANALYTICS_SERVER_PASSWORD));
+					= new UsernamePasswordCredentials(username, syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.GP_DHIS2_SERVER_PASSWORD));
 			post.addHeader(new BasicScheme().authenticate(credentials, post, null));
 
 			HttpEntity httpEntity= new StringEntity(bodyText,ContentType.APPLICATION_JSON);

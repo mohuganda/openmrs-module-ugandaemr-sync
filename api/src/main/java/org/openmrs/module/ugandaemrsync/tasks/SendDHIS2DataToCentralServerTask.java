@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.module.ugandaemrsync.server.UgandaEMRHttpURLConnection;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.ui.framework.SimpleObject;
@@ -16,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.GP_DHIS2_SERVER_URL;
+import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.GP_DHIS2_SERVER_USERNAME;
 
 /**
  * Posts DHIS 2 data data to the central server
@@ -25,6 +28,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 public class SendDHIS2DataToCentralServerTask extends AbstractTask  {
 
 	protected Log log = LogFactory.getLog(getClass());
+	SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 	protected byte[] data ;
 	SimpleObject serverResponseObject;
 
@@ -48,10 +52,11 @@ public class SendDHIS2DataToCentralServerTask extends AbstractTask  {
 
 	public void execute() {
 		Map map = new HashMap();
-		final String  url = "https://ugisl.mets.or.ug:5000/ehmis";
+		final String  url = "https://ugisl.mets.or.ug/ehmis";
 
 		int responseCode = 0;
-		String baseUrl = ugandaEMRHttpURLConnection.getBaseURL(url);
+		String baseUrl = ugandaEMRHttpURLConnection.getBaseURL(syncGlobalProperties.getGlobalProperty(GP_DHIS2_SERVER_URL));
+		String baseUsername =ugandaEMRHttpURLConnection.getBaseURL(syncGlobalProperties.getGlobalProperty(GP_DHIS2_SERVER_USERNAME));
 		if (isBlank(url)) {
 			log.error("DHIS 2 server URL is not set");
 			ugandaEMRHttpURLConnection
@@ -72,6 +77,7 @@ public class SendDHIS2DataToCentralServerTask extends AbstractTask  {
 		log.error("Sending DHIS2 data to central server ");
 		String bodyText = new String(this.data);
 		HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(url, bodyText,"mets.mkaye");
+
 		if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			String output1 = httpResponse.getStatusLine().getReasonPhrase();
 			map.put("responseCode", output1);
@@ -85,6 +91,6 @@ public class SendDHIS2DataToCentralServerTask extends AbstractTask  {
 			map.put("responseCode", httpResponse.getStatusLine().getStatusCode());
 		}
 		serverResponseObject=SimpleObject.create("message",httpResponse.getStatusLine().getReasonPhrase());
-		serverResponseObject.put("responsedata",responseCode);
+		//serverResponseObject.put("responsedata",responseCode);
 	}
 }
