@@ -81,6 +81,28 @@
         <defaultValue>METS4321!</defaultValue>
         <description>This is the analytics password that the system will connect to</description>
     </globalProperty>
+
+<!--    Sending to DHIS2 Server global Properties-->
+    <globalProperty>
+        <property>ugandaemrsync.sendtoDHIS2.server.url</property>
+        <defaultValue></defaultValue>
+        <description> </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>ugandaemrsync.sendtoDHIS2.server.username</property>
+        <defaultValue></defaultValue>
+        <description>This is the facility DHIS2 password that the system will connect to</description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>ugandaemrsync.sendtoDHIS2.server.password</property>
+        <defaultValue></defaultValue>
+        <description>This is the facility DHIS2 password that the system will connect to</description>
+    </globalProperty>
+
+
+
     <globalProperty>
         <property>ugandaemrsync.analytics.last.successful.submission.date</property>
         <defaultValue></defaultValue>
