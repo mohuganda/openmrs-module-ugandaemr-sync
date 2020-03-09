@@ -245,7 +245,7 @@ public class UgandaEMRHttpURLConnection {
 		return response;
 	}
 
-	public HttpResponse httpPost(String serverUrl, String bodyText,String username)
+	public HttpResponse httpPost(String serverUrl, String bodyText,String username,String password)
 	{
 		HttpResponse response = null;
 
@@ -256,7 +256,7 @@ public class UgandaEMRHttpURLConnection {
 			post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
 
 			UsernamePasswordCredentials credentials
-					= new UsernamePasswordCredentials(username, syncGlobalProperties.getGlobalProperty(UgandaEMRSyncConfig.GP_DHIS2_SERVER_PASSWORD));
+					= new UsernamePasswordCredentials(username, password);
 			post.addHeader(new BasicScheme().authenticate(credentials, post, null));
 
 			HttpEntity httpEntity= new StringEntity(bodyText,ContentType.APPLICATION_JSON);

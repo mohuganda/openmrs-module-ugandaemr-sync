@@ -77,6 +77,11 @@
         <description> </description>
     </globalProperty>
     <globalProperty>
+        <property>ugandaemrsync.analytics.server.username</property>
+        <defaultValue></defaultValue>
+        <description>This is the analytics username that the system will connect to</description>
+    </globalProperty>
+    <globalProperty>
         <property>ugandaemrsync.analytics.server.password</property>
         <defaultValue>METS4321!</defaultValue>
         <description>This is the analytics password that the system will connect to</description>

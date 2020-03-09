@@ -21,11 +21,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
@@ -38,6 +48,9 @@ import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
 public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 	
 	protected Log log = LogFactory.getLog(getClass());
+	Date startDate ;
+	Date endDate;
+	Date lastSubmissionDateSet;
 	
 	UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
 	
@@ -50,9 +63,11 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 	@Override
 	public void execute() {
 		Date todayDate = new Date();
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+		DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		LocalDate today= LocalDate.parse(dateFormat.format(todayDate));
 		if (!isGpAnalyticsServerUrlSet()) {
 			return;
 		}
@@ -61,6 +76,9 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 		}
 
 		if (!isGpAnalyticsServerPasswordSet()) {
+			return;
+		}
+		if (!isGpAnalyticsServerUsernameSet()) {
 			return;
 		}
 
@@ -72,15 +90,54 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 
 
 		if (!isBlank(strSubmissionDate)) {
-			Date gpSubmissionDate = null;
+			LocalDate gpSubmissionDate = null;
+
 			try {
-				gpSubmissionDate = new SimpleDateFormat("yyyy-MM-dd").parse(strSubmissionDate);
+				gpSubmissionDate = LocalDate.parse(strSubmissionDate,dateFormatter);
 			}
-			catch (ParseException e) {
+			catch (Exception e) {
 				log.error("Error parsing last successful submission date " + strSubmissionDate + e);
 				e.printStackTrace();
 			}
+			if (gpSubmissionDate.getMonth()==(today.getMonth())&& gpSubmissionDate.getYear()==today.getYear()) {
+				log.error("Last successful submission was on" + strSubmissionDate
+						+ "so this task will not run again today. If you need to send data, run the task manually."
+						+ System.lineSeparator());
+				return;
+			}else{
 
+				Period diff = Period.between(
+						gpSubmissionDate.withDayOfMonth(1), today.withDayOfMonth(1));
+				if(diff.getMonths() >= 1){
+
+					//setting start and end date for least month data to be generated
+					int monthsBetween =diff.getMonths();
+					Calendar cal = Calendar.getInstance();
+					cal.add(Calendar.MONTH, -monthsBetween);
+					cal.set(Calendar.DATE, 1);
+					startDate = cal.getTime();
+					cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+
+					endDate = cal.getTime();
+
+					//setting last submission month to be the next month
+					Calendar lastSubmissionDate = Calendar.getInstance();
+					lastSubmissionDate.add(Calendar.MONTH, -(monthsBetween-1));
+					lastSubmissionDate.set(Calendar.DATE, 1);
+					lastSubmissionDateSet = lastSubmissionDate.getTime();
+				}
+			}
+		}else{
+			//Formatting start and end dates of the report for first time running
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.MONTH, -1);
+			cal.set(Calendar.DATE, 1);
+			startDate = cal.getTime();
+
+			cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+
+			endDate = cal.getTime();
+			lastSubmissionDateSet= todayDate;
 		}
 		//Check internet connectivity
 		if (!ugandaEMRHttpURLConnection.isConnectionAvailable()) {
@@ -93,11 +150,11 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 		}
 		log.error("Sending analytics data to central server ");
 		String bodyText = getAnalyticsDataExport();
-		HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(analyticsServerUrlEndPoint, bodyText,"mets.mkaye");
+		HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(analyticsServerUrlEndPoint, bodyText,syncGlobalProperties.getGlobalProperty(GP_ANALYTICS_SERVER_USERNAME),syncGlobalProperties.getGlobalProperty(GP_ANALYTICS_SERVER_PASSWORD));
 		if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 
 			ReportUtil.updateGlobalProperty(GP_ANALYTICS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE,
-			    dateTimeFormat.format(todayDate));
+			    dateTimeFormat.format(lastSubmissionDateSet));
 			log.error("Analytics data has been sent to central server");
 		} else {
 			log.error("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
@@ -123,8 +180,12 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 			if (!renderingMode.getRenderer().canRender(rd)) {
 				throw new IllegalArgumentException("Unable to render Analytics Data Export with " + reportRendergingMode);
 			}
+			Map<String, Object> parameterValues = new HashMap<String, Object>();
 			
+			parameterValues.put("startDate", startDate);
+			parameterValues.put("endDate", endDate);
 			EvaluationContext context = new EvaluationContext();
+			context.setParameterValues(parameterValues);
 			ReportData reportData = reportDefinitionService.evaluate(rd, context);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setReportDefinition(new Mapped<ReportDefinition>(rd, context.getParameterValues()));
@@ -134,10 +195,12 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 			renderingMode.getRenderer().render(reportData, renderingMode.getArgument(), fileOutputStream);
 			
 			strOutput = this.readOutputFile(strOutput);
+			log.error(strOutput);
 		}
 		catch (Exception e) {
 			log.error("Error rendering the contents of the Analytics data export report to"
 			        + OpenmrsUtil.getApplicationDataDirectory() +  ANALYTICS_JSON_FILE_NAME + e.toString());
+			e.printStackTrace();
 		}
 		
 		return strOutput;
@@ -185,9 +248,19 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 	
 	public boolean isGpAnalyticsServerPasswordSet() {
 		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_ANALYTICS_SERVER_PASSWORD))) {
-			log.error("Analytics server URL is not set");
+			log.error("Analytics server password is not set");
 			ugandaEMRHttpURLConnection
 			        .setAlertForAllUsers("Analytics server password is not set please go to admin then Settings then Ugandaemrsync and set it");
+			return false;
+		}
+		return true;
+	}
+
+	public boolean isGpAnalyticsServerUsernameSet() {
+		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_ANALYTICS_SERVER_USERNAME))) {
+			log.error("Analytics server Username is not set");
+			ugandaEMRHttpURLConnection
+					.setAlertForAllUsers("Analytics server username is not set please go to admin then Settings then Ugandaemrsync and set it");
 			return false;
 		}
 		return true;

@@ -40,6 +40,7 @@ public class UgandaEMRSyncConfig {
 	public static final String GP_RECENCY_SERVER_PASSWORD = "ugandaemrsync.recency.server.password";
 
 	public static final String GP_ANALYTICS_SERVER_PASSWORD = "ugandaemrsync.analytics.server.password";
+	public static final String GP_ANALYTICS_SERVER_USERNAME = "ugandaemrsync.analytics.server.username";
 
 	public static final String HEADER_EMR_DATE = "x-emr-date";
 	
