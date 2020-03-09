@@ -15,7 +15,7 @@ import org.openmrs.module.reporting.report.util.ReportUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
-import org.openmrs.module.ugandaemrsync.server.UgandaEMRHttpURLConnection;
+import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +85,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			catch (ParseException e) {
 				log.info("Error parsing last successful submission date " + strSubmissionDate + e);
 				e.printStackTrace();
+				log.error(e);
 			}
 			if (dateFormat.format(gpSubmissionDate).equals(dateFormat.format(todayDate))
 			        && strSubmitOnceDaily.equals("true")) {
