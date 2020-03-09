@@ -316,6 +316,31 @@ public class UgandaEMRHttpURLConnection {
         return response;
     }
 
+    public HttpResponse httpPost(String serverUrl, String bodyText,String username,String password)
+    {
+        HttpResponse response = null;
+
+        HttpPost post = new HttpPost(serverUrl);
+        SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+        try{
+            CloseableHttpClient client = createAcceptSelfSignedCertificateClient();
+            post.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
+
+            UsernamePasswordCredentials credentials
+                    = new UsernamePasswordCredentials(username, password);
+            post.addHeader(new BasicScheme().authenticate(credentials, post, null));
+
+            HttpEntity httpEntity= new StringEntity(bodyText,ContentType.APPLICATION_JSON);
+
+            post.setEntity(httpEntity);
+
+            response = client.execute(post);
+        } catch (Exception e) {
+            log.error("Exception sending Analytics data "+ e.getMessage());
+        }
+        return response;
+    }
+
     public void setAlertForAllUsers(String alertMessage) {
         List<User> userList = Context.getUserService().getAllUsers();
         Alert alert = new Alert();

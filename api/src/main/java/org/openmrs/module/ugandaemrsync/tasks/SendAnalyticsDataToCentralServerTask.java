@@ -14,7 +14,7 @@ import org.openmrs.module.reporting.report.definition.service.ReportDefinitionSe
 import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.reporting.report.util.ReportUtil;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
-import org.openmrs.module.ugandaemrsync.server.UgandaEMRHttpURLConnection;
+import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,11 +96,11 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 				gpSubmissionDate = LocalDate.parse(strSubmissionDate,dateFormatter);
 			}
 			catch (Exception e) {
-				log.error("Error parsing last successful submission date " + strSubmissionDate + e);
+				log.info("Error parsing last successful submission date " + strSubmissionDate + e);
 				e.printStackTrace();
 			}
 			if (gpSubmissionDate.getMonth()==(today.getMonth())&& gpSubmissionDate.getYear()==today.getYear()) {
-				log.error("Last successful submission was on" + strSubmissionDate
+				log.info("Last successful submission was on" + strSubmissionDate
 						+ "so this task will not run again today. If you need to send data, run the task manually."
 						+ System.lineSeparator());
 				return;
@@ -148,16 +148,16 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 		if (!ugandaEMRHttpURLConnection.isServerAvailable(analyticsBaseUrl)) {
 			return;
 		}
-		log.error("Sending analytics data to central server ");
+		log.info("Sending analytics data to central server ");
 		String bodyText = getAnalyticsDataExport();
 		HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(analyticsServerUrlEndPoint, bodyText,syncGlobalProperties.getGlobalProperty(GP_ANALYTICS_SERVER_USERNAME),syncGlobalProperties.getGlobalProperty(GP_ANALYTICS_SERVER_PASSWORD));
 		if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 
 			ReportUtil.updateGlobalProperty(GP_ANALYTICS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE,
 			    dateTimeFormat.format(lastSubmissionDateSet));
-			log.error("Analytics data has been sent to central server");
+			log.info("Analytics data has been sent to central server");
 		} else {
-			log.error("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
+			log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
 			        + httpResponse.getStatusLine().getReasonPhrase());
 			ugandaEMRHttpURLConnection.setAlertForAllUsers("Http request has returned a response status: "
 			        + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase()
@@ -195,10 +195,10 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 			renderingMode.getRenderer().render(reportData, renderingMode.getArgument(), fileOutputStream);
 			
 			strOutput = this.readOutputFile(strOutput);
-			log.error(strOutput);
+			log.info(strOutput);
 		}
 		catch (Exception e) {
-			log.error("Error rendering the contents of the Analytics data export report to"
+			log.info("Error rendering the contents of the Analytics data export report to"
 			        + OpenmrsUtil.getApplicationDataDirectory() +  ANALYTICS_JSON_FILE_NAME + e.toString());
 			e.printStackTrace();
 		}
@@ -228,7 +228,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 	
 	public boolean isGpAnalyticsServerUrlSet() {
 		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_ANALYTICS_SERVER_URL))) {
-			log.error("Analytics server URL is not set");
+			log.info("Analytics server URL is not set");
 			ugandaEMRHttpURLConnection
 			        .setAlertForAllUsers("Analytics server URL is not set please go to admin then Settings then Ugandaemrsync and set it");
 			return false;
@@ -238,7 +238,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 	
 	public boolean isGpDhis2OrganizationUuidSet() {
 		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID))) {
-			log.error("DHIS2 Organization UUID is not set");
+			log.info("DHIS2 Organization UUID is not set");
 			ugandaEMRHttpURLConnection
 			        .setAlertForAllUsers("DHIS2 Organization UUID is not set please go to admin then Settings then Ugandaemr and set it");
 			return false;
@@ -248,7 +248,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 	
 	public boolean isGpAnalyticsServerPasswordSet() {
 		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_ANALYTICS_SERVER_PASSWORD))) {
-			log.error("Analytics server password is not set");
+			log.info("Analytics server password is not set");
 			ugandaEMRHttpURLConnection
 			        .setAlertForAllUsers("Analytics server password is not set please go to admin then Settings then Ugandaemrsync and set it");
 			return false;
@@ -258,7 +258,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 
 	public boolean isGpAnalyticsServerUsernameSet() {
 		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_ANALYTICS_SERVER_USERNAME))) {
-			log.error("Analytics server Username is not set");
+			log.info("Analytics server Username is not set");
 			ugandaEMRHttpURLConnection
 					.setAlertForAllUsers("Analytics server username is not set please go to admin then Settings then Ugandaemrsync and set it");
 			return false;
