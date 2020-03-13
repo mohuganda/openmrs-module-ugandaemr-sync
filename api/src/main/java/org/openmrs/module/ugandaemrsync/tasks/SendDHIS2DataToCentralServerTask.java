@@ -4,6 +4,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
@@ -13,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +58,7 @@ public class SendDHIS2DataToCentralServerTask extends AbstractTask  {
 
 	public void execute() {
 		Map map = new HashMap();
-
+		int responseCode = 0;
 		String baseUrl = ugandaEMRHttpURLConnection.getBaseURL(syncGlobalProperties.getGlobalProperty(GP_DHIS2_SERVER_URL));
 		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_DHIS2_SERVER_URL))) {
 			log.error("DHIS 2 server URL is not set");
@@ -72,21 +79,61 @@ public class SendDHIS2DataToCentralServerTask extends AbstractTask  {
 
 		log.error("Sending DHIS2 data to central server ");
 		String bodyText = new String(this.data);
-		HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(syncGlobalProperties.getGlobalProperty(GP_DHIS2_SERVER_URL), bodyText,syncGlobalProperties.getGlobalProperty(GP_DHIS2_SERVER_USERNAME),syncGlobalProperties.getGlobalProperty(GP_DHIS2_SERVER_PASSWORD));
-
-		if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			String output1 = httpResponse.getStatusLine().getReasonPhrase();
-			map.put("responseCode", output1);
-			log.error("DHIS2 data has been sent to central server");
-		} else {
-			log.error("Data Has not been sent to DHIS2: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
-					+ httpResponse.getStatusLine().getReasonPhrase());
-			ugandaEMRHttpURLConnection.setAlertForAllUsers("Data Has not been sent to DHIS2: "
-					+ httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase()
-					+ " error");
-			map.put("responseCode", httpResponse.getStatusLine().getStatusCode());
+		try {
+			HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(syncGlobalProperties.getGlobalProperty(GP_DHIS2_SERVER_URL), bodyText, syncGlobalProperties.getGlobalProperty(GP_DHIS2_SERVER_USERNAME), syncGlobalProperties.getGlobalProperty(GP_DHIS2_SERVER_PASSWORD));
+			responseCode = httpResponse.getStatusLine().getStatusCode();
+			String responseMessage = httpResponse.getStatusLine().getReasonPhrase();
+			if ((responseCode == 200 || responseCode == 201)) {
+				InputStream inputStreamReader = httpResponse.getEntity().getContent();
+				map = getMapOfResults(inputStreamReader, responseCode);
+			} else {
+				map.put("responseCode", responseCode);
+				log.info(responseMessage);
+			}
+			map.put("responseMessage", responseMessage);
+		}catch (IOException e){
+			log.error(e);
 		}
-		serverResponseObject=SimpleObject.create("message",httpResponse.getStatusLine().getReasonPhrase());
-		//serverResponseObject.put("responsedata",responseCode);
+
+		ObjectMapper objectMapper=new ObjectMapper();
+		try {
+			serverResponseObject = SimpleObject.create("message", objectMapper.writeValueAsString(map));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		serverResponseObject.put("responsedata",responseCode);
+
 	}
+
+	public Map getMapOfResults(InputStream inputStreamReader, int responseCode) throws IOException {
+		Map map = new HashMap();
+		InputStreamReader reader = new InputStreamReader(inputStreamReader);
+		StringBuilder buf = new StringBuilder();
+		char[] cbuf = new char[2048];
+		int num;
+		while (true) {
+			if (!(-1 != (num = reader.read(cbuf)))) break;
+			buf.append(cbuf, 0, num);
+		}
+		String result = buf.toString();
+		ObjectMapper mapper = new ObjectMapper();
+		if (isJSONValid(result)) {
+			map = mapper.readValue(result, Map.class);
+		}
+		map.put("responseCode", responseCode);
+		return map;
+	}
+	public boolean isJSONValid(String test) {
+		try {
+			new JSONObject(test);
+		} catch (JSONException ex) {
+			try {
+				new JSONArray(test);
+			} catch (JSONException ex1) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }
