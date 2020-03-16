@@ -81,7 +81,7 @@
 
     <globalProperty>
         <property>ugandaemrsync.analytics.server.url</property>
-        <defaultValue>https://ugisl.mets.or.ug:5000/emr-analytics</defaultValue>
+        <defaultValue>https://ugisl.mets.or.ug/emr-analytics</defaultValue>
         <description> </description>
     </globalProperty>
     <globalProperty>
@@ -91,14 +91,14 @@
     </globalProperty>
     <globalProperty>
         <property>ugandaemrsync.analytics.server.password</property>
-        <defaultValue>METS4321!</defaultValue>
+        <defaultValue></defaultValue>
         <description>This is the analytics password that the system will connect to</description>
     </globalProperty>
 
 <!--    Sending to DHIS2 Server global Properties-->
     <globalProperty>
         <property>ugandaemrsync.sendtoDHIS2.server.url</property>
-        <defaultValue></defaultValue>
+        <defaultValue>https://ugisl.mets.or.ug/ehmis</defaultValue>
         <description> </description>
     </globalProperty>
 
