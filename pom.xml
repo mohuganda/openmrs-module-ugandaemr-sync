@@ -337,7 +337,7 @@
         <repository>
             <id>openmrs-repo-modules</id>
             <name>OpenMRS Modules</name>
-            <url>https://mavenrepo.openmrs.org/nexus/content/repositories/modules</url>
+            <url>https://openmrs.jfrog.io/artifactory/modules/</url>
         </repository>
         <snapshotRepository>
             <id>openmrs-repo-snapshots</id>
@@ -368,7 +368,7 @@
         <openMRSVersion>2.0.6</openMRSVersion>
         <appuiVersion>1.7</appuiVersion>
         <uiframeworkVersion>3.15.0</uiframeworkVersion>
-        <ugandaemrReportsVersion>2.0.12</ugandaemrReportsVersion>
+        <ugandaemrReportsVersion>2.0.16</ugandaemrReportsVersion>
         <reportingVersion>1.20.0</reportingVersion>
         <calculationVersion>1.1</calculationVersion>
         <serialization.xstreamVersion>0.2.14</serialization.xstreamVersion>
