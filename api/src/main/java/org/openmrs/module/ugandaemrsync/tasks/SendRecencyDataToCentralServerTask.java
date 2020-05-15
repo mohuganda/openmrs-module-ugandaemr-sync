@@ -146,7 +146,7 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 			FileOutputStream fileOutputStream = new FileOutputStream(file);
 			renderingMode.getRenderer().render(reportData, renderingMode.getArgument(), fileOutputStream);
 			
-			strOutput = this.readOutputFile(strOutput);
+			// strOutput = this.readOutputFile(strOutput);
 		}
 		catch (Exception e) {
 			log.info("Error rendering the contents of the Recency data export report to"
@@ -156,35 +156,35 @@ public class SendRecencyDataToCentralServerTask extends AbstractTask {
 		return strOutput;
 	}
 	
-	/*
-	Method: readOutputFile
-	Pre condition: empty strOutput initialized
-	Description:
-		Read the recency exported report file in csv
-		Create a string and prefix the dhis2_orgunit_uuid
-		and encounter_uuid columns to the final output
-	Post condition: strOutput assigned with csv file data prefixed with two additional columns
-	* */
+	// /*
+	// Method: readOutputFile
+	// Pre condition: empty strOutput initialized
+	// Description:
+	// 	Read the recency exported report file in csv
+	// 	Create a string and prefix the dhis2_orgunit_uuid
+	// 	and encounter_uuid columns to the final output
+	// Post condition: strOutput assigned with csv file data prefixed with two additional columns
+	// * */
 	
-	public String readOutputFile(String strOutput) throws Exception {
-		SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-		FileInputStream fstreamItem = new FileInputStream(OpenmrsUtil.getApplicationDataDirectory() + RECENCY_CSV_FILE_NAME);
-		DataInputStream inItem = new DataInputStream(fstreamItem);
-		BufferedReader brItem = new BufferedReader(new InputStreamReader(inItem));
-		String phraseItem;
+	// public String readOutputFile(String strOutput) throws Exception {
+	// 	SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+	// 	FileInputStream fstreamItem = new FileInputStream(OpenmrsUtil.getApplicationDataDirectory() + RECENCY_CSV_FILE_NAME);
+	// 	DataInputStream inItem = new DataInputStream(fstreamItem);
+	// 	BufferedReader brItem = new BufferedReader(new InputStreamReader(inItem));
+	// 	String phraseItem;
 		
-		if (!(phraseItem = brItem.readLine()).isEmpty()) {
-			strOutput = strOutput + "\"dhis2_orgunit_uuid\"," + "\"encounter_uuid\"," + phraseItem + System.lineSeparator();
-			while ((phraseItem = brItem.readLine()) != null) {
-				strOutput = strOutput + "\"" + syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID)
-				        + "\",\"\"," + phraseItem + System.lineSeparator();
-			}
-		}
+	// 	if (!(phraseItem = brItem.readLine()).isEmpty()) {
+	// 		strOutput = strOutput + "\"dhis2_orgunit_uuid\"," + "\"encounter_uuid\"," + phraseItem + System.lineSeparator();
+	// 		while ((phraseItem = brItem.readLine()) != null) {
+	// 			strOutput = strOutput + "\"" + syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID)
+	// 			        + "\",\"\"," + phraseItem + System.lineSeparator();
+	// 		}
+	// 	}
 		
-		fstreamItem.close();
+	// 	fstreamItem.close();
 		
-		return strOutput;
-	}
+	// 	return strOutput;
+	// }
 	
 	public boolean isGpRecencyServerUrlSet() {
 		if (isBlank(syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_URL))) {
