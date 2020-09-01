@@ -13,6 +13,25 @@
         { label: "UgandaEMR Sync", link: '/' + OPENMRS_CONTEXT_PATH + '/ugandaemrsync/ugandaemrsync.page'},
         { label: "Upload Viral Load Results"}
     ];
+
+    jq(document).ready(function () {
+
+        jq('#upload_vl').submit(function(){
+            if(!jq('input[type="file"]').val()) {
+                jq().toastmessage('showNoticeToast', "No file was uploaded");
+                return false;
+            }else{
+                return true;
+            }
+        });
+
+        var errorMessage = jq('#errorMessage').val();
+        if(errorMessage!==""){
+            jq().toastmessage('showNoticeToast', errorMessage);
+        }
+
+
+    });
 </script>
 <style>
 #browser_file_container {
@@ -52,6 +71,7 @@
 <form method="post" id="upload_vl" enctype="multipart/form-data" accept-charset="UTF-8">
     <div class="div-table">
         <div class="div-row" id="">
+            <input type="hidden" name="errorMessage" id="errorMessage" value="${errorMessage}">
             <div class="div-col2" id="browser_file_container">
                 <input type="file" name="file" accept=".csv" id="browser_file"/></div>
 
