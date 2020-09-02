@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.HIV_ENCOUNTER_PAGE_UUID;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.VL_FACILITY_DHIS2_ID_CELL_NO;
@@ -105,13 +104,11 @@ public class ViralLoadUploadPageController {
                             encounters = Context.getEncounterService().getEncounters(encounterSearchCriteria);
 
                             if (encounters.size() > 0 ) {
-                                if( !encounterHasVLDataAlreadySaved(encounters.get(0))) {
                                     try {
                                         ugandaEMRSyncService.addVLToEncounter(vlQualitative, vlQuantitative, vlDate, encounters.get(0), null);
                                     } catch (Exception e) {
                                         log.error("Failed to add viral load to encounter", e);
                                     }
-                                }
                             } else {
                                 this.noEncounterFound.add(vlResult[VL_PATIENT_ART_ID_CELL_NO]);
                             }
@@ -135,8 +132,4 @@ public class ViralLoadUploadPageController {
 
     }
 
-    public boolean encounterHasVLDataAlreadySaved(Encounter encounter){
-        Set<Obs> obs = encounter.getAllObs(false);
-        return obs.stream().map(Obs::getConcept).collect(Collectors.toSet()).contains(Context.getConceptService().getConcept(165412));
-    }
 }
