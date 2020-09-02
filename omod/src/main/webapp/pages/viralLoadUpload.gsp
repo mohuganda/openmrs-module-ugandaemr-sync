@@ -132,7 +132,7 @@
     <div class="div-row">
         <% if (noPatientFound?.size() > 0) { %>
         <div class="div-col3" id="feedback_no_patient_found">
-            <p><label><h4>No patients Found</h4></label></p>
+            <p><label><h4> Patients Not Found</h4></label></p>
             <table>
                 <thead>
                 <tr>
@@ -153,7 +153,7 @@
         <% } %>
         <% if (noEncounterFound?.size() > 0) { %>
         <div class="div-col3" style="text-align: justify" id="feedback_no_encounter_found">
-            <p><label><h4>No Encounters Found</h4></label></p>
+            <p><label><h4>Encounters Not Found</h4></label></p>
 
             <table>
                 <thead>
