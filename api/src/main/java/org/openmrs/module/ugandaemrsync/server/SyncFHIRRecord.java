@@ -10,7 +10,9 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.module.fhir2.api.FhirPatientService;
@@ -148,6 +150,102 @@ public class SyncFHIRRecord {
 
         finalPayLoadJson.put("managingOrganization", managingOrganizationJson);
         return finalPayLoadJson.toString();
+    }
+
+
+    public String proccessBuldeFHIRResources(String resourceType, String lastUpdateOnDate) {
+
+        SyncTaskType syncTaskType = Context.getService(UgandaEMRSyncService.class).getSyncTaskTypeByUUID(FHIRSERVER_SYNC_TASK_TYPE_UUID);
+
+        DateRangeParam lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBound(lastUpdateOnDate);
+        IParser iParser = FhirContext.forR4().newJsonParser();
+        IBundleProvider results = null;
+        List<String> jsoStrings = new ArrayList<>();
+
+        String bundleWrapperString = "{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[%]}";
+
+        FhirPersonService fhirPersonService;
+        FhirPatientService fhirPatientService;
+        FhirPractitionerService fhirPractitionerService;
+        FhirEncounterService fhirEncounterService;
+        FhirObservationService fhirObservationService;
+
+
+        try {
+            Field serviceContextField = Context.class.getDeclaredField("serviceContext");
+            serviceContextField.setAccessible(true);
+            try {
+                ApplicationContext applicationContext = ((ServiceContext) serviceContextField.get(null))
+                        .getApplicationContext();
+
+                fhirPersonService = applicationContext.getBean(FhirPersonService.class);
+                fhirPatientService = applicationContext.getBean(FhirPatientService.class);
+                fhirEncounterService = applicationContext.getBean(FhirEncounterService.class);
+                fhirObservationService = applicationContext.getBean(FhirObservationService.class);
+                fhirPractitionerService = applicationContext.getBean(FhirPractitionerService.class);
+
+
+            } finally {
+                serviceContextField.setAccessible(false);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+        if (resourceType == "Patient") {
+            results = fhirPatientService.searchForPatients(null, null, null, null, null, null, null, null, null,
+                    null, null, null, null, lastUpdated, null, null);
+        } else if (resourceType.equals("Person")) {
+            results = fhirPersonService.searchForPeople(null, null, null, null,
+                    null, null, null, null, lastUpdated, null, null);
+        } else if (resourceType.equals("Encounter")) {
+            results = fhirEncounterService.searchForEncounters(null,
+                    null, null, null, null, lastUpdated, null, null);
+        } else if (resourceType.equals("Observation")) {
+            results = fhirObservationService.searchForObservations(null,
+                    null, null, null,
+                    null, null, null,
+                    null, null, null, null, lastUpdated, null, null, null);
+        } else if (resourceType.equals("Practitioner")) {
+            results = fhirPractitionerService.searchForPractitioners(null, null, null, null, null,
+                    null, null, null, null, lastUpdated, null);
+        }
+
+
+        for (IBaseResource iBaseResource : results.getResources(0, Integer.MAX_VALUE)) {
+            String jsonString = iParser.encodeResourceToString(iBaseResource);
+            if (resourceType.equals("Patient") || resourceType.equals("Practitioner")) {
+                addOrganizationToRecord(jsonString);
+            }
+            jsoStrings.add(jsonString);
+        }
+
+        String finalBundle = "";
+
+        if (jsoStrings.size() > 0) {
+            finalBundle = String.format(bundleWrapperString, jsoStrings.toString());
+        }
+        return finalBundle;
+    }
+
+    public List<Map> sendFHIRBundleObject(String resourceType) {
+        SyncTaskType syncTaskType = Context.getService(UgandaEMRSyncService.class).getSyncTaskTypeByUUID(FHIRSERVER_SYNC_TASK_TYPE_UUID);
+
+        List<Map> maps = new ArrayList<>();
+        String globalProperty = Context.getAdministrationService().getGlobalProperty(LAST_SYNC_DATE);
+        String finalBundle = proccessBuldeFHIRResources(resourceType, globalProperty);
+        Map map = null;
+        try {
+            map = ugandaEMRHttpURLConnection.sendPostBy(syncTaskType.getUrl() + resourceType, syncTaskType.getUrlUserName(), syncTaskType.getUrlPassword(), "", finalBundle, false);
+            map.put("DataType", resourceType);
+            map.put("uuid", "");
+            maps.add(map);
+        } catch (Exception e) {
+            log.error(e);
+        }
+
+        return maps;
     }
 
 
