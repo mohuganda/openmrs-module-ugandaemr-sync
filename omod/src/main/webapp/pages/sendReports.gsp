@@ -1,7 +1,7 @@
 <%
     ui.decorateWith("appui", "standardEmrPage", [title: ui.message("Send Reports Page")])
-    ui.includeJavascript("uicommons", "bootstrap-collapse.js")
-    ui.includeJavascript("uicommons", "bootstrap-transition.js")
+    ui.includeJavascript("uicommons", "angular.min.js")
+    ui.includeJavascript("reportingui", "runReport.js")
 
     def htmlSafeId = { extension ->
         "${extension.id.replace(".", "-")}-${extension.id.replace(".", "-")}-extension"
@@ -35,68 +35,57 @@
 
     });
 </script>
-<style>
-#browser_file_container {
-    width: 80%;
-    padding-left: 0px;
-    padding-right: 0px;
-}
-
-#upload_button_container {
-    width: 20%;
-    text-align: right;
-    padding-left: 0px;
-    padding-right: 0px;
-}
-
-#browser_file {
-    width: 109%;
-    text-align: right;
-}
-
-.div-col3 {
-    padding-left: 30px;
-    padding-right: 30px;
-}
-
-.div-col2 {
-    padding-left: 30px;
-    padding-right: 30px;
-}
-</style>
 
 <div>
     <label style="text-align: center"><h1>Send EMR Reports to DHIS2 </h1></label>
 
 </div>
 
-<form method="post" id="sendReports">
-    <div class="div-row">
-        <div class="div-col8">
-            <select id="reportDefinitions" name="reportDefinition" class="col-lg-5">
-                <% if (reportDefinitions.size() > 0) {
-                    reportDefinitions.each { %>
-                      <option value="${it.uuid}">${it.name}</option>
-                    <% }
-                    } %>
-            </select>
-        </div>
-        <div class="div-col4">
-        <legend> Period Parameter</legend>
-        <div>
-            <label>Start Date</label>
-            <input type="date" name="startDate" id="startDate">
-            <p></p>
-            <label>End Date</label>
-            <input type="date" name="endDate" id="endDate">
-        </div>
-          <button type="submit" class="confirm right" ng-class="{disabled: submitting}" ng-disabled="submitting">
-              <i class="icon-play"></i>
-              ${ ui.message("reportingui.runButtonLabel") }
-          </button>
-        </div>
+<%
+    def renderingOptions = reportDefinitions
+            .collect {
+                [ value: it.uuid, label: ui.message(it.name) ]
+            }
+%>
+<div class="row">
+    <div class="col-md-6">
+        <form method="post" id="sendReports">
+            <fieldset>
+                <legend> Run the Report</legend>
+                ${ui.includeFragment("uicommons","field/dropDown",[
+                        formFieldName: "reportDefinition",
+                        label: "Report",
+                        hideEmptyLabel: false,
+                        options: renderingOptions
+
+                ])}
+
+                ${ ui.includeFragment("uicommons", "field/datetimepicker", [
+                        formFieldName: "startDate",
+                        label: "StartDate",
+                        useTime: false,
+                        defaultDate: ""
+                ])}
+                ${ ui.includeFragment("uicommons", "field/datetimepicker", [
+                        formFieldName: "endDate",
+                        label: "EndDate",
+                        useTime: false,
+                        defaultDate: ""
+                ])}
+
+                <p></p>
+                    <span>
+                        <button type="submit" class="confirm right" ng-class="{disabled: submitting}" ng-disabled="submitting">
+                            <i class="icon-play"></i>
+                            Send Report
+                        </button>
+                    </span>
+
+            </fieldset>
+
+
+        </form>
     </div>
 
-
-</form>
+</div>
 
