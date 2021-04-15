@@ -18,21 +18,10 @@
 
     jq(document).ready(function () {
 
-        jq('#upload_vl').submit(function(){
-            if(!jq('input[type="file"]').val()) {
-                jq().toastmessage('showNoticeToast', "No file was uploaded");
-                return false;
-            }else{
-                return true;
-            }
-        });
-
         var errorMessage = jq('#errorMessage').val();
         if(errorMessage!==""){
             jq().toastmessage('showNoticeToast', errorMessage);
         }
-
-
     });
 </script>
 
@@ -82,8 +71,7 @@
                     </span>
 
             </fieldset>
-
-
+            <input type="hidden" name="errorMessage" id="errorMessage" value="${errorMessage}">
         </form>
     </div>
 

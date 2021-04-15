@@ -106,7 +106,6 @@ public class SendReportsTask extends AbstractTask {
             }else {
                 List<ReportDesign> reportDesigns = Context.getService(ReportService.class).getReportDesigns(rd, TextTemplateRenderer.class, false);
                 ReportDesign reportDesign = reportDesigns.stream().filter(p -> "JSON".equals(p.getName())).findAny().orElse(null);
-                System.out.println(reportDesign.getUuid());
                 String reportRendergingMode = JSON_REPORT_RENDERER_TYPE + "!" + reportDesign.getUuid();
                 RenderingMode renderingMode = new RenderingMode(reportRendergingMode);
                 if (!renderingMode.getRenderer().canRender(rd)) {
@@ -127,7 +126,6 @@ public class SendReportsTask extends AbstractTask {
                 renderingMode.getRenderer().render(reportData, renderingMode.getArgument(), fileOutputStream);
 
                 strOutput = readOutputFile(strOutput);
-                log.error(strOutput);
             }
         }catch (Exception e){
             e.printStackTrace();

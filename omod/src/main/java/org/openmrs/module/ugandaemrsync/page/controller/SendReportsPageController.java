@@ -39,25 +39,28 @@ public class SendReportsPageController {
 
     public void post(@SpringBean PageModel pageModel,
                      @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
-                     HttpServletRequest request,
+                     @RequestParam("startDate") String periodStartDate,
+                     @RequestParam("endDate") String periodEndDate,
                      @RequestParam("reportDefinition") String uuid) {
 
-        String startDateString = request.getParameter("startDate");
-        String endDateString = request.getParameter("endDate");
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-
         try {
-            Date startDate = dateFormat.parse(startDateString);
-            Date endDate = dateFormat.parse(endDateString);
+            Date startDate = dateFormat.parse(periodStartDate);
+            Date endDate = dateFormat.parse(periodEndDate);
              sendReportsTask= new SendReportsTask(startDate,endDate,uuid);
             sendReportsTask.execute();
-           System.out.println(sendReportsTask.isSent());
+            if(sendReportsTask.isSent()){
+                pageModel.put("errorMessage", "Report"+
+                        getReportDefinitionService().getDefinitionByUuid(uuid).getName()+
+                        "from period" + startDate + "to" + endDate + "successfully sent");
+            }else{
+                pageModel.put("errorMessage", "Report not sent");
+            }
         }catch (ParseException e){
-            e.printStackTrace();
+            pageModel.put("errorMessage", e.getMessage());
         }
         pageModel.put("breadcrumbOverride", breadcrumbOverride);
-        pageModel.put("errorMessage", "");
         pageModel.put("reportDefinitions", rds);
     }
 
