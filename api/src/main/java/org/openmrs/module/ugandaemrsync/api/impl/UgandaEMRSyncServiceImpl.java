@@ -24,6 +24,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
 import org.openmrs.module.ugandaemrsync.api.dao.UgandaEMRSyncDao;
+import org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile;
 import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
@@ -204,7 +205,7 @@ public class UgandaEMRSyncServiceImpl extends BaseOpenmrsService implements Ugan
             } catch (Exception e) {
                 log.error("Failed to discontinue order", e);
             }
-            Context.getObsService().saveObs(viralLoadTestGroupObs,"Adding Viral Load Data");
+            Context.getObsService().saveObs(viralLoadTestGroupObs, "Adding Viral Load Data");
             return encounter;
         } else {
             return encounter;
@@ -357,8 +358,33 @@ public class UgandaEMRSyncServiceImpl extends BaseOpenmrsService implements Ugan
         return patientARTNO;
     }
 
-    public boolean encounterHasVLDataAlreadySaved(Encounter encounter){
+
+    public boolean encounterHasVLDataAlreadySaved(Encounter encounter) {
         Set<Obs> obs = encounter.getAllObs(false);
         return obs.stream().map(Obs::getConcept).collect(Collectors.toSet()).contains(Context.getConceptService().getConcept(165412));
     }
+
+
+    @Override
+    public SyncFHIRProfile saveSyncFHIRProfile(SyncFHIRProfile syncFHIRProfile) {
+        return dao.saveSyncFHIRProfile(syncFHIRProfile);
+    }
+
+    /**
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFHIRProfileById(java.lang.Integer)
+     */
+    @Override
+    public SyncFHIRProfile getSyncFHIRProfileById(Integer id) {
+        return dao.getSyncFHIRProfileById(id);
+    }
+
+    /**
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFHIRProfileByUUID(java.lang.String)
+     */
+    @Override
+    public SyncFHIRProfile getSyncFHIRProfileByUUID(String uuid) {
+        return dao.getSyncFHIRProfileByUUID(uuid);
+    }
+
 }
+

@@ -9,6 +9,7 @@
  */
 package org.openmrs.module.ugandaemrsync.fragment.controller;
 
+import org.json.JSONObject;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.ugandaemrsync.server.SyncDataRecord;
 import org.openmrs.module.ugandaemrsync.server.SyncFHIRRecord;
@@ -18,6 +19,8 @@ import org.openmrs.ui.framework.page.PageModel;
 
 import java.util.List;
 import java.util.Map;
+
+import static org.openmrs.module.ugandaemrsync.server.SyncConstant.FHIR_FILTER_OBJECT_STRING;
 
 /**
  *  * Controller for a fragment that shows all users  
@@ -32,10 +35,13 @@ public class GenerateInitialFHIRBundleDataFragmentController {
 	public void get(@SpringBean PageModel pageModel) throws Exception {
 		SyncFHIRRecord syncFHIRRecord = new SyncFHIRRecord();
 		List<Map> totals;
-		syncFHIRRecord.sendFHIRBundleObject("Patient");
-		syncFHIRRecord.sendFHIRBundleObject("Practitioner");
-		syncFHIRRecord.sendFHIRBundleObject("Observation");
-		syncFHIRRecord.sendFHIRBundleObject("Encounter");
+
+
+		syncFHIRRecord.sendFHIRBundleObject("Patient",null);
+		syncFHIRRecord.sendFHIRBundleObject("Practitioner",null);
+		syncFHIRRecord.sendFHIRBundleObject("Observation",null);
+		syncFHIRRecord.sendFHIRBundleObject("Encounter",null);
+		JSONObject patientFilterObject = new JSONObject(FHIR_FILTER_OBJECT_STRING);
 		//pageModel.put("persons", totals);
 
 

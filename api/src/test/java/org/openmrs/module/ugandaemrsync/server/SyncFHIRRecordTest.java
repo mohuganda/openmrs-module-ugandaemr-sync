@@ -13,6 +13,7 @@ import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 public class SyncFHIRRecordTest extends BaseModuleContextSensitiveTest {
 
@@ -34,15 +35,5 @@ public class SyncFHIRRecordTest extends BaseModuleContextSensitiveTest {
 
         Assert.assertNotEquals(managingOrganizationJsonString,"{}");
         Assert.assertEquals(managingOrganizationJsonString,"{\"managingOrganization\":{\"reference\":\"Organization/7744yxP\"}}");
-    }
-
-    @Test
-    public void proccessBuldeFHIRResources_shouldReturnJsonStringWithAManagingOrganization() {
-        SyncFHIRRecord syncFHIRRecord=new SyncFHIRRecord();
-
-        String proccessBuldeFHIRResources = syncFHIRRecord.proccessBuldeFHIRResources("Patient","1988-01-01");
-
-        Assert.assertNotEquals(proccessBuldeFHIRResources,"{}");
-        Assert.assertEquals(proccessBuldeFHIRResources,"{\"managingOrganization\":{\"reference\":\"Organization/7744yxP\"}}");
     }
 }

@@ -17,6 +17,7 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
+import org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile;
 import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.springframework.transaction.annotation.Transactional;
@@ -173,4 +174,27 @@ public interface UgandaEMRSyncService extends OpenmrsService {
 	 * @return the identifier that matches both the patient and the patient identifier type UUID
 	 */
 	public String getPatientIdentifier(Patient patient, String patientIdentifierTypeUUID);
+
+
+	/**
+	 * This Method saves a Sync FHIR Profile
+	 * @param syncFHIRProfile the Sync FHIR Profile to be saved
+	 * @return the saved Sync FHIR Profile
+	 */
+	public SyncFHIRProfile saveSyncFHIRProfile(SyncFHIRProfile syncFHIRProfile);
+
+	/**
+	 * This Method returs a Sync FHIR Profile that matches the id given
+	 * @param id the Id that will be used to match a sync fhir profile
+	 * @return the matched Sync FHIR Profile
+	 */
+	public SyncFHIRProfile getSyncFHIRProfileById(Integer id);
+
+
+	/**
+	 * This Method returs a Sync FHIR Profile that matches the id given
+	 * @param uuid the uuid that will be used to match a sync fhir profile
+	 * @return the matched Sync FHIR Profile
+	 */
+	public SyncFHIRProfile getSyncFHIRProfileByUUID(String uuid);
 }

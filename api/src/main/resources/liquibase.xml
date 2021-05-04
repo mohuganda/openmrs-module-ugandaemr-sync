@@ -326,7 +326,7 @@
         </preConditions>
         <comment>Inserting   Sync FHIR Records To Central Server into 'schedule_task_config' table</comment>
         <insert tableName="scheduler_task_config">
-            <column name="name" value="Sync FHIR Records To given Server" />
+            <column name="name" value="Sync FHIR Records a given Server" />
             <column name="description" value="Synchronises FHIR Data to given Server" />
             <column name="schedulable_class" value="org.openmrs.module.ugandaemrsync.tasks.SendFHIRDataToCentralServerTask" />
             <column name="start_time_pattern" value="MM/dd/yyyy HH:mm:ss" />
@@ -336,6 +336,55 @@
             <column name="created_by" value="1" />
             <column name="uuid" value="08a36b06-7a71-11eb-9439-0242ac130002" />
         </insert>
+    </changeSet>
+
+
+    <changeSet author="slubwama" id="ugandaemrsync-1620114029968-1" dbms="mysql">
+        <createTable tableName="sync_fhir_profile">
+            <column autoIncrement="true" name="profile_id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="resource_types" type="VARCHAR(255)"/>
+            <column name="resource_search_parameter" type="TEXT"/>
+            <column name="generate_bundle" type="TINYINT(3)"/>
+            <column name="url_end_point" type="VARCHAR(255)"/>
+            <column name="url_username" type="VARCHAR(255)"/>
+            <column name="url_password" type="VARCHAR(255)"/>
+            <column name="url_token" type="VARCHAR(255)"/>
+            <column name="creator" type="INT"/>
+            <column name="date_created" type="datetime"/>
+            <column name="changed_by" type="INT"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="voided" type="INT"/>
+            <column name="date_voided" type="datetime"/>
+            <column name="uuid" type="VARCHAR(38)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="lubwamasamuel" id="ugandaemrsync-1620114029968-4">
+        <createIndex indexName="sync_fhir_profile_changed_by_index" tableName="sync_fhir_profile">
+            <column name="changed_by"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="lubwamasamuel" id="ugandaemrsync-1620114029968-5">
+        <createIndex indexName="sync_fhir_profile_creator_index" tableName="sync_fhir_profile">
+            <column name="creator"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="lubwamasamuel" id="ugandaemrsync-1620114029968-6">
+        <createIndex indexName="sync_fhir_profile_voided_by_index" tableName="sync_fhir_profile">
+            <column name="voided_by"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="lubwamasamuel" id="ugandaemrsync-1620114029968-7">
+        <addForeignKeyConstraint baseColumnNames="creator" baseTableName="sync_fhir_profile" constraintName="sync_fhir_profile_users_user_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet author="lubwamasamuel" id="ugandaemrsync-1620114029968-8">
+        <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="sync_fhir_profile" constraintName="sync_fhir_profile_users_user_id_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet author="lubwamasamuel" id="ugandaemrsync-1620114029968-9">
+        <addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="sync_fhir_profile" constraintName="sync_fhir_profile_users_user_id_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
 
 </databaseChangeLog>

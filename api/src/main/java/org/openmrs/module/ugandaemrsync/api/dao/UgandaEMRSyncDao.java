@@ -14,6 +14,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
+import org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile;
 import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,5 +119,31 @@ public class UgandaEMRSyncDao {
 		                    + "' and  require_action=true and action_completed=false;");
 		sqlQuery.addEntity(SyncTask.class);
 		return sqlQuery.list();
+	}
+
+	/**
+	 * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFHIRProfileById(java.lang.Integer)
+	 */
+	public SyncFHIRProfile getSyncFHIRProfileById(Integer id) {
+		return (SyncFHIRProfile) getSession().createCriteria(SyncFHIRProfile.class).add(Restrictions.eq("profileId", id))
+				.uniqueResult();
+	}
+
+
+	/**
+	 * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFHIRProfileByUUID(java.lang.String)
+	 */
+	public SyncFHIRProfile getSyncFHIRProfileByUUID(String uuid) {
+		return (SyncFHIRProfile) getSession().createCriteria(SyncFHIRProfile.class).add(Restrictions.eq("uuid", uuid))
+				.uniqueResult();
+	}
+
+
+	/**
+	 * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveSyncFHIRProfile(org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile)
+	 */
+	public SyncFHIRProfile saveSyncFHIRProfile(SyncFHIRProfile syncFHIRProfile) {
+		getSession().saveOrUpdate(syncFHIRProfile);
+		return syncFHIRProfile;
 	}
 }

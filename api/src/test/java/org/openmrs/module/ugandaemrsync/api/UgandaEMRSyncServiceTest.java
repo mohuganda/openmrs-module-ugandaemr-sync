@@ -25,6 +25,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ugandaemrsync.api.dao.UgandaEMRSyncDao;
 import org.openmrs.module.ugandaemrsync.api.impl.UgandaEMRSyncServiceImpl;
+import org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile;
 import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.module.ugandaemrsync.server.SyncConstant;
@@ -36,6 +37,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import static org.openmrs.module.ugandaemrsync.server.SyncConstant.FHIR_FILTER_OBJECT_STRING;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.VIRAL_LOAD_SYNC_TYPE_UUID;
 
 /**
@@ -209,9 +211,53 @@ public class UgandaEMRSyncServiceTest extends BaseModuleContextSensitiveTest {
         Context.getObsService().getObservations("Anet Test Oloo");
 
         Assert.assertEquals(encounter, Context.getObsService().getObservations("Anet Test Oloo").get(1).getEncounter());
-        List<Obs> obs=Context.getObsService().getObservationsByPersonAndConcept(encounter.getPatient().getPerson(),Context.getConceptService().getConcept(1305));
-        Assert.assertTrue(obs.size()>0);
-        Assert.assertEquals("1306",obs.get(0).getValueCoded().getConceptId().toString());
+        List<Obs> obs = Context.getObsService().getObservationsByPersonAndConcept(encounter.getPatient().getPerson(), Context.getConceptService().getConcept(1305));
+        Assert.assertTrue(obs.size() > 0);
+        Assert.assertEquals("1306", obs.get(0).getValueCoded().getConceptId().toString());
 
     }
+
+
+    @Test
+    public void getSyncFHIRProfileById_ShouldReturnSyncFHIRProfileByID() {
+        UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
+
+        SyncFHIRProfile syncFHIRProfile = ugandaEMRSyncService.getSyncFHIRProfileById(1);
+
+        Assert.assertNotNull(syncFHIRProfile);
+        Assert.assertEquals("Example Profile", syncFHIRProfile.getName());
+    }
+
+    @Test
+    public void getSyncFHIRProfileByUUID_ShouldReturnSyncFHIRProfileByUUID() {
+        UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
+        SyncFHIRProfile syncFHIRProfile = ugandaEMRSyncService.getSyncFHIRProfileByUUID("c91b12c3-65fe-4b1c-aba4-99e3a7e58cfa");
+
+        Assert.assertNotNull(syncFHIRProfile);
+        Assert.assertEquals("Example Profile", syncFHIRProfile.getName());
+    }
+
+
+    @Test
+    public void saveSyncFHIRProfile_shouldSaveSyncFHIRProfile() {
+        UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
+
+        SyncFHIRProfile syncFHIRProfile = new SyncFHIRProfile();
+        syncFHIRProfile.setName("FHIR Profile to be saved");
+        syncFHIRProfile.setGenerateBundle(true);
+        syncFHIRProfile.setResourceTypes("Patient,Encounter,Observation");
+        syncFHIRProfile.setResourceSearchParameter(FHIR_FILTER_OBJECT_STRING);
+        syncFHIRProfile.setUrl("http://google.com");
+        syncFHIRProfile.setUrlUserName("username");
+        syncFHIRProfile.setUrlPassword("password");
+        syncFHIRProfile.setUrlToken("ZZZZAAAACCCC");
+
+        syncFHIRProfile = ugandaEMRSyncService.saveSyncFHIRProfile(syncFHIRProfile);
+
+        Assert.assertNotNull(syncFHIRProfile);
+        Assert.assertNotNull(syncFHIRProfile.getId());
+        Assert.assertEquals(syncFHIRProfile.getResourceSearchParameter(), FHIR_FILTER_OBJECT_STRING);
+    }
+
+
 }

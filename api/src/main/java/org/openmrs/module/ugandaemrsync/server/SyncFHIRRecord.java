@@ -44,7 +44,13 @@ public class SyncFHIRRecord {
 
     Log log = LogFactory.getLog(SyncFHIRRecord.class);
 
+    String healthCenterIdentifier;
+    String lastSyncDate;
+
+
     public SyncFHIRRecord() {
+        healthCenterIdentifier = Context.getAdministrationService().getGlobalProperty(GP_DHIS2);
+        lastSyncDate = Context.getAdministrationService().getGlobalProperty(LAST_SYNC_DATE);
     }
 
     private List getDatabaseRecordWithOutFacility(String query, String from, String to, int datesToBeReplaced, List<String> columns) {
@@ -143,7 +149,10 @@ public class SyncFHIRRecord {
     }
 
     public String addOrganizationToRecord(String payload) {
-        String healthCenterIdentifier = Context.getAdministrationService().getGlobalProperty("ugandaemr.dhis2.organizationuuid");
+        if (payload.isEmpty()) {
+            return "";
+        }
+
         String managingOrganizationStirng = String.format("{\"reference\": \"Organization/%s\"}", healthCenterIdentifier);
         JSONObject finalPayLoadJson = new JSONObject(payload);
         JSONObject managingOrganizationJson = new JSONObject(managingOrganizationStirng);
@@ -152,17 +161,34 @@ public class SyncFHIRRecord {
         return finalPayLoadJson.toString();
     }
 
+    public String wrapResourceInPostRequest(String payload) {
+        if (payload.isEmpty()) {
+            return "";
+        }
 
-    public String proccessBuldeFHIRResources(String resourceType, String lastUpdateOnDate) {
+        String requestString = "{\"resource\":%s,\"request\":{\"method\":\"POST\"}}";
 
-        SyncTaskType syncTaskType = Context.getService(UgandaEMRSyncService.class).getSyncTaskTypeByUUID(FHIRSERVER_SYNC_TASK_TYPE_UUID);
+        String wrappedResourceInRequest = String.format(requestString, payload);
+
+        return wrappedResourceInRequest;
+    }
+
+
+    public List<String> proccessBuldeFHIRResources(String resourceType, String lastUpdateOnDate) {
+
+        String finalQuery;
+
+        StringBuilder currentBundleString = new StringBuilder();
+        Integer currentNumberOfBundlesCollected = 0;
+        Integer interval = 1000;
+        List<String> resourceBundles = new ArrayList<>();
 
         DateRangeParam lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBound(lastUpdateOnDate);
         IParser iParser = FhirContext.forR4().newJsonParser();
         IBundleProvider results = null;
         List<String> jsoStrings = new ArrayList<>();
 
-        String bundleWrapperString = "{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[%]}";
+        String bundleWrapperString = "{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":%s}";
 
         FhirPersonService fhirPersonService;
         FhirPatientService fhirPatientService;
@@ -212,38 +238,55 @@ public class SyncFHIRRecord {
                     null, null, null, null, lastUpdated, null);
         }
 
+        List<IBaseResource> iBaseResources = results.getResources(0, Integer.MAX_VALUE);
 
-        for (IBaseResource iBaseResource : results.getResources(0, Integer.MAX_VALUE)) {
+        for (IBaseResource iBaseResource : iBaseResources) {
             String jsonString = iParser.encodeResourceToString(iBaseResource);
             if (resourceType.equals("Patient") || resourceType.equals("Practitioner")) {
                 addOrganizationToRecord(jsonString);
             }
-            jsoStrings.add(jsonString);
+            jsonString = wrapResourceInPostRequest(jsonString);
+
+
+            if (currentNumberOfBundlesCollected < interval) {
+                currentBundleString.append(jsonString);
+                currentNumberOfBundlesCollected++;
+            } else {
+                if (!currentBundleString.toString().equals("")) {
+                    resourceBundles.add(String.format(bundleWrapperString, currentBundleString.toString()));
+                }
+                currentNumberOfBundlesCollected = 1;
+                currentBundleString = new StringBuilder();
+                currentBundleString.append(jsonString);
+            }
         }
 
-        String finalBundle = "";
-
-        if (jsoStrings.size() > 0) {
-            finalBundle = String.format(bundleWrapperString, jsoStrings.toString());
+        if (currentNumberOfBundlesCollected < interval) {
+            resourceBundles.add(String.format(bundleWrapperString, currentBundleString.toString()));
         }
-        return finalBundle;
+
+        return resourceBundles;
     }
 
-    public List<Map> sendFHIRBundleObject(String resourceType) {
+    public List<Map> sendFHIRBundleObject(String resourceType, JSONObject filterObject) {
         SyncTaskType syncTaskType = Context.getService(UgandaEMRSyncService.class).getSyncTaskTypeByUUID(FHIRSERVER_SYNC_TASK_TYPE_UUID);
 
         List<Map> maps = new ArrayList<>();
-        String globalProperty = Context.getAdministrationService().getGlobalProperty(LAST_SYNC_DATE);
-        String finalBundle = proccessBuldeFHIRResources(resourceType, globalProperty);
-        Map map = null;
-        try {
-            map = ugandaEMRHttpURLConnection.sendPostBy(syncTaskType.getUrl() + resourceType, syncTaskType.getUrlUserName(), syncTaskType.getUrlPassword(), "", finalBundle, false);
-            map.put("DataType", resourceType);
-            map.put("uuid", "");
-            maps.add(map);
-        } catch (Exception e) {
-            log.error(e);
+        String globalProperty = Context.getAdministrationService().getGlobalProperty(String.format(LAST_SYNC_DATE_TO_FORMAT, resourceType));
+        List<String> rescourceBundles = proccessBuldeFHIRResources(resourceType, globalProperty);
+
+        for (String bundle : rescourceBundles) {
+            try {
+                Map map = null;
+                map = ugandaEMRHttpURLConnection.sendPostBy(syncTaskType.getUrl(), syncTaskType.getUrlUserName(), syncTaskType.getUrlPassword(), "", bundle, false);
+                map.put("DataType", resourceType);
+                map.put("uuid", "");
+                maps.add(map);
+            } catch (Exception e) {
+                log.error(e);
+            }
         }
+
 
         return maps;
     }

@@ -49,7 +49,8 @@ public class SyncConstant {
 
     public static final String JSON_CONTENT_TYPE = "application/json";
 
-    public static final String LAST_SYNC_DATE = "ugandaemr.lastSyncDate";
+    public static final String LAST_SYNC_DATE = "ugandaemr.lastsSyncDate";
+    public static final String LAST_SYNC_DATE_TO_FORMAT = "ugandaemrsync.last%sSyncDate";
     public static final String GP_ENABLE_SYNC_CBS_FHIR_DATA = "ugandaemrsync.syncCBSFHIRData";
 
     public static Date MINIMUM_DATE = new Date(Long.MIN_VALUE);
@@ -461,6 +462,7 @@ public class SyncConstant {
     public static final String PRACTITIONER_UUID_QUERY="select uuid from provider WHERE date_created > '%s' OR date_changed > '%s' OR date_retired > '%s'";
 
     public static final String FHIR_BUNDLE_RESOURCE_FOR_COLLECTION="{\"resourceType\": \"Bundle\",\"type\": \"collection\",\"entry\": [%s]}";
+    public static final String FHIR_FILTER_OBJECT_STRING="{\"observationFilters\":{\"encounterReference\":[],\"patientReference\":[],\"hasMemberReference\":[],\"valueConcept\":[],\"valueDateParam\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"valueQuantityParam\":[],\"valueStringParam\":[],\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"code\":[],\"category\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"patientFilters\":{\"name\":[],\"given\":[],\"family\":[],\"identifier\":[],\"gender\":[],\"birthDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deathDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"encountrerFilters\":{\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"location\":[],\"participant\":[],\"subject\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"personFilters\":{\"name\":[],\"gender\":[],\"birthDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"practitionerFilters\":{\"identifier\":[],\"name\":[],\"given\":[],\"family\":[],\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}}}";
 
 
     public static List<String> VL_SYNC_TASK_COLUMNS = Arrays.asList("sync_task_id", "sync_task_type", "sync_task", "status", "status_code", "sent_to_url", "require_action", "action_completed", "date_sent", "creator", "date_created", "changed_by", "date_changed", "voided", "date_voided", "voided_by ", "void_reason", "uuid");
