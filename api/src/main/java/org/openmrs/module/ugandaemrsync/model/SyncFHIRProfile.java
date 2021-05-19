@@ -2,12 +2,14 @@ package org.openmrs.module.ugandaemrsync.model;
 
 import org.hibernate.annotations.Type;
 import org.openmrs.BaseOpenmrsData;
-
+import org.openmrs.PatientIdentifierType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 
 @Entity(name = "ugandaemrsync.SyncFHIRProfile")
 @Table(name = "sync_fhir_profile")
@@ -24,12 +26,22 @@ public class SyncFHIRProfile extends BaseOpenmrsData {
 	@Column(name = "resource_types", length = 255)
 	private String resourceTypes;
 
+    @ManyToOne
+    @JoinColumn(name = "patient_identifier_type")
+    private PatientIdentifierType patientIdentifierType;
+
+    @Column(name = "number_of_resources_in_bundle")
+    private Integer numberOfResourcesInBundle;
+
+	@Column(name = "duration_to_keep_synced_resources")
+	private Integer durationToKeepSyncedResources;
+
+    @Column(name = "generate_bundle")
+    private Boolean generateBundle;
+
 	@Column(name = "resource_search_parameter")
 	@Type(type="text")
 	private String resourceSearchParameter;
-
-	@Column(name = "generate_bundle")
-	private Boolean generateBundle;
 
 	@Column(name = "url_end_point", length = 255)
 	private String url;
@@ -83,7 +95,32 @@ public class SyncFHIRProfile extends BaseOpenmrsData {
 		this.generateBundle = generateBundle;
 	}
 
-	public String getUrl() {
+
+	public Integer getNumberOfResourcesInBundle() {
+		return numberOfResourcesInBundle;
+	}
+
+	public void setNumberOfResourcesInBundle(Integer numberOfResourcesInBundle) {
+		this.numberOfResourcesInBundle = numberOfResourcesInBundle;
+	}
+
+	public PatientIdentifierType getPatientIdentifierType() {
+		return patientIdentifierType;
+	}
+
+	public void setPatientIdentifierType(PatientIdentifierType patientIdentifierType) {
+		this.patientIdentifierType = patientIdentifierType;
+	}
+
+    public Integer getDurationToKeepSyncedResources() {
+        return durationToKeepSyncedResources;
+    }
+
+    public void setDurationToKeepSyncedResources(Integer durationToKeepSyncedResources) {
+        this.durationToKeepSyncedResources = durationToKeepSyncedResources;
+    }
+
+    public String getUrl() {
 		return url;
 	}
 

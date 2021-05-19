@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 public class SyncConstant {
+	public static final String ENCOUNTER_ROLE = "240b26f9-dd88-4172-823d-4a8bfeb7841f";
 
     public static final String SERVER_IP = "ugandaemrsync.serverIP";
 
@@ -461,7 +462,9 @@ public class SyncConstant {
     public static final String OBSERVATION_UUID_QUERY="select uuid from obs WHERE date_created > '%s' OR date_voided > '%s'";
     public static final String PRACTITIONER_UUID_QUERY="select uuid from provider WHERE date_created > '%s' OR date_changed > '%s' OR date_retired > '%s'";
 
-    public static final String FHIR_BUNDLE_RESOURCE_FOR_COLLECTION="{\"resourceType\": \"Bundle\",\"type\": \"collection\",\"entry\": [%s]}";
+    public static final String FHIR_BUNDLE_RESOURCE_TRANSACTION ="{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":[%s]}";
+    public static final String FHIR_BUNDLE_RESOURCE_METHOD_POST ="{\"resource\":%s,\"request\":{\"method\":\"POST\"}}";
+    public static final String FHIR_BUNDLE_RESOURCE_METHOD_PUT ="{\"resource\":%s,\"request\":{\"method\":\"PUT\",\"url\":\"%s\"}}";
     public static final String FHIR_FILTER_OBJECT_STRING="{\"observationFilters\":{\"encounterReference\":[],\"patientReference\":[],\"hasMemberReference\":[],\"valueConcept\":[],\"valueDateParam\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"valueQuantityParam\":[],\"valueStringParam\":[],\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"code\":[],\"category\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"patientFilters\":{\"name\":[],\"given\":[],\"family\":[],\"identifier\":[],\"gender\":[],\"birthDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deathDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"encountrerFilters\":{\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"location\":[],\"participant\":[],\"subject\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"personFilters\":{\"name\":[],\"gender\":[],\"birthDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"practitionerFilters\":{\"identifier\":[],\"name\":[],\"given\":[],\"family\":[],\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}}}";
 
 

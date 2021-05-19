@@ -25,25 +25,23 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
 import org.openmrs.module.ugandaemrsync.api.dao.UgandaEMRSyncDao;
 import org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile;
+import org.openmrs.module.ugandaemrsync.model.SyncFHIRResource;
 import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
+import org.openmrs.module.ugandaemrsync.util.UgandaEMRSyncUtil;
+import org.openmrs.scheduler.TaskDefinition;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Set;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.GP_DHIS2_ORGANIZATION_UUID;
-import static org.openmrs.module.ugandaemrsync.server.SyncConstant.GP_DHIS2;
 
 public class UgandaEMRSyncServiceImpl extends BaseOpenmrsService implements UgandaEMRSyncService {
 
@@ -385,6 +383,70 @@ public class UgandaEMRSyncServiceImpl extends BaseOpenmrsService implements Ugan
     public SyncFHIRProfile getSyncFHIRProfileByUUID(String uuid) {
         return dao.getSyncFHIRProfileByUUID(uuid);
     }
+
+
+    /**
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFHIRProfileByScheduledTaskName(java.lang.String)
+     */
+    @Override
+    public SyncFHIRProfile getSyncFHIRProfileByScheduledTaskName(String scheduledTaskName) {
+
+        TaskDefinition taskDefinition = Context.getSchedulerService().getTaskByName(scheduledTaskName);
+
+        if (taskDefinition != null) {
+            String syncFHIRProfileUUID = taskDefinition.getProperty("syncFHIRProfileUUID");
+            SyncFHIRProfile syncFHIRProfile = getSyncFHIRProfileByUUID(syncFHIRProfileUUID);
+            if (syncFHIRProfile != null) {
+                return syncFHIRProfile;
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveFHIRResource(SyncFHIRResource)
+     */
+    @Override
+    public SyncFHIRResource saveFHIRResource(SyncFHIRResource syncFHIRResource) {
+        return dao.saveSyncFHIRResource(syncFHIRResource);
+    }
+
+
+    /**
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveFHIRResource(SyncFHIRResource)
+     */
+    @Override
+    public List<SyncFHIRResource> getSyncFHIRResourceBySyncFHIRProfile(SyncFHIRProfile syncFHIRProfile, boolean includeSynced) {
+        return dao.getSyncResourceBySyncFHIRProfile(syncFHIRProfile, includeSynced);
+    }
+
+    @Override
+    public SyncFHIRResource getSyncFHIRResourceById(Integer id) {
+        return dao.getSyncFHIRResourceById(id);
+    }
+
+    @Override
+    public SyncFHIRResource markSyncFHIRResourceSynced(SyncFHIRResource syncFHIRResources) {
+        Date today = new Date();
+        syncFHIRResources.setSynced(true);
+        syncFHIRResources.setDateSynced(today);
+        syncFHIRResources.setExpiryDate(UgandaEMRSyncUtil.addDaysToDate(today, syncFHIRResources.getGeneratorProfile().getDurationToKeepSyncedResources()));
+        return dao.saveSyncFHIRResource(syncFHIRResources);
+    }
+
+    @Override
+    public List<SyncFHIRResource> getExpiredSyncFHIRResources(Date date) {
+        return dao.getExpiredSyncFHIRResources(date);
+    }
+
+    @Override
+    public void purgeExpiredFHIRResource(Date date) {
+        for (SyncFHIRResource syncFHIRResource : getExpiredSyncFHIRResources(date)) {
+            dao.purgeExpiredFHIRResource(syncFHIRResource);
+        }
+    }
+
 
 }
 

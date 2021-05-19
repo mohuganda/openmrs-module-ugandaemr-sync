@@ -346,8 +346,11 @@
             </column>
             <column name="name" type="VARCHAR(255)"/>
             <column name="resource_types" type="VARCHAR(255)"/>
-            <column name="resource_search_parameter" type="TEXT"/>
+            <column name="patient_identifier_type" type="INT"/>
+            <column name="number_of_resources_in_bundle" type="INT"/>
+            <column name="duration_to_keep_synced_resources" type="INT"/>
             <column name="generate_bundle" type="TINYINT(3)"/>
+            <column name="resource_search_parameter" type="TEXT"/>
             <column name="url_end_point" type="VARCHAR(255)"/>
             <column name="url_username" type="VARCHAR(255)"/>
             <column name="url_password" type="VARCHAR(255)"/>
@@ -362,28 +365,37 @@
         </createTable>
     </changeSet>
 
-    <changeSet author="lubwamasamuel" id="ugandaemrsync-1620114029968-4">
+    <changeSet author="slubwama" id="ugandaemrsync-1620114029968-2">
+        <createIndex indexName="sync_fhir_profile_patient_identifier_type_index" tableName="sync_fhir_profile">
+            <column name="changed_by"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="slubwama" id="ugandaemrsync-1620114029968-3">
         <createIndex indexName="sync_fhir_profile_changed_by_index" tableName="sync_fhir_profile">
             <column name="changed_by"/>
         </createIndex>
     </changeSet>
-    <changeSet author="lubwamasamuel" id="ugandaemrsync-1620114029968-5">
+    <changeSet author="slubwama" id="ugandaemrsync-1620114029968-4">
         <createIndex indexName="sync_fhir_profile_creator_index" tableName="sync_fhir_profile">
             <column name="creator"/>
         </createIndex>
     </changeSet>
-    <changeSet author="lubwamasamuel" id="ugandaemrsync-1620114029968-6">
+    <changeSet author="slubwama" id="ugandaemrsync-1620114029968-5">
         <createIndex indexName="sync_fhir_profile_voided_by_index" tableName="sync_fhir_profile">
             <column name="voided_by"/>
         </createIndex>
     </changeSet>
-    <changeSet author="lubwamasamuel" id="ugandaemrsync-1620114029968-7">
+    <changeSet author="slubwama" id="ugandaemrsync-1620114029968-6">
+        <addForeignKeyConstraint baseColumnNames="patient_identifier_type" baseTableName="sync_fhir_profile" constraintName="sync_fhir_profile_patient_identifier_type_patient_identifier_type_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="patient_identifier_type_id" referencedTableName="patient_identifier_type"/>
+    </changeSet>
+    <changeSet author="slubwama" id="ugandaemrsync-1620114029968-7">
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="sync_fhir_profile" constraintName="sync_fhir_profile_users_user_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
-    <changeSet author="lubwamasamuel" id="ugandaemrsync-1620114029968-8">
+    <changeSet author="slubwama" id="ugandaemrsync-1620114029968-8">
         <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="sync_fhir_profile" constraintName="sync_fhir_profile_users_user_id_fk_2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
-    <changeSet author="lubwamasamuel" id="ugandaemrsync-1620114029968-9">
+    <changeSet author="slubwama" id="ugandaemrsync-1620114029968-9">
         <addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="sync_fhir_profile" constraintName="sync_fhir_profile_users_user_id_fk_3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users"/>
     </changeSet>
 

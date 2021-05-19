@@ -13,16 +13,14 @@ import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Patient;
 import org.openmrs.Order;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
-import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
 import org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile;
+import org.openmrs.module.ugandaemrsync.model.SyncFHIRResource;
 import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -197,4 +195,58 @@ public interface UgandaEMRSyncService extends OpenmrsService {
 	 * @return the matched Sync FHIR Profile
 	 */
 	public SyncFHIRProfile getSyncFHIRProfileByUUID(String uuid);
+
+
+	/**
+	 * This Method gets a Sync FHIR Profile from a scheduled task
+	 * @param scheduledTaskName
+	 * @return the syncFHIRProfile that is associated with a scheduled task that matches the scheduledTaskName
+	 */
+
+	public SyncFHIRProfile getSyncFHIRProfileByScheduledTaskName(String scheduledTaskName);
+
+
+	/**
+	 * This Method saves a Sync FHIR Resource
+	 * @param syncFHIRResource the resource to be saved
+	 * @return the saved sync fhir resource
+	 */
+	public SyncFHIRResource saveFHIRResource(SyncFHIRResource syncFHIRResource);
+
+
+	/**
+	 * This Method gets a list of sync fhir resources by the profile that generated them
+	 * @param syncFHIRProfile
+	 * @param includeSynced the check to determine if it has been sent to the destined server
+	 * @return
+	 */
+	public List<SyncFHIRResource> getSyncFHIRResourceBySyncFHIRProfile(SyncFHIRProfile syncFHIRProfile, boolean includeSynced);
+
+
+	/**
+	 * Gets a Sync FHIR Resource using an id
+	 * @param id the id that will be used to match the resource
+	 * @return the resource that matches the id
+	 */
+	public SyncFHIRResource getSyncFHIRResourceById(Integer id);
+
+    /**
+     * Marks resource Synced and sets expiry date based on the number of days to keep resource after sync set in profile
+     * @param syncFHIRResources the resource to be marked synced
+     * @return the resource that is marked synced.
+     */
+	public SyncFHIRResource markSyncFHIRResourceSynced(SyncFHIRResource syncFHIRResources);
+
+
+    /**
+     * gets all expired resources based on date passed
+     * @param date the date which will be used to match expired resources
+     * @return a list of expired resources
+     */
+    public List<SyncFHIRResource> getExpiredSyncFHIRResources(Date date);
+
+    /**
+     * Purges all resources that have  expired
+     */
+    public void purgeExpiredFHIRResource(Date date);
 }
