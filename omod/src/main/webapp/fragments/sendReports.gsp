@@ -164,7 +164,7 @@
             <img src="/openmrs/ms/uiframework/resource/uicommons/images/spinner.gif">
         </div>
         <div id="display-report" style="height:500px;overflow-y:scroll;">
-            <div class='modal-header'> <h3 style='text-align:center'> ${report_title}</h3></div>
+            <div class='modal-header'> <label style="text-align: center"><h1> ${report_title}</h1></label></div>
         </div>
         <div id="submit-button">
             <p></p><span id="sendData"  class="button confirm right"> Submit </span>

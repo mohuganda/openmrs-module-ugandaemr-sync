@@ -24,7 +24,6 @@ import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.module.ugandaemrsync.tasks.SendReportsTask;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.annotation.SpringBean;
-import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +61,7 @@ public class SendReportsFragmentController {
 		pageModel.put("previewBody",null);
 		pageModel.put("reportDefinitions", rds);
 		pageModel.put("errorMessage", "");
-		pageModel.put("report_title",null);
+		pageModel.put("report_title","");
 
 	}
 
@@ -73,6 +72,7 @@ public class SendReportsFragmentController {
 					 @RequestParam("reportDefinition") String uuid) {
 
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		DateFormat displayDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
 
 		try {
 			Date startDate = dateFormat.parse(periodStartDate);
@@ -81,7 +81,7 @@ public class SendReportsFragmentController {
 			bodyText = generateReport(uuid,startDate,endDate);
 			if(bodyText!=""){
 				String displayTitle= getReportDefinitionService().getDefinitionByUuid(uuid).getName()+" For Period \n"+
-						periodStartDate +"To " +periodEndDate;
+						displayDateFormat.format(startDate) +" To " +displayDateFormat.format(endDate);
 				pageModel.put("previewBody",bodyText);
 				pageModel.put("errorMessage", "");
 				pageModel.put("report_title",displayTitle);
@@ -91,7 +91,7 @@ public class SendReportsFragmentController {
 		}catch (ParseException e){
 			pageModel.put("errorMessage", e.getMessage());
 			pageModel.put("previewBody",null);
-			pageModel.put("report_title",null);
+			pageModel.put("report_title","");
 		}
 		pageModel.put("breadcrumbOverride", breadcrumbOverride);
 		pageModel.put("reportDefinitions", rds);
