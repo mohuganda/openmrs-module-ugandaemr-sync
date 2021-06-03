@@ -14,12 +14,10 @@ import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
+import org.openmrs.Patient;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
-import org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile;
-import org.openmrs.module.ugandaemrsync.model.SyncFHIRResource;
-import org.openmrs.module.ugandaemrsync.model.SyncTask;
-import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
+import org.openmrs.module.ugandaemrsync.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -192,7 +190,7 @@ public class UgandaEMRSyncDao {
     }
 
     public void purgeExpiredFHIRResource(SyncFHIRResource syncFHIRResource) {
-            getSession().delete(syncFHIRResource);
+        getSession().delete(syncFHIRResource);
     }
 
     public List<SyncFHIRResource> getExpiredSyncFHIRResources(Date date) {
@@ -202,5 +200,38 @@ public class UgandaEMRSyncDao {
         criteria.addOrder(Order.desc("expiryDate"));
 
         return criteria.list();
+    }
+
+    public SyncFHIRProfileLog saveSyncFHIRProfileLog(SyncFHIRProfileLog syncFHIRProfileLog) {
+        getSession().saveOrUpdate(syncFHIRProfileLog);
+        return syncFHIRProfileLog;
+    }
+
+    public List<SyncFHIRProfileLog> getSyncFHIRProfileLogByProfileAndResourceName(SyncFHIRProfile syncFHIRProfile, String resourceType) {
+        Criteria criteria = getSession().createCriteria(SyncFHIRProfileLog.class);
+
+        if (syncFHIRProfile != null && resourceType != null) {
+            criteria.add(Restrictions.eq("resourceType", resourceType));
+            criteria.add(Restrictions.eq("profile", syncFHIRProfile));
+            criteria.addOrder(Order.desc("dateCreated"));
+        }
+
+        return criteria.list();
+    }
+
+    public SyncFHIRCase getSyncFHIRCaseBySyncFHIRProfileAndPatient(SyncFHIRProfile syncFHIRProfile, Patient patient,String caseIdentifier) {
+        Criteria criteria = getSession().createCriteria(SyncFHIRCase.class);
+        criteria.add(Restrictions.eq("profile", syncFHIRProfile));
+        criteria.add(Restrictions.eq("patient", patient));
+        criteria.add(Restrictions.eq("caseIdentifier", caseIdentifier));
+
+        return (SyncFHIRCase) criteria.uniqueResult();
+    }
+
+    public SyncFHIRCase saveSyncFHIRCase(SyncFHIRCase syncFHIRCase) {
+
+        getSession().saveOrUpdate(syncFHIRCase);
+
+        return syncFHIRCase;
     }
 }

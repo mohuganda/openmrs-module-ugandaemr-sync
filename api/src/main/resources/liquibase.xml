@@ -350,7 +350,9 @@
             <column name="number_of_resources_in_bundle" type="INT"/>
             <column name="duration_to_keep_synced_resources" type="INT"/>
             <column name="generate_bundle" type="TINYINT(3)"/>
+            <column name="is_case_based_profile" type="TINYINT(3)"/>
             <column name="resource_search_parameter" type="TEXT"/>
+            <column name="case_based_primary_resource_type" type="TEXT"/>
             <column name="url_end_point" type="VARCHAR(255)"/>
             <column name="url_username" type="VARCHAR(255)"/>
             <column name="url_password" type="VARCHAR(255)"/>
@@ -367,7 +369,7 @@
 
     <changeSet author="slubwama" id="ugandaemrsync-1620114029968-2">
         <createIndex indexName="sync_fhir_profile_patient_identifier_type_index" tableName="sync_fhir_profile">
-            <column name="changed_by"/>
+            <column name="patient_identifier_type"/>
         </createIndex>
     </changeSet>
 

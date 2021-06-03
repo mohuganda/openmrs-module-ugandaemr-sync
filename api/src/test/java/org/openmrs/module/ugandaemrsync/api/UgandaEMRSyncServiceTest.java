@@ -17,10 +17,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile;
-import org.openmrs.module.ugandaemrsync.model.SyncFHIRResource;
-import org.openmrs.module.ugandaemrsync.model.SyncTask;
-import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
+import org.openmrs.module.ugandaemrsync.model.*;
 import org.openmrs.module.ugandaemrsync.server.SyncConstant;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
@@ -316,16 +313,64 @@ public class UgandaEMRSyncServiceTest extends BaseModuleContextSensitiveTest {
 
     }
 
-
     @Test
-    public void purgeExpiredFHIRResource_shouldPurgeSyncFHIRResource() {
+    public void saveSyncFHIRProfileLog_shouldSaveSyncFHIRProfileLog() {
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
 
-        Assert.assertNotNull(ugandaEMRSyncService.getSyncFHIRResourceById(5));
 
-        ugandaEMRSyncService.purgeExpiredFHIRResource(new Date());
+        SyncFHIRProfileLog syncFHIRProfileLog = new SyncFHIRProfileLog();
 
-        Assert.assertNull(ugandaEMRSyncService.getSyncFHIRResourceById(5));
+        syncFHIRProfileLog.setLastGenerationDate(new Date());
+        syncFHIRProfileLog.setResourceType("Encounter");
+        syncFHIRProfileLog.setProfile(Context.getService(UgandaEMRSyncService.class).getSyncFHIRProfileByUUID("c91b12c3-65fe-4b1c-aba4-99e3a7e58cfa"));
+        syncFHIRProfileLog.setNumberOfResources(5);
+        SyncFHIRProfileLog syncFHIRProfileLog1 = ugandaEMRSyncService.saveSyncFHIRProfileLog(syncFHIRProfileLog);
+        Assert.assertNotNull(syncFHIRProfileLog1);
+        Assert.assertNotNull(syncFHIRProfileLog1.getId());
+        Assert.assertEquals(syncFHIRProfileLog1.getResourceType(), "Encounter");
+    }
+
+
+    @Test
+    public void getSyncFHIRProfileLogByProfileAndResourceName_shouldGetSyncFHIRProfileLog() {
+        UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
+
+        SyncFHIRProfileLog syncFHIRProfileLog = ugandaEMRSyncService.getLatestSyncFHIRProfileLogByProfileAndResourceName(Context.getService(UgandaEMRSyncService.class).getSyncFHIRProfileByUUID("c91b12c3-65fe-4b1c-aba4-99e3a7e58cfa"), "Encounter");
+
+        Assert.assertNotNull(syncFHIRProfileLog);
+
+    }
+
+    @Test
+    public void getSyncFHIRCaseBySyncFHIRProfileAndPatient_ShouldGetSyncFHIRCase() {
+        String patientUID = "";
+        String caseIdentifier = "";
+        UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
+        Patient patient = Context.getPatientService().getPatientByUuid(patientUID);
+        SyncFHIRProfile syncFHIRProfile = Context.getService(UgandaEMRSyncService.class).getSyncFHIRProfileByUUID("c91b12c3-65fe-4b1c-aba4-99e3a7e58cfa");
+        SyncFHIRCase syncFHIRCase = ugandaEMRSyncService.getSyncFHIRCaseBySyncFHIRProfileAndPatient(syncFHIRProfile, patient, caseIdentifier);
+
+        Assert.assertNotNull(syncFHIRCase);
+        Assert.assertEquals(syncFHIRCase.getPatient().getUuid(), patientUID);
+
+    }
+
+    @Test
+    public void saveSyncFHIRCase_shouldSyncFHIRCase() {
+        UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
+
+        SyncFHIRCase syncFHIRCase = new SyncFHIRCase();
+        Date date = new Date();
+
+        syncFHIRCase.setPatient(Context.getPatientService().getPatientByUuid(""));
+        syncFHIRCase.setProfile(ugandaEMRSyncService.getSyncFHIRProfileByUUID(""));
+        syncFHIRCase.setCaseIdentifier("111");
+        syncFHIRCase.setLastUpdateDate(date);
+
+        SyncFHIRCase syncFHIRCase1 = ugandaEMRSyncService.saveSyncFHIRCase(syncFHIRCase);
+
+        Assert.assertNotNull(syncFHIRCase1);
+        Assert.assertNotNull(syncFHIRCase1.getCaseId());
     }
 
 

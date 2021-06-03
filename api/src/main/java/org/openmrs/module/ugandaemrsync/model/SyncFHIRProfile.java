@@ -20,10 +20,10 @@ public class SyncFHIRProfile extends BaseOpenmrsData {
 	@Column(name = "profile_id")
 	private int profileId;
 
-	@Column(name = "name", length = 255)
+	@Column(name = "name")
 	private String name;
 
-	@Column(name = "resource_types", length = 255)
+	@Column(name = "resource_types")
 	private String resourceTypes;
 
     @ManyToOne
@@ -39,20 +39,29 @@ public class SyncFHIRProfile extends BaseOpenmrsData {
     @Column(name = "generate_bundle")
     private Boolean generateBundle;
 
+	@Column(name = "is_case_based_profile")
+	private Boolean isCaseBasedProfile;
+
+	@Column(name = "case_based_primary_resource_type")
+	private String caseBasedPrimaryResourceType;
+
+	@Column(name = "case_based_primary_resource_type_id")
+	private String caseBasedPrimaryResourceTypeId;
+
 	@Column(name = "resource_search_parameter")
 	@Type(type="text")
 	private String resourceSearchParameter;
 
-	@Column(name = "url_end_point", length = 255)
+	@Column(name = "url_end_point")
 	private String url;
 
-	@Column(name = "url_token", length = 255)
+	@Column(name = "url_token")
 	private String urlToken;
 
-	@Column(name = "url_username", length = 255)
+	@Column(name = "url_username")
 	private String urlUserName;
 
-	@Column(name = "url_password", length = 255)
+	@Column(name = "url_password")
 	private String urlPassword;
 
 	public int getProfileId() {
@@ -120,7 +129,31 @@ public class SyncFHIRProfile extends BaseOpenmrsData {
         this.durationToKeepSyncedResources = durationToKeepSyncedResources;
     }
 
-    public String getUrl() {
+	public Boolean getCaseBasedProfile() {
+		return isCaseBasedProfile;
+	}
+
+	public void setCaseBasedProfile(Boolean caseBasedProfile) {
+		isCaseBasedProfile = caseBasedProfile;
+	}
+
+	public String getCaseBasedPrimaryResourceType() {
+		return caseBasedPrimaryResourceType;
+	}
+
+	public void setCaseBasedPrimaryResourceType(String caseBasedPrimaryResourceType) {
+		this.caseBasedPrimaryResourceType = caseBasedPrimaryResourceType;
+	}
+
+	public String getCaseBasedPrimaryResourceTypeId() {
+		return caseBasedPrimaryResourceTypeId;
+	}
+
+	public void setCaseBasedPrimaryResourceTypeId(String caseBasedPrimaryResourceTypeId) {
+		this.caseBasedPrimaryResourceTypeId = caseBasedPrimaryResourceTypeId;
+	}
+
+	public String getUrl() {
 		return url;
 	}
 
