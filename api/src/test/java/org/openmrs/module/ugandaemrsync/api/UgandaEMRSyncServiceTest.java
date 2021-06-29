@@ -250,9 +250,9 @@ public class UgandaEMRSyncServiceTest extends BaseModuleContextSensitiveTest {
     @Test
     public void getSyncFHIRProfileByScheduledTaskName_ShouldReturnSyncFHIRFromScheduledTask() {
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
-
+        String encounterFilter = "{\"observationFilter\":{\"encounterReference\":[],\"patientReference\":[],\"hasMemberReference\":[],\"valueConcept\":[],\"valueDateParam\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"valueQuantityParam\":[],\"valueStringParam\":[],\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"code\":[],\"category\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"patientFilter\":{\"name\":[],\"given\":[],\"family\":[],\"identifier\":[],\"gender\":[],\"birthDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deathDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"encounterFilter\":{\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"location\":[],\"participant\":[],\"subject\":[],\"id\":[],\"type\":[\"8d5b2be0-c2cc-11de-8d13-0010c6dffd0f\"],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"personFilter\":{\"name\":[],\"gender\":[],\"birthDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"practitionerFilter\":{\"identifier\":[],\"name\":[],\"given\":[],\"family\":[],\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}}}";
         SyncFHIRProfile syncFHIRProfile = ugandaEMRSyncService.getSyncFHIRProfileByScheduledTaskName("Example Task for FHIR Exchange Profile");
-        Assert.assertEquals(syncFHIRProfile.getResourceSearchParameter(), FHIR_FILTER_OBJECT_STRING);
+        Assert.assertEquals(syncFHIRProfile.getResourceSearchParameter(), encounterFilter);
         Assert.assertEquals("Example Profile", syncFHIRProfile.getName());
     }
 
@@ -343,8 +343,8 @@ public class UgandaEMRSyncServiceTest extends BaseModuleContextSensitiveTest {
 
     @Test
     public void getSyncFHIRCaseBySyncFHIRProfileAndPatient_ShouldGetSyncFHIRCase() {
-        String patientUID = "";
-        String caseIdentifier = "";
+        String patientUID = "da7f524f-27ce-4bb2-86d6-6d1d05312bd5";
+        String caseIdentifier = "ART-MALE-1";
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
         Patient patient = Context.getPatientService().getPatientByUuid(patientUID);
         SyncFHIRProfile syncFHIRProfile = Context.getService(UgandaEMRSyncService.class).getSyncFHIRProfileByUUID("c91b12c3-65fe-4b1c-aba4-99e3a7e58cfa");
@@ -362,15 +362,17 @@ public class UgandaEMRSyncServiceTest extends BaseModuleContextSensitiveTest {
         SyncFHIRCase syncFHIRCase = new SyncFHIRCase();
         Date date = new Date();
 
-        syncFHIRCase.setPatient(Context.getPatientService().getPatientByUuid(""));
-        syncFHIRCase.setProfile(ugandaEMRSyncService.getSyncFHIRProfileByUUID(""));
-        syncFHIRCase.setCaseIdentifier("111");
+        syncFHIRCase.setPatient(Context.getPatientService().getPatient(2));
+        syncFHIRCase.setProfile(ugandaEMRSyncService.getSyncFHIRProfileByUUID("c91b12c3-65fe-4b1c-aba4-99e3a7e58cfa"));
+        syncFHIRCase.setCaseIdentifier(Context.getPatientService().getPatient(2).getPatientIdentifier(14).getIdentifier());
         syncFHIRCase.setLastUpdateDate(date);
 
         SyncFHIRCase syncFHIRCase1 = ugandaEMRSyncService.saveSyncFHIRCase(syncFHIRCase);
 
         Assert.assertNotNull(syncFHIRCase1);
         Assert.assertNotNull(syncFHIRCase1.getCaseId());
+        Assert.assertNotNull(syncFHIRCase1.getCaseIdentifier());
+        Assert.assertNotNull("ART-MALE-1", syncFHIRCase1.getCaseIdentifier());
     }
 
 

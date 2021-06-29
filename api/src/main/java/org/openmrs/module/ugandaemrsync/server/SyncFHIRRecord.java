@@ -793,7 +793,7 @@ public class SyncFHIRRecord {
 
 
     private Date getLastSyncDate(SyncFHIRProfile syncFHIRProfile, String resourceType) {
-        Date date = null;
+        Date date;
 
         SyncFHIRProfileLog syncFHIRProfileLog = Context.getService(UgandaEMRSyncService.class).getLatestSyncFHIRProfileLogByProfileAndResourceName(syncFHIRProfile, resourceType);
 

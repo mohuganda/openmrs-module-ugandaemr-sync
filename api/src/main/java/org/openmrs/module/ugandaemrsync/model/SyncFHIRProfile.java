@@ -26,12 +26,12 @@ public class SyncFHIRProfile extends BaseOpenmrsData {
 	@Column(name = "resource_types")
 	private String resourceTypes;
 
-    @ManyToOne
-    @JoinColumn(name = "patient_identifier_type")
-    private PatientIdentifierType patientIdentifierType;
+	@ManyToOne
+	@JoinColumn(name = "patient_identifier_type")
+	private PatientIdentifierType patientIdentifierType;
 
-    @Column(name = "number_of_resources_in_bundle")
-    private Integer numberOfResourcesInBundle;
+	@Column(name = "number_of_resources_in_bundle")
+	private Integer numberOfResourcesInBundle;
 
 	@Column(name = "duration_to_keep_synced_resources")
 	private Integer durationToKeepSyncedResources;

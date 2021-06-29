@@ -23,8 +23,9 @@ public class SyncFHIRProfilePageController {
 
     public void controller(@SpringBean PageModel pageModel, @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride, UiSessionContext sessionContext, PageModel model, UiUtils ui) {
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
-        List<SyncTaskType> syncTaskTypes = ugandaEMRSyncService.getAllSyncTaskType();
-        pageModel.put("syncTaskTypes", syncTaskTypes);
+
+        pageModel.put("syncFHIRProfiles", null);
+        pageModel.put("patientIdentifierType", Context.getPatientService().getAllPatientIdentifierTypes());
         pageModel.put("breadcrumbOverride", breadcrumbOverride);
     }
 
