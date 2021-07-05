@@ -45,12 +45,12 @@ public class SendLabRequestToALIS extends AbstractTask {
             log.error("Failed to pass orders to list", e);
         }
 
-        SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(OTHER_TESTS_SYNC_TYPE_UUID);
+        SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(ALIS_TESTS_SYNC_TYPE_UUID);
 
         for (Order order : orderList) {
             SyncTask syncTask = ugandaEMRSyncService.getSyncTaskBySyncTaskId(order.getAccessionNumber());
             if (syncTask == null) {
-                Map<String, String> dataOutput = generateLabFHIROrderTestRequestBody((TestOrder) order, VL_SEND_SAMPLE_FHIR_JSON_STRING);
+                Map<String, String> dataOutput = generateLabFHIROrderTestRequestBody((TestOrder) order, ALIS_SEND_SAMPLE_FHIR_JSON_STRING);
                 String json = dataOutput.get("json");
                 try {
                     Map map = ugandaEMRHttpURLConnection.sendPostBy(syncTaskType.getUrl(), syncTaskType.getUrlUserName(), syncTaskType.getUrlPassword(), "", json, false);
@@ -64,7 +64,7 @@ public class SendLabRequestToALIS extends AbstractTask {
                         newSyncTask.setSyncTask(order.getAccessionNumber());
                         newSyncTask.setStatusCode((Integer) map.get("responseCode"));
                         newSyncTask.setStatus("SUCCESS");
-                        newSyncTask.setSyncTaskType(ugandaEMRSyncService.getSyncTaskTypeByUUID(OTHER_TESTS_SYNC_TYPE_UUID));
+                        newSyncTask.setSyncTaskType(ugandaEMRSyncService.getSyncTaskTypeByUUID(ALIS_TESTS_SYNC_TYPE_UUID));
                         ugandaEMRSyncService.saveSyncTask(newSyncTask);
                     }
                 } catch (Exception e) {

@@ -71,7 +71,7 @@ public class SyncConstant {
     public static final String VIRAL_LOAD_SYNC_TYPE_UUID = "3551ca84-06c0-432b-9064-fcfeefd6f4ec";
     public static final String FHIRSERVER_SYNC_TASK_TYPE_UUID = "3c1ce940-8ade-11ea-bc55-0242ac130003";
     public static final String VIRAL_LOAD_RESULT_PULL_TYPE_UUID = "3396dcf0-2106-4e73-9b90-c63978c3a8b4";
-	public static final String OTHER_TESTS_SYNC_TYPE_UUID = "64078546-cd3a-4669-96a4-a8d0722b7be7";
+	public static final String ALIS_TESTS_SYNC_TYPE_UUID = "64078546-cd3a-4669-96a4-a8d0722b7be7";
 
     public static final String PATIENT_IDENTIFIER_TYPE = "e1731641-30ab-102d-86b0-7a5022ba4115";
 
@@ -92,6 +92,8 @@ public class SyncConstant {
     public static final String GP_DHIS2 = "ugandaemr.dhis2.organizationuuid";
 
     public static final String VL_SEND_SAMPLE_FHIR_JSON_STRING = "{\"resourceType\":\"ServiceRequest\",\"locationCode\":\"%s\",\"locationReference\":\"%s\",\"code\":\"%s\",\"performerType\":\"????\",\"status\":\"active\",\"intent\":\"order\",\"subject\":{\"resourceType\":\"Location\",\"name\":\"%s\"},\"specimen\":[{\"subject\":{\"resourceType\":\"Patient\",\"identifier\":\"%s\"},\"resourceType\":\"Specimen\",\"identifier\":\"%s\",\"type\":\"%s\",\"status\":\"available\",\"collection\":{\"collectedDateTime\":\"%s\",\"collector\":{\"resourceType\":\"Practitioner\",\"name\":\"%s\",\"telecom\":\"%s\"}}}],\"requester\":{\"resourceType\":\"Practitioner\",\"name\":\"%s\",\"telecom\":\"%s\"},\"performer\":[{\"resourceType\":\"Organization\",\"endpoint\":\"%s\"}]}";
+
+	public static final String ALIS_SEND_SAMPLE_FHIR_JSON_STRING = "{\"resourceType\":\"ServiceRequest\",\"id\":\"%s\",\"status\":\"active\",\"intent\":\"order\",\"category\":[{\"coding\":[{\"system\":\"http://snomed.info/sct\",\"code\":\"108252007\",\"display\":\"Laboratory procedure\"}]}],\"code\":{\"coding\":[{\"system\":\"http://snomed.info/sct\",\"code\":\"407727009\",\"display\":\"Malaria antigen test (procedure) \"}],\"text\":\"Malaria RDT\"},\"subject\":{\"reference\":\"#12345\"},\"authoredOn\":\"2021-06-22\",\"requester\":{\"reference\":\"#9909\"},\"contained\":[{\"resourceType\":\"Patient\",\"id\":\"12345\",\"name\":[{\"family\":\"Kabogoza\",\"given\":[\"Enock\",\"Zilabamuzaale\"]}],\"birthDate\":\"1999-02-29\",\"gender\":\"male\",\"address\":[{\"city\":\"kawaala\"}],\"extension\":[{\"url\":\"http://labhie.cphluganda.org/fhir/patient-extension\",\"extension\":[{\"url\":\"nationality\",\"valueString\":\"National\"},{\"url\":\"ninOrPassportno\",\"valueString\":\"CF98993909398489\"},{\"url\":\"age\",\"valueAge\":{\"unit\":\"year\",\"value\":23}},{\"url\":\"occupation\",\"valueString\":\"business man\"}]}]},{\"resourceType\":\"Practitioner\",\"id\":\"9909\",\"name\":[{\"family\":\"Nalumaga\",\"given\":[\"Cissy\"]}],\"telecom\":[{\"system\":\"phone\",\"value\":\"0799808081\"},{\"system\":\"email\",\"value\":\"cnalumaga2021@gmail.com\"}]}]}";
 
     public static final String VL_RECEIVE_RESULT_FHIR_JSON_STRING = "{\"resourceType\":\"ServiceRequest\",\"locationCode\":\"%s\",\"subject\":{\"resourceType\":\"Location\",\"name\":\"UgandaEMR\"},\"specimen\":[{\"subject\":{\"resourceType\":\"Patient\",\"identifier\":\"%s\"},\"resourceType\":\"Specimen\",\"identifier\":\"%s\"}]}";
 
@@ -453,7 +455,7 @@ public class SyncConstant {
 
     public static final String VIRAL_LOAD_ORDERS_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) inner JOIN concept ON (orders.concept_id = concept.concept_id) inner join concept_reference_map on (concept.concept_id = concept_reference_map.concept_id) inner join concept_reference_term on (concept_reference_map.concept_reference_term_id = concept_reference_term.concept_reference_term_id) where accession_number!=\"\" AND specimen_source!=\"\" AND orders.instructions=\"REFER TO cphl\" AND code=\"" + VIRAL_LOAD_SYNC_TASK_TYPE_IDENTIFIER + "\"";
 
-	public static final String LAB_ORDERS_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) inner JOIN concept ON (orders.concept_id = concept.concept_id) inner join concept_reference_map on (concept.concept_id = concept_reference_map.concept_id) inner join concept_reference_term on (concept_reference_map.concept_reference_term_id = concept_reference_term.concept_reference_term_id) where accession_number!=\"\" AND specimen_source!=\"\"";
+	public static final String LAB_ORDERS_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) inner JOIN concept ON (orders.concept_id = concept.concept_id) inner join concept_reference_map on (concept.concept_id = concept_reference_map.concept_id) inner join concept_reference_term on (concept_reference_map.concept_reference_term_id = concept_reference_term.concept_reference_term_id)";
 
     public static final String VIRAL_LOAD_ORDER_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) where accession_number=\"%s\"";
 
