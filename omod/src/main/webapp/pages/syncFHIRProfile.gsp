@@ -19,10 +19,6 @@
     ];
 
     jq(document).ready(function () {
-
-        jq("#okay").click(function () {
-            patientqueue.createReadMessageDialog();
-        });
     });
 </script>
 
@@ -199,8 +195,6 @@
 
                 <div class="container">
                     <!-- Content here -->
-
-
                     <input type="hidden" name="syncFHIRProfileId" id="syncFHIRProfileId" value="">
 
                     <div class="container">
@@ -223,7 +217,7 @@
 
                     <div class="tab-content">
                         <div class="tab-pane active" id="resource-definition-section">
-                            <div class="container">
+                            <div class="container" style="margin-left: auto; margin-right: auto; width: 99%">
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="card">
@@ -247,6 +241,7 @@
                                                                     <input type="checkbox"
                                                                            id="resourceTypeEncounter"
                                                                            name="resourceType"
+                                                                           class="resourceType"
                                                                            value="Encounter">
                                                                     <label class="form-check-label"
                                                                            for="resourceTypeEncounter">
@@ -258,8 +253,8 @@
                                                                 <div class="form-check">
                                                                     <input type="checkbox" id="resourcePatient"
                                                                            name="resourceType"
-                                                                           value="Patient">
-                                                                    <label class="form-check-label"
+                                                                           value="Patient" class="resourceType">
+                                                                    <label class="form-check-label "
                                                                            for="resourcePatient">
                                                                         Patient
                                                                     </label>
@@ -268,6 +263,7 @@
                                                                 <div class="form-check">
                                                                     <input type="checkbox" id="resourceTypePerson"
                                                                            name="resourceType"
+                                                                           class="resourceType"
                                                                            value="Person">
                                                                     <label class="form-check-label"
                                                                            for="resourceTypePerson">
@@ -279,6 +275,7 @@
                                                                     <input type="checkbox"
                                                                            id="resourceTypeObservation"
                                                                            name="resourceType"
+                                                                           class="resourceType"
                                                                            value="Observation">
                                                                     <label class="form-check-label"
                                                                            for="resourceTypeObservation">
@@ -294,6 +291,7 @@
                                                                     <input type="checkbox"
                                                                            id="resourceTypeEpisodeOfCare"
                                                                            name="resourceType"
+                                                                           class="resourceType"
                                                                            value="EpisodeOfCare">
                                                                     <label class="form-check-label"
                                                                            for="resourceTypeEpisodeOfCare">
@@ -305,6 +303,7 @@
                                                                     <input type="checkbox"
                                                                            id="resourceTypeServiceRequest"
                                                                            name="resourceType"
+                                                                           class="resourceType"
                                                                            value="ServiceRequest">
                                                                     <label class="form-check-label"
                                                                            for="resourceTypeServiceRequest">
@@ -316,6 +315,7 @@
                                                                     <input type="checkbox"
                                                                            id="resourceTypeMedicationRequest"
                                                                            name="resourceType"
+                                                                           class="resourceType"
                                                                            value="MedicationRequest">
                                                                     <label class="form-check-label"
                                                                            for="resourceTypeMedicationRequest">
@@ -377,60 +377,61 @@
                         </div>
 
                         <div class="tab-pane" id="resource-filters-section">
+                            <div class="container" style="margin-left: auto; margin-right: auto; width: 99%">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header">General Filters</div>
 
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">General Filters</div>
+                                            <div class="card-body">
+                                                <div class="form-group">
+                                                    <label>Patient Identifier Type</label>
+                                                    <select class="form-control" name="dataType" id="dataType">
+                                                        <option value="">Select Patient Identifier Type</option>
+                                                        <% patientIdentifierType?.each { %>
+                                                        <option value="${it.uuid}">${it.name}</option>
+                                                        <% } %>
+                                                    </select>
+                                                </div>
 
-                                        <div class="card-body">
-                                            <div class="form-group">
-                                                <label>Patient Identifier Type</label>
-                                                <select class="form-control" name="dataType" id="dataType">
-                                                    <option value="">Select Patient Identifier Type</option>
-                                                    <% patientIdentifierType?.each { %>
-                                                    <option value="${it.uuid}">${it.name}</option>
-                                                    <% } %>
-                                                </select>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label>No of Resources in Bundle</label>
-                                                <input type="number" class="form-control"
-                                                       id="noOfResourcesInBundle"
-                                                       name="noOfResourcesInBundle">
+                                                <div class="form-group">
+                                                    <label>No of Resources in Bundle</label>
+                                                    <input type="number" class="form-control"
+                                                           id="noOfResourcesInBundle"
+                                                           name="noOfResourcesInBundle">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">Resource Filters</div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header">Resource Filters</div>
 
-                                        <div class="card-body">
-                                            <div class="form-group">
-                                                <label>Encounter Type UUIDS</label>
-                                                <input type="text" class="form-control" id="encounterTypeUUIDS"
-                                                       placeholder="comma separate encouter type uuids"
-                                                       name="encounterTypeUUIDS">
-                                            </div>
+                                            <div class="card-body">
+                                                <div class="form-group">
+                                                    <label>Encounter Type UUIDS</label>
+                                                    <input type="text" class="form-control" id="encounterTypeUUIDS"
+                                                           placeholder="comma separate encouter type uuids"
+                                                           name="encounterTypeUUIDS">
+                                                </div>
 
-                                            <div class="form-group">
-                                                <label>Observation Concept  UUIDS</label>
-                                                <input type="text" class="form-control"
-                                                       id="observationCodeUuids"
-                                                       placeholder="comma separate concept  uuids"
-                                                       name="observationCodeUuids">
-                                            </div>
+                                                <div class="form-group">
+                                                    <label>Observation Concept  UUIDS</label>
+                                                    <input type="text" class="form-control"
+                                                           id="observationCodeUuids"
+                                                           placeholder="comma separate concept  uuids"
+                                                           name="observationCodeUuids">
+                                                </div>
 
-                                            <div class="form-group">
-                                                <label>EpisodeOfCare (Program)  UUIDS</label>
-                                                <input type="text" class="form-control" id="episodeOfCareUuids"
-                                                       placeholder="comma separate program  uuids"
-                                                       name="episodeOfCareUuids">
+                                                <div class="form-group">
+                                                    <label>EpisodeOfCare (Program)  UUIDS</label>
+                                                    <input type="text" class="form-control" id="episodeOfCareUuids"
+                                                           placeholder="comma separate program  uuids"
+                                                           name="episodeOfCareUuids">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -439,37 +440,39 @@
                         </div>
 
                         <div class="tab-pane" id="sync-settings-section">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">Authentication and Authorization</div>
+                            <div class="container" style="margin-left: auto; margin-right: auto; width: 99%">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header">Authentication and Authorization</div>
 
-                                        <div class="card-body">
+                                            <div class="card-body">
 
-                                            <div class="form-group">
-                                                <label>URL</label>
-                                                <input type="text" class="form-control" id="url"
-                                                       placeholder="url or ip Address to Send Data to"
-                                                       name="url">
-                                            </div>
+                                                <div class="form-group">
+                                                    <label>URL</label>
+                                                    <input type="text" class="form-control" id="url"
+                                                           placeholder="url or ip Address to Send Data to"
+                                                           name="url">
+                                                </div>
 
-                                            <div class="form-group">
-                                                <label>Username</label>
-                                                <input type="text" class="form-control" id="username"
-                                                       placeholder="Username" name="username">
-                                            </div>
+                                                <div class="form-group">
+                                                    <label>Username</label>
+                                                    <input type="text" class="form-control" id="username"
+                                                           placeholder="Username" name="username">
+                                                </div>
 
 
-                                            <div class="form-group">
-                                                <label>Password</label>
-                                                <input type="password" class="form-control" id="password"
-                                                       placeholder="Password" name="password">
-                                            </div>
+                                                <div class="form-group">
+                                                    <label>Password</label>
+                                                    <input type="password" class="form-control" id="password"
+                                                           placeholder="Password" name="password">
+                                                </div>
 
-                                            <div class="form-group">
-                                                <label>Auth Token</label>
-                                                <input type="text" class="form-control" id="token"
-                                                       placeholder="token" name="token">
+                                                <div class="form-group">
+                                                    <label>Auth Token</label>
+                                                    <input type="text" class="form-control" id="token"
+                                                           placeholder="token" name="token">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
