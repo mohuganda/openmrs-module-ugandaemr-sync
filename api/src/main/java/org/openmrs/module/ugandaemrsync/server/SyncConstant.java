@@ -93,7 +93,109 @@ public class SyncConstant {
 
     public static final String VL_SEND_SAMPLE_FHIR_JSON_STRING = "{\"resourceType\":\"ServiceRequest\",\"locationCode\":\"%s\",\"locationReference\":\"%s\",\"code\":\"%s\",\"performerType\":\"????\",\"status\":\"active\",\"intent\":\"order\",\"subject\":{\"resourceType\":\"Location\",\"name\":\"%s\"},\"specimen\":[{\"subject\":{\"resourceType\":\"Patient\",\"identifier\":\"%s\"},\"resourceType\":\"Specimen\",\"identifier\":\"%s\",\"type\":\"%s\",\"status\":\"available\",\"collection\":{\"collectedDateTime\":\"%s\",\"collector\":{\"resourceType\":\"Practitioner\",\"name\":\"%s\",\"telecom\":\"%s\"}}}],\"requester\":{\"resourceType\":\"Practitioner\",\"name\":\"%s\",\"telecom\":\"%s\"},\"performer\":[{\"resourceType\":\"Organization\",\"endpoint\":\"%s\"}]}";
 
-	public static final String ALIS_SEND_SAMPLE_FHIR_JSON_STRING = "{\"resourceType\":\"ServiceRequest\",\"id\":\"%s\",\"status\":\"active\",\"intent\":\"order\",\"category\":[{\"coding\":[{\"system\":\"http://snomed.info/sct\",\"code\":\"108252007\",\"display\":\"Laboratory procedure\"}]}],\"code\":{\"coding\":[{\"system\":\"http://snomed.info/sct\",\"code\":\"407727009\",\"display\":\"Malaria antigen test (procedure) \"}],\"text\":\"Malaria RDT\"},\"subject\":{\"reference\":\"#12345\"},\"authoredOn\":\"2021-06-22\",\"requester\":{\"reference\":\"#9909\"},\"contained\":[{\"resourceType\":\"Patient\",\"id\":\"12345\",\"name\":[{\"family\":\"Kabogoza\",\"given\":[\"Enock\",\"Zilabamuzaale\"]}],\"birthDate\":\"1999-02-29\",\"gender\":\"male\",\"address\":[{\"city\":\"kawaala\"}],\"extension\":[{\"url\":\"http://labhie.cphluganda.org/fhir/patient-extension\",\"extension\":[{\"url\":\"nationality\",\"valueString\":\"National\"},{\"url\":\"ninOrPassportno\",\"valueString\":\"CF98993909398489\"},{\"url\":\"age\",\"valueAge\":{\"unit\":\"year\",\"value\":23}},{\"url\":\"occupation\",\"valueString\":\"business man\"}]}]},{\"resourceType\":\"Practitioner\",\"id\":\"9909\",\"name\":[{\"family\":\"Nalumaga\",\"given\":[\"Cissy\"]}],\"telecom\":[{\"system\":\"phone\",\"value\":\"0799808081\"},{\"system\":\"email\",\"value\":\"cnalumaga2021@gmail.com\"}]}]}";
+	public static final String ALIS_SEND_SAMPLE_FHIR_JSON_STRING = "{\n" +
+            "   \"resourceType\":\"ServiceRequest\",\n" +
+            "   \"id\":\"%s\",\n" +
+            "   \"status\":\"active\",\n" +
+            "   \"intent\":\"order\",\n" +
+            "   \"category\":[\n" +
+            "      {\n" +
+            "         \"coding\":[\n" +
+            "            {\n" +
+            "               \"system\":\"http://snomed.info/sct\",\n" +
+            "               \"code\":\"108252007\",\n" +
+            "               \"display\":\"Laboratory procedure\"\n" +
+            "            }\n" +
+            "         ]\n" +
+            "      }\n" +
+            "   ],\n" +
+            "   \"code\":{\n" +
+            "      \"coding\":[\n" +
+            "         {\n" +
+            "            \"system\":\"%s\",\n" +
+            "            \"code\":\"%s\",\n" +
+            "            \"display\":\"%s\"\n" +
+            "         }\n" +
+            "      ],\n" +
+            "      \"text\":\"%s\"\n" +
+            "   },\n" +
+            "   \"subject\":{\n" +
+            "      \"reference\":\"%s\"\n" +
+            "   },\n" +
+            "   \"authoredOn\":\"%s\",\n" +
+            "   \"requester\":{\n" +
+            "      \"reference\":\"%s\"\n" +
+            "   },\n" +
+            "   \"contained\":[\n" +
+            "      {\n" +
+            "         \"resourceType\":\"Patient\",\n" +
+            "         \"id\":\"%s\",\n" +
+            "         \"name\":[\n" +
+            "            {\n" +
+            "               \"family\":\"%s\",\n" +
+            "               \"given\":[\n" +
+            "                  \"%s\"\n" +
+            "               ]\n" +
+            "            }\n" +
+            "         ],\n" +
+            "         \"birthDate\":\"%s\",\n" +
+            "         \"gender\":\"%s\",\n" +
+            "         \"address\":[\n" +
+            "            {\n" +
+            "               \"city\":\"%s\"\n" +
+            "            }\n" +
+            "         ],\n" +
+            "         \"extension\":[\n" +
+            "            {\n" +
+            "               \"url\":\"http://labhie.cphluganda.org/fhir/patient-extension\",\n" +
+            "               \"extension\":[\n" +
+            "                  {\n" +
+            "                     \"url\":\"nationality\",\n" +
+            "                     \"valueString\":\"%s\"\n" +
+            "                  },\n" +
+            "                  {\n" +
+            "                     \"url\":\"ninOrPassportno\",\n" +
+            "                     \"valueString\":\"%S\"\n" +
+            "                  },\n" +
+            "                  {\n" +
+            "                     \"url\":\"age\",\n" +
+            "                     \"valueAge\":{\n" +
+            "                        \"unit\":\"%s\",\n" +
+            "                        \"value\":\"%s\"\n" +
+            "                     }\n" +
+            "                  },\n" +
+            "                  {\n" +
+            "                     \"url\":\"occupation\",\n" +
+            "                     \"valueString\":\"%s\"\n" +
+            "                  }\n" +
+            "               ]\n" +
+            "            }\n" +
+            "         ]\n" +
+            "      },\n" +
+            "      {\n" +
+            "         \"resourceType\":\"Practitioner\",\n" +
+            "         \"id\":\"%s\",\n" +
+            "         \"name\":[\n" +
+            "            {\n" +
+            "               \"family\":\"%s\",\n" +
+            "               \"given\":[\n" +
+            "                  \"%s\"\n" +
+            "               ]\n" +
+            "            }\n" +
+            "         ],\n" +
+            "         \"telecom\":[\n" +
+            "            {\n" +
+            "               \"system\":\"phone\",\n" +
+            "               \"value\":\"%s\"\n" +
+            "            },\n" +
+            "            {\n" +
+            "               \"system\":\"email\",\n" +
+            "               \"value\":\"%s\"\n" +
+            "            }\n" +
+            "         ]\n" +
+            "      }\n" +
+            "   ]\n" +
+            "}";
 
     public static final String VL_RECEIVE_RESULT_FHIR_JSON_STRING = "{\"resourceType\":\"ServiceRequest\",\"locationCode\":\"%s\",\"subject\":{\"resourceType\":\"Location\",\"name\":\"UgandaEMR\"},\"specimen\":[{\"subject\":{\"resourceType\":\"Patient\",\"identifier\":\"%s\"},\"resourceType\":\"Specimen\",\"identifier\":\"%s\"}]}";
 

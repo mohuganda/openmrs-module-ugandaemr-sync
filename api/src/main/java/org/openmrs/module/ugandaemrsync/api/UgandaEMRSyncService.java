@@ -9,22 +9,17 @@
  */
 package org.openmrs.module.ugandaemrsync.api;
 
-import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
-import org.openmrs.Patient;
-import org.openmrs.Order;
-import org.openmrs.annotation.Authorized;
+import org.openmrs.*;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
-import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
 import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The main service of this module, which is exposed for other modules. See
@@ -173,4 +168,12 @@ public interface UgandaEMRSyncService extends OpenmrsService {
 	 * @return the identifier that matches both the patient and the patient identifier type UUID
 	 */
 	public String getPatientIdentifier(Patient patient, String patientIdentifierTypeUUID);
+
+	public String getPatientIdentifier(Set<PersonName> names);
+
+	public String getPatientIdentifier(Date birthDateTime);
+
+	public String getPatientIdentifier(String gender);
+
+
 }

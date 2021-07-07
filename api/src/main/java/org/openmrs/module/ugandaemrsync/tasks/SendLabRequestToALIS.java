@@ -88,14 +88,15 @@ public class SendLabRequestToALIS extends AbstractTask {
         if (testOrder != null) {
 
             // need to aline these with the servicerequestFHIR json from ALIS
-
-            String healthCenterName = ugandaEMRSyncService.getHealthCenterName();
-            String healthCenterCode = ugandaEMRSyncService.getHealthCenterCode();
             String requestType = proccessMappings(testOrder.getConcept());
-            String sourceSystem = "UgandaEMR";
-            String patientARTNO = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient(),PATIENT_IDENTIFIER_TYPE);
-            String sampleID = testOrder.getAccessionNumber();
-            String sampleCollectionDate = testOrder.getEncounter().getEncounterDatetime().toString();
+
+            String patientID = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient(),PATIENT_IDENTIFIER_TYPE);
+            String patientName = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient().getNames());
+            String patientDOB = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient().getBirthDateTime());
+            String patientGender = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient().getGender());
+            String patientAddress = ugandaEMRSyncService.getPatientIdentifier((Date) testOrder.getPatient().getAddresses());
+            /*String sampleID = testOrder.getAccessionNumber();*/
+            String authoredOn = testOrder.getEncounter().getEncounterDatetime().toString();
             String clinicianNames = testOrder.getOrderer().getName();
             String labTechNames = testOrder.getCreator().getPersonName().getFullName();
             String labTechContact = "None";
@@ -110,11 +111,13 @@ public class SendLabRequestToALIS extends AbstractTask {
                 ordererContact = getProviderAttributeValue(testOrder.getOrderer().getActiveAttributes());
             }
 
-            filledJsonFile = String.format(jsonFHIRMap, healthCenterCode, healthCenterName, requestType, sourceSystem, patientARTNO, sampleID, obsSampleType, sampleCollectionDate, labTechNames, labTechContact, clinicianNames, ordererContact, "CPHL");
+            filledJsonFile = String.format(jsonFHIRMap, requestType, patientID, patientName,patientDOB, patientGender,patientAddress,authoredOn,obsSampleType, labTechNames, labTechContact, clinicianNames, ordererContact);
+
         }
         jsonMap.put("json", filledJsonFile);
-        System.out.print(filledJsonFile);
+        System.out.print(jsonMap);
         return jsonMap;
+
     }
 
     private String proccessMappings(Concept concept) {
