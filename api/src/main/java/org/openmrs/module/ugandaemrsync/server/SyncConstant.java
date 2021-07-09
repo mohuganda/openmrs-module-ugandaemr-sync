@@ -103,8 +103,8 @@ public class SyncConstant {
             "         \"coding\":[\n" +
             "            {\n" +
             "               \"system\":\"http://snomed.info/sct\",\n" +
-            "               \"code\":\"108252007\",\n" +
-            "               \"display\":\"Laboratory procedure\"\n" +
+            "               \"code\":\"%s\",\n" +
+            "               \"display\":\"%s\"\n" +
             "            }\n" +
             "         ]\n" +
             "      }\n" +
@@ -112,7 +112,7 @@ public class SyncConstant {
             "   \"code\":{\n" +
             "      \"coding\":[\n" +
             "         {\n" +
-            "            \"system\":\"%s\",\n" +
+            "            \"system\":\"http://snomed.info/sct\",\n" +
             "            \"code\":\"%s\",\n" +
             "            \"display\":\"%s\"\n" +
             "         }\n" +
@@ -120,11 +120,11 @@ public class SyncConstant {
             "      \"text\":\"%s\"\n" +
             "   },\n" +
             "   \"subject\":{\n" +
-            "      \"reference\":\"%s\"\n" +
+            "      \"reference\":\"#%s\"\n" +
             "   },\n" +
             "   \"authoredOn\":\"%s\",\n" +
             "   \"requester\":{\n" +
-            "      \"reference\":\"%s\"\n" +
+            "      \"reference\":\"#%s\"\n" +
             "   },\n" +
             "   \"contained\":[\n" +
             "      {\n" +
@@ -133,9 +133,7 @@ public class SyncConstant {
             "         \"name\":[\n" +
             "            {\n" +
             "               \"family\":\"%s\",\n" +
-            "               \"given\":[\n" +
-            "                  \"%s\"\n" +
-            "               ]\n" +
+            "               \"given\":[%s]\n" +
             "            }\n" +
             "         ],\n" +
             "         \"birthDate\":\"%s\",\n" +
@@ -155,7 +153,7 @@ public class SyncConstant {
             "                  },\n" +
             "                  {\n" +
             "                     \"url\":\"ninOrPassportno\",\n" +
-            "                     \"valueString\":\"%S\"\n" +
+            "                     \"valueString\":\"%s\"\n" +
             "                  },\n" +
             "                  {\n" +
             "                     \"url\":\"age\",\n" +
@@ -178,9 +176,7 @@ public class SyncConstant {
             "         \"name\":[\n" +
             "            {\n" +
             "               \"family\":\"%s\",\n" +
-            "               \"given\":[\n" +
-            "                  \"%s\"\n" +
-            "               ]\n" +
+            "               \"given\":[%s]\n" +
             "            }\n" +
             "         ],\n" +
             "         \"telecom\":[\n" +

@@ -169,11 +169,4 @@ public interface UgandaEMRSyncService extends OpenmrsService {
 	 */
 	public String getPatientIdentifier(Patient patient, String patientIdentifierTypeUUID);
 
-	public String getPatientIdentifier(Set<PersonName> names);
-
-	public String getPatientIdentifier(Date birthDateTime);
-
-	public String getPatientIdentifier(String gender);
-
-
 }

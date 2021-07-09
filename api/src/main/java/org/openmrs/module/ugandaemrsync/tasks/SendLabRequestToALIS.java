@@ -90,17 +90,30 @@ public class SendLabRequestToALIS extends AbstractTask {
             // need to aline these with the servicerequestFHIR json from ALIS
             String requestType = proccessMappings(testOrder.getConcept());
 
-            String patientID = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient(),PATIENT_IDENTIFIER_TYPE);
-            String patientName = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient().getNames());
-            String patientDOB = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient().getBirthDateTime());
-            String patientGender = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient().getGender());
-            String patientAddress = ugandaEMRSyncService.getPatientIdentifier((Date) testOrder.getPatient().getAddresses());
-            /*String sampleID = testOrder.getAccessionNumber();*/
+            /*authoredOn*/
             String authoredOn = testOrder.getEncounter().getEncounterDatetime().toString();
+
+            //requester
             String clinicianNames = testOrder.getOrderer().getName();
+            String ordererContact = "None";
+
+
+            // patient container stuff
+            String patientID = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient(),PATIENT_IDENTIFIER_TYPE);
+            String patientName = testOrder.getPatient().getNames().toString();
+            String patientDOB = testOrder.getPatient().getBirthDateTime().toString();
+            String patientGender = testOrder.getPatient().getGender();
+            String patientAddress = testOrder.getPatient().getAddresses().toString();
+            String patientNationality = testOrder.getPatient().getAttribute(24).getValue();
+            String patientNationalID = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient(),"f0c16a6d-dc5f-4118-a803-616d0075d282");
+            String patientOccupation = testOrder.getPatient().getAttribute(23).getValue();
+            String patientAge = testOrder.getPatient().getAge().toString();
+
+            //Practitioner
             String labTechNames = testOrder.getCreator().getPersonName().getFullName();
             String labTechContact = "None";
-            String ordererContact = "None";
+            String labID = testOrder.getCreator().getPerson().getPersonId().toString();
+            String email =  testOrder.getCreator().getPerson().getAddresses().toString();
 
             if (getProviderAttributeValue(Objects.requireNonNull(getProviderAppributesFromPerson(testOrder.getCreator().getPerson()))) != null) {
                 labTechContact = getProviderAttributeValue(Objects.requireNonNull(getProviderAppributesFromPerson(testOrder.getCreator().getPerson())));
@@ -111,7 +124,7 @@ public class SendLabRequestToALIS extends AbstractTask {
                 ordererContact = getProviderAttributeValue(testOrder.getOrderer().getActiveAttributes());
             }
 
-            filledJsonFile = String.format(jsonFHIRMap, requestType, patientID, patientName,patientDOB, patientGender,patientAddress,authoredOn,obsSampleType, labTechNames, labTechContact, clinicianNames, ordererContact);
+            filledJsonFile = String.format(jsonFHIRMap, requestType,clinicianNames, authoredOn,obsSampleType, patientID, patientName,patientDOB, patientGender,patientAddress,patientNationality,patientNationalID,patientOccupation,patientAge,labTechNames, labTechContact);
 
         }
         jsonMap.put("json", filledJsonFile);
@@ -143,7 +156,7 @@ public class SendLabRequestToALIS extends AbstractTask {
         if (list.size() > 0) {
             for (Object o : list) {
                 Order order = orderService.getOrder(Integer.parseUnsignedInt(((ArrayList) o).get(0).toString()));
-                if (order.getAccessionNumber() != null && order.isActive()) {
+                if (order.isActive()) {
                     orders.add(order);
                 }
             }
