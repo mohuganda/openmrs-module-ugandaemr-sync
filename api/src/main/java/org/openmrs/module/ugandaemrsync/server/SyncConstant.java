@@ -71,7 +71,7 @@ public class SyncConstant {
     public static final String VIRAL_LOAD_SYNC_TYPE_UUID = "3551ca84-06c0-432b-9064-fcfeefd6f4ec";
     public static final String FHIRSERVER_SYNC_TASK_TYPE_UUID = "3c1ce940-8ade-11ea-bc55-0242ac130003";
     public static final String VIRAL_LOAD_RESULT_PULL_TYPE_UUID = "3396dcf0-2106-4e73-9b90-c63978c3a8b4";
-	public static final String ALIS_TESTS_SYNC_TYPE_UUID = "64078546-cd3a-4669-96a4-a8d0722b7be7";
+	public static final String ALIS_TESTS_SYNC_TYPE_UUID = "e036a1e7-4490-4409-9a52-7a778fb550e4";
 
     public static final String PATIENT_IDENTIFIER_TYPE = "e1731641-30ab-102d-86b0-7a5022ba4115";
 
@@ -553,7 +553,9 @@ public class SyncConstant {
 
     public static final String VIRAL_LOAD_ORDERS_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) inner JOIN concept ON (orders.concept_id = concept.concept_id) inner join concept_reference_map on (concept.concept_id = concept_reference_map.concept_id) inner join concept_reference_term on (concept_reference_map.concept_reference_term_id = concept_reference_term.concept_reference_term_id) where accession_number!=\"\" AND specimen_source!=\"\" AND orders.instructions=\"REFER TO cphl\" AND code=\"" + VIRAL_LOAD_SYNC_TASK_TYPE_IDENTIFIER + "\"";
 
-	public static final String LAB_ORDERS_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) inner JOIN concept ON (orders.concept_id = concept.concept_id) inner join concept_reference_map on (concept.concept_id = concept_reference_map.concept_id) inner join concept_reference_term on (concept_reference_map.concept_reference_term_id = concept_reference_term.concept_reference_term_id)";
+	//public static final String LAB_ORDERS_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) inner JOIN concept ON (orders.concept_id = concept.concept_id) inner join concept_reference_map on (concept.concept_id = concept_reference_map.concept_id) inner join concept_reference_term on (concept_reference_map.concept_reference_term_id = concept_reference_term.concept_reference_term_id)";
+
+	public static final String ALIS_LAB_TEST_QUERY ="select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) inner JOIN concept ON (orders.concept_id = concept.concept_id) WHERE orders.concept_id !='165412' AND accession_number!=\"\" AND order_action =\"REVISE\"";
 
     public static final String VIRAL_LOAD_ORDER_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) where accession_number=\"%s\"";
 

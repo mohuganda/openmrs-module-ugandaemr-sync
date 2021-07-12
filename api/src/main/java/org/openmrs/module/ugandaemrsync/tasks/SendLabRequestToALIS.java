@@ -39,6 +39,8 @@ public class SendLabRequestToALIS extends AbstractTask {
 
         try {
             orderList = getOrders();
+            System.out.print(orderList);
+
         } catch (IOException e) {
             log.error("Failed to get orders", e);
         } catch (ParseException e) {
@@ -90,6 +92,8 @@ public class SendLabRequestToALIS extends AbstractTask {
             // need to aline these with the servicerequestFHIR json from ALIS
             String requestType = proccessMappings(testOrder.getConcept());
 
+            // subject
+
             /*authoredOn*/
             String authoredOn = testOrder.getEncounter().getEncounterDatetime().toString();
 
@@ -101,7 +105,7 @@ public class SendLabRequestToALIS extends AbstractTask {
             // patient container stuff
             String patientID = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient(),PATIENT_IDENTIFIER_TYPE);
             String patientName = testOrder.getPatient().getNames().toString();
-            String patientDOB = testOrder.getPatient().getBirthDateTime().toString();
+            String patientDOB = "1983-07-12";
             String patientGender = testOrder.getPatient().getGender();
             String patientAddress = testOrder.getPatient().getAddresses().toString();
             String patientNationality = testOrder.getPatient().getAttribute(24).getValue();
@@ -124,8 +128,8 @@ public class SendLabRequestToALIS extends AbstractTask {
                 ordererContact = getProviderAttributeValue(testOrder.getOrderer().getActiveAttributes());
             }
 
-            filledJsonFile = String.format(jsonFHIRMap, requestType,clinicianNames, authoredOn,obsSampleType, patientID, patientName,patientDOB, patientGender,patientAddress,patientNationality,patientNationalID,patientOccupation,patientAge,labTechNames, labTechContact);
-
+            filledJsonFile = String.format(jsonFHIRMap, requestType,clinicianNames, authoredOn,obsSampleType,     patientID, patientName,patientDOB, patientGender,patientAddress,patientNationality,patientNationalID,patientOccupation,patientAge,labTechNames, labTechContact);
+            System.out.print(filledJsonFile);
         }
         jsonMap.put("json", filledJsonFile);
         System.out.print(jsonMap);
@@ -152,11 +156,11 @@ public class SendLabRequestToALIS extends AbstractTask {
     public List<Order> getOrders() throws IOException, ParseException {
         OrderService orderService = Context.getOrderService();
         List<Order> orders = new ArrayList<>();
-        List list = Context.getAdministrationService().executeSQL(LAB_ORDERS_QUERY, true);
+        List list = Context.getAdministrationService().executeSQL(ALIS_LAB_TEST_QUERY, true);
         if (list.size() > 0) {
             for (Object o : list) {
                 Order order = orderService.getOrder(Integer.parseUnsignedInt(((ArrayList) o).get(0).toString()));
-                if (order.isActive()) {
+                if (order.getAccessionNumber() != null && order.isActive()) {
                     orders.add(order);
                 }
             }
