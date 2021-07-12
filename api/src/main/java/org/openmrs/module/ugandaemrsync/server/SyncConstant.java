@@ -94,104 +94,49 @@ public class SyncConstant {
     public static final String VL_SEND_SAMPLE_FHIR_JSON_STRING = "{\"resourceType\":\"ServiceRequest\",\"locationCode\":\"%s\",\"locationReference\":\"%s\",\"code\":\"%s\",\"performerType\":\"????\",\"status\":\"active\",\"intent\":\"order\",\"subject\":{\"resourceType\":\"Location\",\"name\":\"%s\"},\"specimen\":[{\"subject\":{\"resourceType\":\"Patient\",\"identifier\":\"%s\"},\"resourceType\":\"Specimen\",\"identifier\":\"%s\",\"type\":\"%s\",\"status\":\"available\",\"collection\":{\"collectedDateTime\":\"%s\",\"collector\":{\"resourceType\":\"Practitioner\",\"name\":\"%s\",\"telecom\":\"%s\"}}}],\"requester\":{\"resourceType\":\"Practitioner\",\"name\":\"%s\",\"telecom\":\"%s\"},\"performer\":[{\"resourceType\":\"Organization\",\"endpoint\":\"%s\"}]}";
 
 	public static final String ALIS_SEND_SAMPLE_FHIR_JSON_STRING = "{\n" +
-            "   \"resourceType\":\"ServiceRequest\",\n" +
-            "   \"id\":\"%s\",\n" +
-            "   \"status\":\"active\",\n" +
-            "   \"intent\":\"order\",\n" +
-            "   \"category\":[\n" +
-            "      {\n" +
-            "         \"coding\":[\n" +
-            "            {\n" +
-            "               \"system\":\"http://snomed.info/sct\",\n" +
-            "               \"code\":\"%s\",\n" +
-            "               \"display\":\"%s\"\n" +
-            "            }\n" +
-            "         ]\n" +
-            "      }\n" +
-            "   ],\n" +
-            "   \"code\":{\n" +
-            "      \"coding\":[\n" +
-            "         {\n" +
-            "            \"system\":\"http://snomed.info/sct\",\n" +
-            "            \"code\":\"%s\",\n" +
-            "            \"display\":\"%s\"\n" +
-            "         }\n" +
-            "      ],\n" +
-            "      \"text\":\"%s\"\n" +
-            "   },\n" +
-            "   \"subject\":{\n" +
-            "      \"reference\":\"#%s\"\n" +
-            "   },\n" +
-            "   \"authoredOn\":\"%s\",\n" +
-            "   \"requester\":{\n" +
-            "      \"reference\":\"#%s\"\n" +
-            "   },\n" +
-            "   \"contained\":[\n" +
-            "      {\n" +
-            "         \"resourceType\":\"Patient\",\n" +
-            "         \"id\":\"%s\",\n" +
-            "         \"name\":[\n" +
-            "            {\n" +
-            "               \"family\":\"%s\",\n" +
-            "               \"given\":[%s]\n" +
-            "            }\n" +
-            "         ],\n" +
-            "         \"birthDate\":\"%s\",\n" +
-            "         \"gender\":\"%s\",\n" +
-            "         \"address\":[\n" +
-            "            {\n" +
-            "               \"city\":\"%s\"\n" +
-            "            }\n" +
-            "         ],\n" +
-            "         \"extension\":[\n" +
-            "            {\n" +
-            "               \"url\":\"http://labhie.cphluganda.org/fhir/patient-extension\",\n" +
-            "               \"extension\":[\n" +
-            "                  {\n" +
-            "                     \"url\":\"nationality\",\n" +
-            "                     \"valueString\":\"%s\"\n" +
-            "                  },\n" +
-            "                  {\n" +
-            "                     \"url\":\"ninOrPassportno\",\n" +
-            "                     \"valueString\":\"%s\"\n" +
-            "                  },\n" +
-            "                  {\n" +
-            "                     \"url\":\"age\",\n" +
-            "                     \"valueAge\":{\n" +
-            "                        \"unit\":\"%s\",\n" +
-            "                        \"value\":\"%s\"\n" +
-            "                     }\n" +
-            "                  },\n" +
-            "                  {\n" +
-            "                     \"url\":\"occupation\",\n" +
-            "                     \"valueString\":\"%s\"\n" +
-            "                  }\n" +
-            "               ]\n" +
-            "            }\n" +
-            "         ]\n" +
-            "      },\n" +
-            "      {\n" +
-            "         \"resourceType\":\"Practitioner\",\n" +
-            "         \"id\":\"%s\",\n" +
-            "         \"name\":[\n" +
-            "            {\n" +
-            "               \"family\":\"%s\",\n" +
-            "               \"given\":[%s]\n" +
-            "            }\n" +
-            "         ],\n" +
-            "         \"telecom\":[\n" +
-            "            {\n" +
-            "               \"system\":\"phone\",\n" +
-            "               \"value\":\"%s\"\n" +
-            "            },\n" +
-            "            {\n" +
-            "               \"system\":\"email\",\n" +
-            "               \"value\":\"%s\"\n" +
-            "            }\n" +
-            "         ]\n" +
-            "      }\n" +
-            "   ]\n" +
-            "}";
+			"            \"resourceType\":\"Patient\",\n" +
+			"            \"id\": \"12345\",\n" +
+			"            \"name\": [\n" +
+			"                {\n" +
+			"                    \"family\": \"Kabogoza\",\n" +
+			"                    \"given\": [\"Enock\",\"Zilabamuzaale\" ]\n" +
+			"                }\n" +
+			"            ],\n" +
+			"            \"birthDate\": \"1999-02-29\",\n" +
+			"            \"gender\": \"male\",\n" +
+			"            \"address\": [\n" +
+			"                {\n" +
+			"                    \"city\": \"kawaala\"\n" +
+			"                }\n" +
+			"            ],\n" +
+			"            \"extension\": [\n" +
+			"                {\n" +
+			"                    \"url\": \"http://labhie.cphluganda.org/fhir/patient-extension\",\n" +
+			"                    \"extension\": [\n" +
+			"                        {\n" +
+			"                            \"url\": \"nationality\",\n" +
+			"                            \"valueString\": \"National\"\n" +
+			"                        },\n" +
+			"                        {\n" +
+			"                            \"url\": \"ninOrPassportno\",\n" +
+			"                            \"valueString\": \"CF98993909398489\"\n" +
+			"                        },\n" +
+			"                        {\n" +
+			"                            \"url\": \"age\",\n" +
+			"                            \"valueAge\": {\n" +
+			"                                \"unit\": \"year\",\n" +
+			"                                \"value\": 23\n" +
+			"                            }\n" +
+			"                        },\n" +
+			"                        {\n" +
+			"                            \"url\": \"occupation\",\n" +
+			"                            \"valueString\": \"business man\"\n" +
+			"                        }\n" +
+			"                    ]\n" +
+			"                }\n" +
+			"            ]\n" +
+			"            \n" +
+			"        }";
 
     public static final String VL_RECEIVE_RESULT_FHIR_JSON_STRING = "{\"resourceType\":\"ServiceRequest\",\"locationCode\":\"%s\",\"subject\":{\"resourceType\":\"Location\",\"name\":\"UgandaEMR\"},\"specimen\":[{\"subject\":{\"resourceType\":\"Patient\",\"identifier\":\"%s\"},\"resourceType\":\"Specimen\",\"identifier\":\"%s\"}]}";
 

@@ -108,9 +108,11 @@ public class SendLabRequestToALIS extends AbstractTask {
             String patientDOB = "1983-07-12";
             String patientGender = testOrder.getPatient().getGender();
             String patientAddress = testOrder.getPatient().getAddresses().toString();
-            String patientNationality = testOrder.getPatient().getAttribute(24).getValue();
+           // String patientNationality = testOrder.getPatient().getAttribute(24).getValue();
+            String patientNationality = "National";
             String patientNationalID = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient(),"f0c16a6d-dc5f-4118-a803-616d0075d282");
-            String patientOccupation = testOrder.getPatient().getAttribute(23).getValue();
+           // String patientOccupation = testOrder.getPatient().getAttribute(23).getValue();
+            String patientOccupation = "Test";
             String patientAge = testOrder.getPatient().getAge().toString();
 
             //Practitioner
