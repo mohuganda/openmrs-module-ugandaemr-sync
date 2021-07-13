@@ -40,10 +40,7 @@ import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig;
 import org.openmrs.notification.Alert;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -522,5 +519,29 @@ public class UgandaEMRHttpURLConnection {
                 .custom()
                 .setSSLSocketFactory(connectionFactory)
                 .build();
+    }
+
+    public String getJson(String url) {
+        URLConnection request = null;
+        try {
+            URL u = new URL(url);
+            request = u.openConnection();
+            request.connect();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+            br.close();
+            return sb.toString();
+
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }
