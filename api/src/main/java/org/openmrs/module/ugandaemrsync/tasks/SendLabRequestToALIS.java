@@ -10,6 +10,7 @@ import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
 import org.openmrs.module.ugandaemrsync.api.impl.UgandaEMRSyncServiceImpl;
 import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
+import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.module.ugandaemrsync.util.UgandaEMRSyncUtil;
 import org.openmrs.scheduler.tasks.AbstractTask;
 
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
+import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.ALIS_SERVER_URL;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.*;
 
 /**
@@ -26,6 +28,7 @@ import static org.openmrs.module.ugandaemrsync.server.SyncConstant.*;
 public class SendLabRequestToALIS extends AbstractTask {
 
     protected Log log = LogFactory.getLog(SendLabRequestToALIS.class);
+    SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 
     @Override
     public void execute() {
@@ -36,10 +39,15 @@ public class SendLabRequestToALIS extends AbstractTask {
         if (!ugandaEMRHttpURLConnection.isConnectionAvailable()) {
             return;
         }
+        String ALIS_ServerUrlEndPoint = syncGlobalProperties.getGlobalProperty(ALIS_SERVER_URL);
+        String ALISBaseUrl = ugandaEMRHttpURLConnection.getBaseURL(ALIS_ServerUrlEndPoint);
+
+        if (!ugandaEMRHttpURLConnection.isServerAvailable(ALISBaseUrl)) {
+            return;
+        }
 
         try {
             orderList = getOrders();
-            System.out.print(orderList);
 
         } catch (IOException e) {
             log.error("Failed to get orders", e);
@@ -49,31 +57,34 @@ public class SendLabRequestToALIS extends AbstractTask {
 
         SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(ALIS_TESTS_SYNC_TYPE_UUID);
 
-        for (Order order : orderList) {
-            SyncTask syncTask = ugandaEMRSyncService.getSyncTaskBySyncTaskId(order.getAccessionNumber());
-            if (syncTask == null) {
-                Map<String, String> dataOutput = generateLabFHIROrderTestRequestBody((TestOrder) order, ALIS_SEND_SAMPLE_FHIR_JSON_STRING);
-                String json = dataOutput.get("json");
-                try {
-                    Map map = ugandaEMRHttpURLConnection.sendPostBy(syncTaskType.getUrl(), syncTaskType.getUrlUserName(), syncTaskType.getUrlPassword(), "", json, false);
-                    if ((map != null) && UgandaEMRSyncUtil.getSuccessCodeList().contains(map.get("responseCode"))) {
-                        SyncTask newSyncTask = new SyncTask();
-                        newSyncTask.setDateSent(new Date());
-                        newSyncTask.setCreator(Context.getUserService().getUser(1));
-                        newSyncTask.setSentToUrl(syncTaskType.getUrl());
-                        newSyncTask.setRequireAction(true);
-                        newSyncTask.setActionCompleted(false);
-                        newSyncTask.setSyncTask(order.getAccessionNumber());
-                        newSyncTask.setStatusCode((Integer) map.get("responseCode"));
-                        newSyncTask.setStatus("SUCCESS");
-                        newSyncTask.setSyncTaskType(ugandaEMRSyncService.getSyncTaskTypeByUUID(ALIS_TESTS_SYNC_TYPE_UUID));
-                        ugandaEMRSyncService.saveSyncTask(newSyncTask);
+        if (orderList != null){
+            for (Order order : orderList) {
+                SyncTask syncTask = ugandaEMRSyncService.getSyncTaskBySyncTaskId(order.getAccessionNumber());
+                if (syncTask == null) {
+                    Map<String, String> dataOutput = generateLabFHIROrderTestRequestBody((TestOrder) order, UGANDAEMR_ALIS_FHIR_PATIANT_JSON_STRING);
+                    String json = dataOutput.get("json");
+                    try {
+                        Map map = ugandaEMRHttpURLConnection.sendPostBy(syncTaskType.getUrl(), syncTaskType.getUrlUserName(), syncTaskType.getUrlPassword(), "", json, false);
+                        if ((map != null) && UgandaEMRSyncUtil.getSuccessCodeList().contains(map.get("responseCode"))) {
+                            SyncTask newSyncTask = new SyncTask();
+                            newSyncTask.setDateSent(new Date());
+                            newSyncTask.setCreator(Context.getUserService().getUser(1));
+                            newSyncTask.setSentToUrl(syncTaskType.getUrl());
+                            newSyncTask.setRequireAction(true);
+                            newSyncTask.setActionCompleted(false);
+                            newSyncTask.setSyncTask(order.getAccessionNumber());
+                            newSyncTask.setStatusCode((Integer) map.get("responseCode"));
+                            newSyncTask.setStatus("SUCCESS");
+                            newSyncTask.setSyncTaskType(ugandaEMRSyncService.getSyncTaskTypeByUUID(ALIS_TESTS_SYNC_TYPE_UUID));
+                            ugandaEMRSyncService.saveSyncTask(newSyncTask);
+                        }
+                    } catch (Exception e) {
+                        log.error("Faied to create sync task",e);
                     }
-                } catch (Exception e) {
-                    log.error("Faied to create sync task",e);
                 }
             }
         }
+
     }
 
     /**
@@ -87,6 +98,7 @@ public class SendLabRequestToALIS extends AbstractTask {
         Map<String, String> jsonMap = new HashMap<>();
         UgandaEMRSyncService ugandaEMRSyncService = new UgandaEMRSyncServiceImpl();
         String filledJsonFile = "";
+        System.out.print("See my orders:-"+testOrder);
         if (testOrder != null) {
 
             // need to aline these with the servicerequestFHIR json from ALIS
@@ -104,18 +116,21 @@ public class SendLabRequestToALIS extends AbstractTask {
 
             // patient container stuff
             String patientID = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient(),PATIENT_IDENTIFIER_TYPE);
-            String patientName = testOrder.getPatient().getNames().toString();
-            String patientDOB = "1983-07-12";
+            String patientfamilyName = testOrder.getPatient().getFamilyName();
+            String patientgivenName = testOrder.getPatient().getGivenName()+" "+testOrder.getPatient().getMiddleName();
+            //String patientNames = patientfamilyName+""+patientgivenName;
+            String patientNames = testOrder.getPatient().getNames().toString();
+            String patientDOB = testOrder.getPatient().getBirthdate().toString();
             String patientGender = testOrder.getPatient().getGender();
-            String patientAddress = testOrder.getPatient().getAddresses().toString();
-           // String patientNationality = testOrder.getPatient().getAttribute(24).getValue();
+            String patientAddress = testOrder.getPatient().getPersonAddress().getCityVillage();
+            //String patientNationality = testOrder.getPatient().getAttribute(24).getValue();
             String patientNationality = "National";
             String patientNationalID = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient(),"f0c16a6d-dc5f-4118-a803-616d0075d282");
-           // String patientOccupation = testOrder.getPatient().getAttribute(23).getValue();
-            String patientOccupation = "Test";
+            //String patientOccupation = testOrder.getPatient().getAttribute(23).getValue();
+            String patientOccupation = "ICT";
             String patientAge = testOrder.getPatient().getAge().toString();
 
-            //Practitioner
+            // Practitioner
             String labTechNames = testOrder.getCreator().getPersonName().getFullName();
             String labTechContact = "None";
             String labID = testOrder.getCreator().getPerson().getPersonId().toString();
@@ -130,7 +145,8 @@ public class SendLabRequestToALIS extends AbstractTask {
                 ordererContact = getProviderAttributeValue(testOrder.getOrderer().getActiveAttributes());
             }
 
-            filledJsonFile = String.format(jsonFHIRMap, requestType,clinicianNames, authoredOn,obsSampleType,     patientID, patientName,patientDOB, patientGender,patientAddress,patientNationality,patientNationalID,patientOccupation,patientAge,labTechNames, labTechContact);
+            //filledJsonFile = String.format(jsonFHIRMap, requestType,clinicianNames, authoredOn,obsSampleType,     patientID, patientName,patientDOB, patientGender,patientAddress,patientNationality,patientNationalID,patientOccupation,patientAge,labTechNames, labTechContact);
+            filledJsonFile = String.format(jsonFHIRMap, requestType,patientID, patientNames,patientDOB, patientGender,patientAddress,patientNationality,patientNationalID,patientAge,patientOccupation);
             System.out.print(filledJsonFile);
         }
         jsonMap.put("json", filledJsonFile);

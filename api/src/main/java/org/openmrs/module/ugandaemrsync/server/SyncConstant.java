@@ -93,6 +93,50 @@ public class SyncConstant {
 
     public static final String VL_SEND_SAMPLE_FHIR_JSON_STRING = "{\"resourceType\":\"ServiceRequest\",\"locationCode\":\"%s\",\"locationReference\":\"%s\",\"code\":\"%s\",\"performerType\":\"????\",\"status\":\"active\",\"intent\":\"order\",\"subject\":{\"resourceType\":\"Location\",\"name\":\"%s\"},\"specimen\":[{\"subject\":{\"resourceType\":\"Patient\",\"identifier\":\"%s\"},\"resourceType\":\"Specimen\",\"identifier\":\"%s\",\"type\":\"%s\",\"status\":\"available\",\"collection\":{\"collectedDateTime\":\"%s\",\"collector\":{\"resourceType\":\"Practitioner\",\"name\":\"%s\",\"telecom\":\"%s\"}}}],\"requester\":{\"resourceType\":\"Practitioner\",\"name\":\"%s\",\"telecom\":\"%s\"},\"performer\":[{\"resourceType\":\"Organization\",\"endpoint\":\"%s\"}]}";
 
+    public static final String UGANDAEMR_ALIS_FHIR_PATIANT_JSON_STRING = "{\n" +
+			"            \"resourceType\":\"Patient\",\n" +
+			"            \"id\": \"%s\",\n" +
+			"            \"name\": [\n" +
+			"                {\n" +
+			"                    \"family\": \"%s\",\n" +
+			"                    \"given\": [\"%s\" ]\n" +
+			"                }\n" +
+			"            ],\n" +
+			"            \"birthDate\": \"%s\",\n" +
+			"            \"gender\": \"%s\",\n" +
+			"            \"address\": [\n" +
+			"                {\n" +
+			"                    \"city\": \"%s\"\n" +
+			"                }\n" +
+			"            ],\n" +
+			"            \"extension\": [\n" +
+			"                {\n" +
+			"                    \"url\": \"http://labhie.cphluganda.org/fhir/patient-extension\",\n" +
+			"                    \"extension\": [\n" +
+			"                        {\n" +
+			"                            \"url\": \"nationality\",\n" +
+			"                            \"valueString\": \"%s\"\n" +
+			"                        },\n" +
+			"                        {\n" +
+			"                            \"url\": \"ninOrPassportno\",\n" +
+			"                            \"valueString\": \"%s\"\n" +
+			"                        },\n" +
+			"                        {\n" +
+			"                            \"url\": \"age\",\n" +
+			"                            \"valueAge\": {\n" +
+			"                                \"unit\": \"year\",\n" +
+			"                                \"value\": %s\n" +
+			"                            }\n" +
+			"                        },\n" +
+			"                        {\n" +
+			"                            \"url\": \"occupation\",\n" +
+			"                            \"valueString\": \"%s\"\n" +
+			"                        }\n" +
+			"                    ]\n" +
+			"                }\n" +
+			"            ]\n" +
+			"\n" +
+			"        }";
 	public static final String ALIS_SEND_SAMPLE_FHIR_JSON_STRING = "{\n" +
 			"            \"resourceType\":\"Patient\",\n" +
 			"            \"id\": \"12345\",\n" +
@@ -501,6 +545,8 @@ public class SyncConstant {
 	//public static final String LAB_ORDERS_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) inner JOIN concept ON (orders.concept_id = concept.concept_id) inner join concept_reference_map on (concept.concept_id = concept_reference_map.concept_id) inner join concept_reference_term on (concept_reference_map.concept_reference_term_id = concept_reference_term.concept_reference_term_id)";
 
 	public static final String ALIS_LAB_TEST_QUERY ="select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) inner JOIN concept ON (orders.concept_id = concept.concept_id) WHERE orders.concept_id !='165412' AND accession_number!=\"\" AND order_action =\"REVISE\"";
+
+	public static final String ALIS_LAB_TEST_ORDER_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) where accession_number=\"%s\"";
 
     public static final String VIRAL_LOAD_ORDER_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) where accession_number=\"%s\"";
 
