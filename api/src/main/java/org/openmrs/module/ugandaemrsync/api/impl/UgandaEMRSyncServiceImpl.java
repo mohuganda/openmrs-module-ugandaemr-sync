@@ -15,6 +15,7 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.event.api.db.hibernate.HibernateEventInterceptor;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
@@ -359,41 +360,44 @@ public class UgandaEMRSyncServiceImpl extends BaseOpenmrsService implements Ugan
     }
 
 
-    @Override
-    public SyncFHIRProfile saveSyncFHIRProfile(SyncFHIRProfile syncFHIRProfile) {
-        return dao.saveSyncFHIRProfile(syncFHIRProfile);
+    /**
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveSyncFhirProfile(SyncFhirProfile)
+     */
+    @Transactional
+    public SyncFhirProfile saveSyncFhirProfile(SyncFhirProfile syncFhirProfile) {
+        return dao.saveSyncFhirProfile(syncFhirProfile);
     }
 
     /**
-     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFHIRProfileById(java.lang.Integer)
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFhirProfileById(java.lang.Integer)
      */
     @Override
-    public SyncFHIRProfile getSyncFHIRProfileById(Integer id) {
-        return dao.getSyncFHIRProfileById(id);
+    public SyncFhirProfile getSyncFhirProfileById(Integer id) {
+        return dao.getSyncFhirProfileById(id);
     }
 
     /**
-     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFHIRProfileByUUID(java.lang.String)
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFhirProfileByUUID(java.lang.String)
      */
     @Override
-    public SyncFHIRProfile getSyncFHIRProfileByUUID(String uuid) {
-        return dao.getSyncFHIRProfileByUUID(uuid);
+    public SyncFhirProfile getSyncFhirProfileByUUID(String uuid) {
+        return dao.getSyncFhirProfileByUUID(uuid);
     }
 
 
     /**
-     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFHIRProfileByScheduledTaskName(java.lang.String)
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFhirProfileByScheduledTaskName(java.lang.String)
      */
     @Override
-    public SyncFHIRProfile getSyncFHIRProfileByScheduledTaskName(String scheduledTaskName) {
+    public SyncFhirProfile getSyncFhirProfileByScheduledTaskName(String scheduledTaskName) {
 
         TaskDefinition taskDefinition = Context.getSchedulerService().getTaskByName(scheduledTaskName);
 
         if (taskDefinition != null) {
-            String syncFHIRProfileUUID = taskDefinition.getProperty("syncFHIRProfileUUID");
-            SyncFHIRProfile syncFHIRProfile = getSyncFHIRProfileByUUID(syncFHIRProfileUUID);
-            if (syncFHIRProfile != null) {
-                return syncFHIRProfile;
+            String syncFhirProfileUUID = taskDefinition.getProperty("syncFhirProfileUUID");
+            SyncFhirProfile syncFhirProfile = getSyncFhirProfileByUUID(syncFhirProfileUUID);
+            if (syncFhirProfile != null) {
+                return syncFhirProfile;
             }
         }
         return null;
@@ -401,20 +405,20 @@ public class UgandaEMRSyncServiceImpl extends BaseOpenmrsService implements Ugan
 
 
     /**
-     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveFHIRResource(org.openmrs.module.ugandaemrsync.model.SyncFHIRResource)
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveFHIRResource(SyncFhirResource)
      */
     @Override
-    public SyncFHIRResource saveFHIRResource(SyncFHIRResource syncFHIRResource) {
+    public SyncFhirResource saveFHIRResource(SyncFhirResource syncFHIRResource) {
         return dao.saveSyncFHIRResource(syncFHIRResource);
     }
 
 
     /**
-     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveFHIRResource(org.openmrs.module.ugandaemrsync.model.SyncFHIRResource)
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveFHIRResource(SyncFhirResource)
      */
     @Override
-    public List<SyncFHIRResource> getSyncFHIRResourceBySyncFHIRProfile(SyncFHIRProfile syncFHIRProfile, boolean includeSynced) {
-        return dao.getSyncResourceBySyncFHIRProfile(syncFHIRProfile, includeSynced);
+    public List<SyncFhirResource> getSyncFHIRResourceBySyncFhirProfile(SyncFhirProfile syncFhirProfile, boolean includeSynced) {
+        return dao.getSyncResourceBySyncFhirProfile(syncFhirProfile, includeSynced);
     }
 
 
@@ -422,27 +426,27 @@ public class UgandaEMRSyncServiceImpl extends BaseOpenmrsService implements Ugan
      * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFHIRResourceById(java.lang.Integer)
      */
     @Override
-    public SyncFHIRResource getSyncFHIRResourceById(Integer id) {
+    public SyncFhirResource getSyncFHIRResourceById(Integer id) {
         return dao.getSyncFHIRResourceById(id);
     }
 
     /**
-     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#markSyncFHIRResourceSynced(org.openmrs.module.ugandaemrsync.model.SyncFHIRResource)
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#markSyncFHIRResourceSynced(SyncFhirResource)
      */
     @Override
-    public SyncFHIRResource markSyncFHIRResourceSynced(SyncFHIRResource syncFHIRResources) {
+    public SyncFhirResource markSyncFHIRResourceSynced(SyncFhirResource syncFhirResources) {
         Date today = new Date();
-        syncFHIRResources.setSynced(true);
-        syncFHIRResources.setDateSynced(today);
-        syncFHIRResources.setExpiryDate(UgandaEMRSyncUtil.addDaysToDate(today, syncFHIRResources.getGeneratorProfile().getDurationToKeepSyncedResources()));
-        return dao.saveSyncFHIRResource(syncFHIRResources);
+        syncFhirResources.setSynced(true);
+        syncFhirResources.setDateSynced(today);
+        syncFhirResources.setExpiryDate(UgandaEMRSyncUtil.addDaysToDate(today, syncFhirResources.getGeneratorProfile().getDurationToKeepSyncedResources()));
+        return dao.saveSyncFHIRResource(syncFhirResources);
     }
 
     /**
      * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getExpiredSyncFHIRResources(java.util.Date)
      */
     @Override
-    public List<SyncFHIRResource> getExpiredSyncFHIRResources(Date date) {
+    public List<SyncFhirResource> getExpiredSyncFHIRResources(Date date) {
         return dao.getExpiredSyncFHIRResources(date);
     }
 
@@ -452,55 +456,64 @@ public class UgandaEMRSyncServiceImpl extends BaseOpenmrsService implements Ugan
      */
     @Override
     public void purgeExpiredFHIRResource(Date date) {
-        for (SyncFHIRResource syncFHIRResource : getExpiredSyncFHIRResources(date)) {
+        for (SyncFhirResource syncFHIRResource : getExpiredSyncFHIRResources(date)) {
             dao.purgeExpiredFHIRResource(syncFHIRResource);
         }
     }
 
 
     /**
-     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveSyncFHIRProfileLog(org.openmrs.module.ugandaemrsync.model.SyncFHIRProfileLog)
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveSyncFhirProfileLog(SyncFhirProfileLog)
      */
-    @Override
-    public SyncFHIRProfileLog saveSyncFHIRProfileLog(SyncFHIRProfileLog syncFHIRProfileLog) {
-        return dao.saveSyncFHIRProfileLog(syncFHIRProfileLog);
+    @Transactional
+    public SyncFhirProfileLog saveSyncFhirProfileLog(SyncFhirProfileLog syncFhirProfileLog) {
+        return dao.saveSyncFhirProfileLog(syncFhirProfileLog);
     }
 
 
     /**
-     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFHIRProfileLogByProfileAndResourceName(org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile,java.lang.String)
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFhirProfileLogByProfileAndResourceName(SyncFhirProfile,java.lang.String)
      */
     @Override
-    public List<SyncFHIRProfileLog> getSyncFHIRProfileLogByProfileAndResourceName(SyncFHIRProfile syncFHIRProfile, String resourceType) {
-        return dao.getSyncFHIRProfileLogByProfileAndResourceName(syncFHIRProfile,resourceType);
+    public List<SyncFhirProfileLog> getSyncFhirProfileLogByProfileAndResourceName(SyncFhirProfile syncFhirProfile, String resourceType) {
+        return dao.getSyncFhirProfileLogByProfileAndResourceName(syncFhirProfile,resourceType);
     }
 
 
     /**
-     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getLatestSyncFHIRProfileLogByProfileAndResourceName(org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile,java.lang.String)
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getLatestSyncFhirProfileLogByProfileAndResourceName(SyncFhirProfile,java.lang.String)
      */
     @Override
-    public SyncFHIRProfileLog getLatestSyncFHIRProfileLogByProfileAndResourceName(SyncFHIRProfile syncFHIRProfile, String resourceType) {
+    public SyncFhirProfileLog getLatestSyncFhirProfileLogByProfileAndResourceName(SyncFhirProfile syncFhirProfile, String resourceType) {
 
-        List<SyncFHIRProfileLog> syncFHIRProfileLogs = getSyncFHIRProfileLogByProfileAndResourceName(syncFHIRProfile, resourceType);
+        List<SyncFhirProfileLog> syncFhirProfileLogs = getSyncFhirProfileLogByProfileAndResourceName(syncFhirProfile, resourceType);
 
-        if (syncFHIRProfileLogs.size() > 0)
-            return syncFHIRProfileLogs.get(0);
+        if (syncFhirProfileLogs.size() > 0)
+            return syncFhirProfileLogs.get(0);
         else
             return null;
     }
 
+
+    /**
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getSyncFHIRCaseBySyncFhirProfileAndPatient(SyncFhirProfile,org.openmrs.Patient,java.lang.String)
+     */
     @Override
-    public SyncFHIRCase getSyncFHIRCaseBySyncFHIRProfileAndPatient(SyncFHIRProfile syncFHIRProfile, Patient patient,String caseIdentifier) {
-        return dao.getSyncFHIRCaseBySyncFHIRProfileAndPatient(syncFHIRProfile,patient,caseIdentifier);
+    public SyncFhirCase getSyncFHIRCaseBySyncFhirProfileAndPatient(SyncFhirProfile syncFhirProfile, Patient patient, String caseIdentifier) {
+        return dao.getSyncFHIRCaseBySyncFhirProfileAndPatient(syncFhirProfile,patient,caseIdentifier);
     }
 
     /**
-     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveSyncFHIRCase(org.openmrs.module.ugandaemrsync.model.SyncFHIRCase)
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveSyncFHIRCase(SyncFhirCase)
      */
     @Override
-    public SyncFHIRCase saveSyncFHIRCase(SyncFHIRCase syncFHIRCase) {
+    public SyncFhirCase saveSyncFHIRCase(SyncFhirCase syncFHIRCase) {
         return dao.saveSyncFHIRCase(syncFHIRCase);
+    }
+
+    @Override
+    public List<SyncFhirProfile> getAllSyncFhirProfile() {
+        return null;
     }
 
 

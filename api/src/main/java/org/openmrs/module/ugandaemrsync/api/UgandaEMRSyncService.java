@@ -173,17 +173,17 @@ public interface UgandaEMRSyncService extends OpenmrsService {
 
     /**
      * This Method saves a Sync FHIR Profile
-     * @param syncFHIRProfile the Sync FHIR Profile to be saved
+     * @param syncFhirProfile the Sync FHIR Profile to be saved
      * @return the saved Sync FHIR Profile
      */
-    public SyncFHIRProfile saveSyncFHIRProfile(SyncFHIRProfile syncFHIRProfile);
+    public SyncFhirProfile saveSyncFhirProfile(SyncFhirProfile syncFhirProfile);
 
     /**
      * This Method returs a Sync FHIR Profile that matches the id given
      * @param id the Id that will be used to match a sync fhir profile
      * @return the matched Sync FHIR Profile
      */
-    public SyncFHIRProfile getSyncFHIRProfileById(Integer id);
+    public SyncFhirProfile getSyncFhirProfileById(Integer id);
 
 
     /**
@@ -191,16 +191,16 @@ public interface UgandaEMRSyncService extends OpenmrsService {
      * @param uuid the uuid that will be used to match a sync fhir profile
      * @return the matched Sync FHIR Profile
      */
-    public SyncFHIRProfile getSyncFHIRProfileByUUID(String uuid);
+    public SyncFhirProfile getSyncFhirProfileByUUID(String uuid);
 
 
     /**
      * This Method gets a Sync FHIR Profile from a scheduled task
      * @param scheduledTaskName
-     * @return the syncFHIRProfile that is associated with a scheduled task that matches the scheduledTaskName
+     * @return the syncFhirProfile that is associated with a scheduled task that matches the scheduledTaskName
      */
 
-    public SyncFHIRProfile getSyncFHIRProfileByScheduledTaskName(String scheduledTaskName);
+    public SyncFhirProfile getSyncFhirProfileByScheduledTaskName(String scheduledTaskName);
 
 
     /**
@@ -208,16 +208,16 @@ public interface UgandaEMRSyncService extends OpenmrsService {
      * @param syncFHIRResource the resource to be saved
      * @return the saved sync fhir resource
      */
-    public SyncFHIRResource saveFHIRResource(SyncFHIRResource syncFHIRResource);
+    public SyncFhirResource saveFHIRResource(SyncFhirResource syncFHIRResource);
 
 
     /**
      * This Method gets a list of sync fhir resources by the profile that generated them
-     * @param syncFHIRProfile
+     * @param syncFhirProfile
      * @param includeSynced the check to determine if it has been sent to the destined server
      * @return
      */
-    public List<SyncFHIRResource> getSyncFHIRResourceBySyncFHIRProfile(SyncFHIRProfile syncFHIRProfile, boolean includeSynced);
+    public List<SyncFhirResource> getSyncFHIRResourceBySyncFhirProfile(SyncFhirProfile syncFhirProfile, boolean includeSynced);
 
 
     /**
@@ -225,14 +225,14 @@ public interface UgandaEMRSyncService extends OpenmrsService {
      * @param id the id that will be used to match the resource
      * @return the resource that matches the id
      */
-    public SyncFHIRResource getSyncFHIRResourceById(Integer id);
+    public SyncFhirResource getSyncFHIRResourceById(Integer id);
 
     /**
      * Marks resource Synced and sets expiry date based on the number of days to keep resource after sync set in profile
-     * @param syncFHIRResources the resource to be marked synced
+     * @param syncFhirResources the resource to be marked synced
      * @return the resource that is marked synced.
      */
-    public SyncFHIRResource markSyncFHIRResourceSynced(SyncFHIRResource syncFHIRResources);
+    public SyncFhirResource markSyncFHIRResourceSynced(SyncFhirResource syncFhirResources);
 
 
     /**
@@ -240,7 +240,7 @@ public interface UgandaEMRSyncService extends OpenmrsService {
      * @param date the date which will be used to match expired resources
      * @return a list of expired resources
      */
-    public List<SyncFHIRResource> getExpiredSyncFHIRResources(Date date);
+    public List<SyncFhirResource> getExpiredSyncFHIRResources(Date date);
 
     /**
      * Purges all resources that have  expired
@@ -249,35 +249,35 @@ public interface UgandaEMRSyncService extends OpenmrsService {
 
     /**
      * This Saves the Sync Profile Log
-     * @param syncFHIRProfileLog the log to be saved
-     * @return the SyncFHIRProfileLog that has been saved
+     * @param syncFhirProfileLog the log to be saved
+     * @return the SyncFhirProfileLog that has been saved
      */
-    public SyncFHIRProfileLog saveSyncFHIRProfileLog(SyncFHIRProfileLog syncFHIRProfileLog);
+    public SyncFhirProfileLog saveSyncFhirProfileLog(SyncFhirProfileLog syncFhirProfileLog);
 
     /**
      * This returns the latest sync fhir profile log
-     * @param syncFHIRProfile the sync fhir profile to be used search for the syncFHIRProfile
+     * @param syncFhirProfile the sync fhir profile to be used search for the syncFhirProfile
      * @param resourceType a parameter to be used to search for the sync fhir log
-     * @return syncFHIRProfileLog that has matched the search
+     * @return syncFhirProfileLog that has matched the search
      */
-    public List<SyncFHIRProfileLog> getSyncFHIRProfileLogByProfileAndResourceName(SyncFHIRProfile syncFHIRProfile, String resourceType);
+    public List<SyncFhirProfileLog> getSyncFhirProfileLogByProfileAndResourceName(SyncFhirProfile syncFhirProfile, String resourceType);
 
     /**
      * This returns the latest sync fhir profile log
-     * @param syncFHIRProfile the sync fhir profile to be used search for the syncFHIRProfile
+     * @param syncFhirProfile the sync fhir profile to be used search for the syncFhirProfile
      * @param resourceType a parameter to be used to search for the sync fhir log
-     * @return syncFHIRProfileLog that has matched the search
+     * @return syncFhirProfileLog that has matched the search
      */
-    public SyncFHIRProfileLog getLatestSyncFHIRProfileLogByProfileAndResourceName(SyncFHIRProfile syncFHIRProfile, String resourceType);
+    public SyncFhirProfileLog getLatestSyncFhirProfileLogByProfileAndResourceName(SyncFhirProfile syncFhirProfile, String resourceType);
 
 
     /**
      * This will get a FHIRCase which matches the parameters set
-     * @param syncFHIRProfile the profile that was is used to identify the case
+     * @param syncFhirProfile the profile that was is used to identify the case
      * @param patient the patient who belongs to the case
      * @return the case that matches the parameters
      */
-    public SyncFHIRCase getSyncFHIRCaseBySyncFHIRProfileAndPatient(SyncFHIRProfile syncFHIRProfile, Patient patient, String caseIdentifier);
+    public SyncFhirCase getSyncFHIRCaseBySyncFhirProfileAndPatient(SyncFhirProfile syncFhirProfile, Patient patient, String caseIdentifier);
 
 
 
@@ -286,6 +286,8 @@ public interface UgandaEMRSyncService extends OpenmrsService {
      * @param syncFHIRCase the case to be saved
      * @return the saved case
      */
-    public SyncFHIRCase saveSyncFHIRCase(SyncFHIRCase syncFHIRCase);
+    public SyncFhirCase saveSyncFHIRCase(SyncFhirCase syncFHIRCase);
+
+    public List<SyncFhirProfile> getAllSyncFhirProfile();
 }
 

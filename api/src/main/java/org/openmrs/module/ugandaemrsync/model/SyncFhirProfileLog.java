@@ -10,26 +10,26 @@ import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import java.util.Date;
 
-@Entity(name = "ugandaemrsync.SyncFHIRProfileLog")
+@Entity(name = "ugandaemrsync.SyncFhirProfileLog")
 @Table(name = "sync_fhir_profile_log")
-public class SyncFHIRProfileLog extends BaseOpenmrsData {
+public class SyncFhirProfileLog extends BaseOpenmrsData {
 
     @Id
     @GeneratedValue
-    @Column(name = "profile_log_id")
+    @Column(name = "profile_log_id", length = 11)
     private Integer profileLogId;
 
-    @Column(name = "resource_type")
+    @Column(name = "resource_type", length = 255)
     private String resourceType;
 
     @ManyToOne
     @JoinColumn(name = "profile")
-    private SyncFHIRProfile profile;
+    private SyncFhirProfile profile;
 
     @Column(name = "last_generation_date", nullable = false)
     private Date lastGenerationDate;
 
-    @Column(name = "number_of_resources")
+    @Column(name = "number_of_resources", length = 11)
     private Integer numberOfResources;
 
 
@@ -49,11 +49,11 @@ public class SyncFHIRProfileLog extends BaseOpenmrsData {
         this.resourceType = resourceType;
     }
 
-    public SyncFHIRProfile getProfile() {
+    public SyncFhirProfile getProfile() {
         return profile;
     }
 
-    public void setProfile(SyncFHIRProfile profile) {
+    public void setProfile(SyncFhirProfile profile) {
         this.profile = profile;
     }
 

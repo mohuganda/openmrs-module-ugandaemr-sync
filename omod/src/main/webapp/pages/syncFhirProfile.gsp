@@ -25,13 +25,13 @@
 <script>
     if (jQuery) {
         jq(document).ready(function () {
-            jq('#addEditSyncFHIRProfileModel').on('show.bs.modal', function (event) {
+            jq('#addEditSyncFhirProfileModel').on('show.bs.modal', function (event) {
                 var button = jq(event.relatedTarget);
-                var syncFHIRProfileId = button.data('synctaskid');
+                var profileId = button.data('synctaskid');
                 var modal = jq(this);
 
-                modal.find("#syncFHIRProfileId").val("");
-                modal.find("#syncFHIRProfileName").val("");
+                modal.find("#profileId").val("");
+                modal.find("#syncFhirProfileName").val("");
                 modal.find("#dataType select").find().val("");
                 modal.find("#dataTypeId").val("");
                 modal.find("#username").val("");
@@ -39,19 +39,19 @@
                 modal.find("#url").val("");
                 modal.find("#token").val("");
 
-                jq.get('${ ui.actionLink("ugandaemrsync","syncFHIRProfile","getSyncFHIRProfile",) }', {
-                    "syncFHIRProfileId": syncFHIRProfileId
+                jq.get('${ ui.actionLink("ugandaemrsync","syncFhirProfile","getSyncFhirProfile",) }', {
+                    "profileId": profileId
                 }, function (response) {
-                    var syncFHIRProfile = JSON.parse(response.replace("syncFHIRProfile=", "\"syncFHIRProfile\":").trim());
+                    var syncFhirProfile = JSON.parse(response.replace("syncFhirProfile=", "\"syncFhirProfile\":").trim());
 
-                    modal.find("#syncFHIRProfileId").val(syncFHIRProfileId);
-                    modal.find("#syncFHIRProfileName").val(syncFHIRProfile.syncFHIRProfile.name);
-                    modal.find("#dataType select").find().val(syncFHIRProfile.syncFHIRProfile.dataType);
-                    modal.find("#dataTypeId").val(syncFHIRProfile.syncFHIRProfile.dataTypeId);
-                    modal.find("#username").val(syncFHIRProfile.syncFHIRProfile.urlUserName);
-                    modal.find("#password").val(syncFHIRProfile.syncFHIRProfile.urlPassword);
-                    modal.find("#url").val(syncFHIRProfile.syncFHIRProfile.url);
-                    modal.find("#token").val(syncFHIRProfile.syncFHIRProfile.urlToken);
+                    modal.find("#profileId").val(profileId);
+                    modal.find("#syncFhirProfileName").val(syncFhirProfile.syncFhirProfile.name);
+                    modal.find("#dataType select").find().val(syncFhirProfile.syncFhirProfile.dataType);
+                    modal.find("#dataTypeId").val(syncFhirProfile.syncFhirProfile.dataTypeId);
+                    modal.find("#username").val(syncFhirProfile.syncFhirProfile.urlUserName);
+                    modal.find("#password").val(syncFhirProfile.syncFhirProfile.urlPassword);
+                    modal.find("#url").val(syncFhirProfile.syncFhirProfile.url);
+                    modal.find("#token").val(syncFhirProfile.syncFhirProfile.urlToken);
                     if (!response) {
                         ${ ui.message("coreapps.none ") }
                     }
@@ -124,7 +124,7 @@
                     <div class="">
 
                         <button type="button" style="font-size: 25px" class="confirm icon-plus-sign" data-toggle="modal"
-                                data-target="#addEditSyncFHIRProfileModel" data-whatever="@mdo">Create</button>
+                                data-target="#addEditSyncFhirProfileModel" data-whatever="@mdo">Create</button>
                     </div>
 
                     <div class="vertical"></div>
@@ -149,24 +149,20 @@
                     <th>ID</th>
                     <th>NAME</th>
                     <th>URL</th>
-                    <th>Data Type ID</th>
-                    <th>DATE</th>
                     <th>UUID</th>
                     <th>ACTION</th>
                 </tr>
                 </thead>
                 <tbody>
-                <% if (syncFHIRProfiles?.size() > 0) {
-                    syncFHIRProfiles?.each { %>
+                <% if (syncFhirProfiles?.size() > 0) {
+                    syncFhirProfiles?.each { %>
                 <tr>
-                    <td>${it.syncFHIRProfileId}</td>
-                    <td>${it.name}</td>
-                    <td>${it.url}</td>
-                    <td>${it.dataTypeId}</td>
-                    <td>${it.dateCreated}</td>
-                    <td>${it.uuid}</td>
+                    <td>${it?.profileId}</td>
+                    <td>${it?.name}</td>
+                    <td>${it?.url}</td>
+                    <td>${it?.uuid}</td>
                     <td>
-                        <i style="font-size: 25px" data-toggle="modal" data-target="#addEditSyncFHIRProfileModel"
+                        <i style="font-size: 25px" data-toggle="modal" data-target="#addEditSyncFhirProfileModel"
                            data-synctaskid="${it.uuid}" class="icon-edit edit-action" title="Edit"></i>
                     </td>
                     <% }
@@ -179,15 +175,15 @@
 </div>
 
 
-<div class="modal fade" id="addEditSyncFHIRProfileModel" tabindex="-1" role="dialog"
-     aria-labelledby="addEditSyncFHIRProfileModelLabel"
+<div class="modal fade" id="addEditSyncFhirProfileModel" tabindex="-1" role="dialog"
+     aria-labelledby="addEditSyncFhirProfileModelLabel"
      aria-hidden="true">
     <div class="modal-dialog  modal-lg" role="document">
 
         <form method="post">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addEditSyncFHIRProfileModelLabel">New Sync FHIR Profile</h5>
+                    <h5 class="modal-title" id="addEditSyncFhirProfileModelLabel">New Sync FHIR Profile</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -195,7 +191,8 @@
 
                 <div class="container">
                     <!-- Content here -->
-                    <input type="hidden" name="syncFHIRProfileId" id="syncFHIRProfileId" value="">
+                    <input type="hidden" name="profileId" id="profileId" value="">
+                    <input type="hidden" name="resourceSearchParameter" id="resourceSearchParameter" value="">
 
                     <div class="container">
                         <ul class="nav nav-tabs nav-fill card-header-tabs">
@@ -226,10 +223,42 @@
                                             <div class="card-body">
                                                 <div class="form-group">
                                                     <label>Sync FHIR Profile Name</label>
-                                                    <input type="text" class="form-control" id="syncFHIRProfileName"
+                                                    <input type="text" class="form-control" id="syncFhirProfileName"
                                                            placeholder="The Name of the Profile"
-                                                           name="syncFHIRProfileName">
+                                                           name="syncFhirProfileName">
                                                 </div>
+
+                                                <div class="form-check">
+                                                    <input type="checkbox" id="generateBundle"
+                                                           name="generateBundle"
+                                                           value="true">
+
+                                                    <label class="form-check-label"
+                                                           for="generateBundle">
+                                                        Generate Bundle
+                                                    </label>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>No of Resources in Bundle</label>
+                                                    <input type="number" class="form-control"
+                                                           id="noOfResourcesInBundle"
+                                                           name="noOfResourcesInBundle">
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Duration To Keep Synced Resource (Days)</label>
+                                                    <input type="number" class="form-control"
+                                                           id="durationToKeepSyncedResources"
+                                                           name="durationToKeepSyncedResources">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card">
+                                            <div class="card-header">Resource Type</div>
+
+                                            <div class="card-body">
 
                                                 <div class="">
                                                     <label style="font-weight: bolder">Resource Type</label>
@@ -353,8 +382,8 @@
 
                                                 <div class="form-group">
                                                     <label>Case Based Primary Resource Type</label>
-                                                    <select class="form-control" name="cbsPrimaryResourceType"
-                                                            id="cbsPrimaryResourceType">
+                                                    <select class="form-control" name="caseBasedPrimaryResourceType"
+                                                            id="caseBasedPrimaryResourceType">
                                                         <option value="">Select Primary Resource Type</option>
                                                         <option value="EpisodeOfCare">Episode of Care (Program)</option>
                                                         <option value="Encounter">Encounter</option>
@@ -364,9 +393,9 @@
                                                 <div class="form-group">
                                                     <label>Case Based Primary Resource Type Identifier</label>
                                                     <input type="text" class="form-control"
-                                                           id="caseBasedPrimaryResourceIdentifier"
+                                                           id="caseBasedPrimaryResourceUUID"
                                                            placeholder="UUID of primary resource Type"
-                                                           name="caseBasedPrimaryResource">
+                                                           name="caseBasedPrimaryResourceUUID">
                                                 </div>
                                             </div>
                                         </div>
@@ -386,19 +415,13 @@
                                             <div class="card-body">
                                                 <div class="form-group">
                                                     <label>Patient Identifier Type</label>
-                                                    <select class="form-control" name="dataType" id="dataType">
+                                                    <select class="form-control" name="patientIdentifierType"
+                                                            id="patientIdentifierType">
                                                         <option value="">Select Patient Identifier Type</option>
                                                         <% patientIdentifierType?.each { %>
                                                         <option value="${it.uuid}">${it.name}</option>
                                                         <% } %>
                                                     </select>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label>No of Resources in Bundle</label>
-                                                    <input type="number" class="form-control"
-                                                           id="noOfResourcesInBundle"
-                                                           name="noOfResourcesInBundle">
                                                 </div>
                                             </div>
                                         </div>
@@ -413,24 +436,26 @@
                                             <div class="card-body">
                                                 <div class="form-group">
                                                     <label>Encounter Type UUIDS</label>
-                                                    <input type="text" class="form-control" id="encounterTypeUUIDS"
+                                                    <input type="text" class="form-control resourceTypeFilter"
+                                                           id="encounterTypeUUIDS"
                                                            placeholder="comma separate encouter type uuids"
                                                            name="encounterTypeUUIDS">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label>Observation Concept  UUIDS</label>
-                                                    <input type="text" class="form-control"
-                                                           id="observationCodeUuids"
+                                                    <input type="text" class="form-control resourceTypeFilter"
+                                                           id="observationCodeUUIDS"
                                                            placeholder="comma separate concept  uuids"
-                                                           name="observationCodeUuids">
+                                                           name="observationCodeUUIDS">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label>EpisodeOfCare (Program)  UUIDS</label>
-                                                    <input type="text" class="form-control" id="episodeOfCareUuids"
+                                                    <input type="text" class="form-control resourceTypeFilter"
+                                                           id="episodeOfCareUUIDS"
                                                            placeholder="comma separate program  uuids"
-                                                           name="episodeOfCareUuids">
+                                                           name="episodeOfCareUUIDS">
                                                 </div>
                                             </div>
                                         </div>

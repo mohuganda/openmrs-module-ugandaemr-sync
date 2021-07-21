@@ -12,7 +12,7 @@ package org.openmrs.module.ugandaemrsync.fragment.controller;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
-import org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirProfile;
 import org.openmrs.ui.framework.SimpleObject;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -21,17 +21,17 @@ import java.io.IOException;
 /**
  *  * Controller for a fragment that shows all users  
  */
-public class SyncFHIRProfileFragmentController {
+public class SyncFhirProfileFragmentController {
 
-	public SimpleObject getSyncFHIRProfile(@RequestParam("syncFHIRProfileId") String syncFHIRProfileId) throws IOException {
-		SyncFHIRProfile syncFHIRProfile = Context.getService(UgandaEMRSyncService.class).getSyncFHIRProfileByUUID(syncFHIRProfileId);
+	public SimpleObject getSyncFhirProfile(@RequestParam(value = "profileId", required = false) String profileId) throws IOException {
+		SyncFhirProfile syncFhirProfile = Context.getService(UgandaEMRSyncService.class).getSyncFhirProfileByUUID(profileId);
 
 		SimpleObject simpleObject = new SimpleObject();
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		SimpleObject syncFHIRProfileMapper=SimpleObject.create("syncFHIRProfileId",syncFHIRProfile.getId(),"name",syncFHIRProfile.getName(),"resourceType",syncFHIRProfile.getResourceTypes(),"url",syncFHIRProfile.getUrl()
-		,"urlToken",syncFHIRProfile.getUrlToken(),"urlUserName",syncFHIRProfile.getUrlUserName(),"urlPassword",syncFHIRProfile.getUrlPassword());
-		simpleObject.put("syncFHIRProfile", objectMapper.writeValueAsString(syncFHIRProfileMapper));
+		SimpleObject syncFhirProfileMapper=SimpleObject.create("profileId",syncFhirProfile.getId(),"name",syncFhirProfile.getName(),"resourceType",syncFhirProfile.getResourceTypes(),"url",syncFhirProfile.getUrl()
+		,"urlToken",syncFhirProfile.getUrlToken(),"urlUserName",syncFhirProfile.getUrlUserName(),"urlPassword",syncFhirProfile.getUrlPassword());
+		simpleObject.put("syncFhirProfile", objectMapper.writeValueAsString(syncFhirProfileMapper));
 		return simpleObject;
 	}
 }

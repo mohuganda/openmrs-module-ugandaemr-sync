@@ -341,8 +341,8 @@
 
     <changeSet author="slubwama" id="ugandaemrsync-1620114029968-1" dbms="mysql">
         <createTable tableName="sync_fhir_profile">
-            <column autoIncrement="true" name="profile_id" type="INT">
-                <constraints primaryKey="true"/>
+            <column autoIncrement="true" name="sync_fhir_profile_id" type="INT">
+                <constraints primaryKey="true" unique="true"/>
             </column>
             <column name="name" type="VARCHAR(255)"/>
             <column name="resource_types" type="VARCHAR(255)"/>
@@ -364,6 +364,7 @@
             <column name="date_changed" type="datetime"/>
             <column name="voided" type="INT"/>
             <column name="voided_by" type="INT"/>
+            <column name="void_reason" type="VARCHAR(255)"/>
             <column name="date_voided" type="datetime"/>
             <column name="uuid" type="VARCHAR(38)"/>
         </createTable>
@@ -442,7 +443,7 @@
         </createIndex>
     </changeSet>
     <changeSet author="slubwama" id="ugandaemrsync-1622796471833-6">
-        <addForeignKeyConstraint baseColumnNames="generator_profile" baseTableName="sync_fhir_resource" constraintName="sync_fhir_resource_sync_fhir_profile_profile_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="profile_id" referencedTableName="sync_fhir_profile"/>
+        <addForeignKeyConstraint baseColumnNames="generator_profile" baseTableName="sync_fhir_resource" constraintName="sync_fhir_resource_sync_fhir_profile_profile_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="sync_fhir_profile_id" referencedTableName="sync_fhir_profile"/>
     </changeSet>
     <changeSet author="slubwama" id="ugandaemrsync-1622796471833-7">
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="sync_fhir_resource" constraintName="sync_fhir_resource_users_user_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users"/>
@@ -495,7 +496,7 @@
         </createIndex>
     </changeSet>
     <changeSet author="slubwama" id="ugandaemrsync-1622796883778-7">
-        <addForeignKeyConstraint baseColumnNames="profile" baseTableName="sync_fhir_case" constraintName="sync_fhir_case_sync_fhir_profile_profile_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="profile_id" referencedTableName="sync_fhir_profile"/>
+        <addForeignKeyConstraint baseColumnNames="profile" baseTableName="sync_fhir_case" constraintName="sync_fhir_case_sync_fhir_profile_profile_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="sync_fhir_profile_id" referencedTableName="sync_fhir_profile"/>
     </changeSet>
     <changeSet author="slubwama" id="ugandaemrsync-1622796883778-8">
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="sync_fhir_case" constraintName="sync_fhir_case_users_user_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users"/>
@@ -545,7 +546,7 @@
         </createIndex>
     </changeSet>
     <changeSet author="slubwama" id="ugandaemrsync-1622797783660-6">
-        <addForeignKeyConstraint baseColumnNames="profile" baseTableName="sync_fhir_profile_log" constraintName="sync_fhir_profile_log_sync_fhir_profile_profile_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="profile_id" referencedTableName="sync_fhir_profile"/>
+        <addForeignKeyConstraint baseColumnNames="profile" baseTableName="sync_fhir_profile_log" constraintName="sync_fhir_profile_log_sync_fhir_profile_profile_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="sync_fhir_profile_id" referencedTableName="sync_fhir_profile"/>
     </changeSet>
     <changeSet author="slubwama" id="ugandaemrsync-1622797783660-7">
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="sync_fhir_profile_log" constraintName="sync_fhir_profile_log_users_user_id_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users"/>

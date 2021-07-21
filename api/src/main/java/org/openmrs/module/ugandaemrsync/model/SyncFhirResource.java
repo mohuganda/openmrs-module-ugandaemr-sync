@@ -14,11 +14,11 @@ import java.util.Date;
 
 @Entity(name = "ugandaemrsync.SyncFHIRResources")
 @Table(name = "sync_fhir_resource")
-public class SyncFHIRResource extends BaseOpenmrsData {
+public class SyncFhirResource extends BaseOpenmrsData {
 
     @Id
     @GeneratedValue
-    @Column(name = "resource_id")
+    @Column(name = "resource_id", length = 11)
     private int resourceId;
 
     @Column(name = "synced")
@@ -32,9 +32,9 @@ public class SyncFHIRResource extends BaseOpenmrsData {
 
     @ManyToOne
     @JoinColumn(name = "generator_profile")
-    private SyncFHIRProfile generatorProfile;
+    private SyncFhirProfile generatorProfile;
 
-    @Column(name = "resource")
+    @Column(name = "resource", length = 60000)
     @Type(type="text")
     private String resource;
 
@@ -72,11 +72,11 @@ public class SyncFHIRResource extends BaseOpenmrsData {
     }
 
 
-    public SyncFHIRProfile getGeneratorProfile() {
+    public SyncFhirProfile getGeneratorProfile() {
         return generatorProfile;
     }
 
-    public void setGeneratorProfile(SyncFHIRProfile generatorProfile) {
+    public void setGeneratorProfile(SyncFhirProfile generatorProfile) {
         this.generatorProfile = generatorProfile;
     }
 

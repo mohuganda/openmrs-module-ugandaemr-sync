@@ -8,14 +8,14 @@ import java.util.Date;
 
 @Entity(name = "ugandaemrsync.SyncFHIRCase")
 @Table(name = "sync_fhir_case")
-public class SyncFHIRCase extends BaseOpenmrsData {
+public class SyncFhirCase extends BaseOpenmrsData {
 
     @Id
     @GeneratedValue
-    @Column(name = "case_id")
+    @Column(name = "case_id",length = 11)
     private Integer caseId;
 
-    @Column(name = "case_identifier")
+    @Column(name = "case_identifier",length = 255)
     private String caseIdentifier;
 
     @ManyToOne
@@ -24,7 +24,7 @@ public class SyncFHIRCase extends BaseOpenmrsData {
 
     @ManyToOne
     @JoinColumn(name = "profile")
-    private SyncFHIRProfile profile;
+    private SyncFhirProfile profile;
 
     @Column(name = "last_date_updated", nullable = false)
     private Date lastUpdateDate;
@@ -53,11 +53,11 @@ public class SyncFHIRCase extends BaseOpenmrsData {
         this.caseIdentifier = caseIdentifier;
     }
 
-    public SyncFHIRProfile getProfile() {
+    public SyncFhirProfile getProfile() {
         return profile;
     }
 
-    public void setProfile(SyncFHIRProfile profile) {
+    public void setProfile(SyncFhirProfile profile) {
         this.profile = profile;
     }
 

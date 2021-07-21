@@ -5,9 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
-import org.openmrs.module.ugandaemrsync.model.SyncFHIRProfile;
-import org.openmrs.module.ugandaemrsync.model.SyncFHIRProfileLog;
-import org.openmrs.module.ugandaemrsync.model.SyncFHIRResource;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirProfile;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirProfileLog;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirResource;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 import java.util.ArrayList;
@@ -53,18 +53,18 @@ public class SyncFHIRRecordTest extends BaseModuleContextSensitiveTest {
 
         SyncFHIRRecord syncFHIRRecord = new SyncFHIRRecord();
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
-        SyncFHIRProfile syncFHIRProfile = ugandaEMRSyncService.getSyncFHIRProfileByUUID("c91b12c3-65fe-4b1c-aba4-99e3a7e58cfa");
-        List<SyncFHIRProfileLog> syncFHIRProfileLogsBeforeSave = ugandaEMRSyncService.getSyncFHIRProfileLogByProfileAndResourceName(syncFHIRProfile, "Observation");
-        List<SyncFHIRResource> syncFHIRResourcesBeforeSave = ugandaEMRSyncService.getSyncFHIRResourceBySyncFHIRProfile(syncFHIRProfile, false);
+        SyncFhirProfile syncFhirProfile = ugandaEMRSyncService.getSyncFhirProfileByUUID("c91b12c3-65fe-4b1c-aba4-99e3a7e58cfa");
+        List<SyncFhirProfileLog> syncFhirProfileLogsBeforeSave = ugandaEMRSyncService.getSyncFhirProfileLogByProfileAndResourceName(syncFhirProfile, "Observation");
+        List<SyncFhirResource> syncFhirResourcesBeforeSave = ugandaEMRSyncService.getSyncFHIRResourceBySyncFhirProfile(syncFhirProfile, false);
 
         Date currentDate = new Date();
 
-        syncFHIRRecord.saveSyncFHIRResources(resources, "Observation", syncFHIRProfile, currentDate);
+        syncFHIRRecord.saveSyncFHIRResources(resources, "Observation", syncFhirProfile, currentDate);
 
-        List<SyncFHIRProfileLog> syncFHIRProfileLogsAfterSave = ugandaEMRSyncService.getSyncFHIRProfileLogByProfileAndResourceName(syncFHIRProfile, "Observation");
-        List<SyncFHIRResource> syncFHIRResourcesAfterSave = ugandaEMRSyncService.getSyncFHIRResourceBySyncFHIRProfile(syncFHIRProfile, false);
+        List<SyncFhirProfileLog> syncFhirProfileLogsAfterSave = ugandaEMRSyncService.getSyncFhirProfileLogByProfileAndResourceName(syncFhirProfile, "Observation");
+        List<SyncFhirResource> syncFhirResourcesAfterSave = ugandaEMRSyncService.getSyncFHIRResourceBySyncFhirProfile(syncFhirProfile, false);
 
-        Assert.assertEquals(syncFHIRProfileLogsBeforeSave.size() + 1, syncFHIRProfileLogsAfterSave.size());
-        Assert.assertEquals(syncFHIRResourcesBeforeSave.size() + 4, syncFHIRResourcesAfterSave.size());
+        Assert.assertEquals(syncFhirProfileLogsBeforeSave.size() + 1, syncFhirProfileLogsAfterSave.size());
+        Assert.assertEquals(syncFhirResourcesBeforeSave.size() + 4, syncFhirResourcesAfterSave.size());
     }
 }
