@@ -11,9 +11,11 @@ import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
+import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.scheduler.tasks.AbstractTask;
 
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -30,6 +32,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
     EncounterService encounterService =Context.getEncounterService();
     LocationService locationService = Context.getLocationService();
     Location pharmacyLocation = locationService.getLocationByUuid("3ec8ff90-3ec1-408e-bf8c-22e4553d6e17");
+    EncounterType ARTCardEncounterType = encounterService.getEncounterTypeByUuid("8d5b2be0-c2cc-11de-8d13-0010c6dffd0f");
 
 
     @Override
@@ -44,8 +47,6 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             return;
         }
 
-
-
         SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(ART_ACCESS_PULL_TYPE_UUID);
 
         String ARTAccessServerUrlEndPoint="";
@@ -53,6 +54,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         if(syncTaskType.getUrl()!=null){
             ARTAccessServerUrlEndPoint = syncTaskType.getUrl();
             ARTAccessServerUrlEndPoint = addParametersToUrl(ARTAccessServerUrlEndPoint);
+            System.out.println(ARTAccessServerUrlEndPoint);
 
             if (!ugandaEMRHttpURLConnection.isServerAvailable(ugandaEMRHttpURLConnection.getBaseURL(ARTAccessServerUrlEndPoint))) {
                 return;
@@ -61,353 +63,8 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         }
 
         try {
-//            results = ugandaEMRHttpURLConnection.getJson(ARTAccessServerUrlEndPoint);
-            results = "{\n" +
-                    "    \"resourceType\": \"Bundle\",\n" +
-                    "    \"id\": \"Bundle Transaction\",\n" +
-                    "    \"type\": \"transaction\",\n" +
-                    "    \"meta\": {\n" +
-                    "      \"lastUpdated\": \"2021-06-26T02:42:59.000000Z\"\n" +
-                    "    },\n" +
-                    "    \"entry\": [\n" +
-                    "      {\n" +
-                    "        \"resourceType\": \"Bundle\",\n" +
-                    "        \"id\": \"Bundle Transaction\",\n" +
-                    "        \"meta\": {\n" +
-                    "          \"lastUpdated\": \"2021-05-31T10:48:57.000000Z\"\n" +
-                    "        },\n" +
-                    "        \"type\": \"transaction\",\n" +
-                    "        \"active\": true,\n" +
-                    "        \"entry\": [\n" +
-                    "          {\n" +
-                    "            \"fullUrl\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "            \"resource\": {\n" +
-                    "              \"resourceType\": \"Patient\",\n" +
-                    "              \"identifier\": [\n" +
-                    "                {\n" +
-                    "                  \"type\": {\n" +
-                    "                    \"coding\": {\n" +
-                    "                      \"0\": {\n" +
-                    "                        \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                        \"code\": \"KAW\\/CP2\\/04216\",\n" +
-                    "                        \"display\": \"ART Number\"\n" +
-                    "                      },\n" +
-                    "                      \"text\": \"ART Number\"\n" +
-                    "                    },\n" +
-                    "                    \"value\": \"KAW\\/CP2\\/04216\"\n" +
-                    "                  },\n" +
-                    "                  \"assigner\": {\n" +
-                    "                    \"identifier\": \"KAW\\/CP2\\/04216\",\n" +
-                    "                    \"type\": \"Organization\"\n" +
-                    "                  }\n" +
-                    "                }\n" +
-                    "              ],\n" +
-                    "              \"name\": [\n" +
-                    "                {\n" +
-                    "                  \"use\": \"Official\",\n" +
-                    "                  \"family\": \"KWIZERA \",\n" +
-                    "                  \"given\": [\n" +
-                    "                    \"KWIZERA \"\n" +
-                    "                  ]\n" +
-                    "                }\n" +
-                    "              ],\n" +
-                    "              \"gender\": \"Male\",\n" +
-                    "              \"age\": \"42\"\n" +
-                    "            },\n" +
-                    "            \"request\": {\n" +
-                    "              \"method\": \"POST\",\n" +
-                    "              \"url\": \"http:\\/\\/52.12.36.20:8070KAW\\/CP2\\/04216\"\n" +
-                    "            }\n" +
-                    "          },\n" +
-                    "          {\n" +
-                    "            \"resourceType\": \"Observation\",\n" +
-                    "            \"status\": \"final\",\n" +
-                    "            \"code\": {\n" +
-                    "              \"coding\": [\n" +
-                    "                {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": \"KAW\\/CP2\\/04216\",\n" +
-                    "                  \"display\": \"ART Number\"\n" +
-                    "                }\n" +
-                    "              ],\n" +
-                    "              \"text\": \"ART Start Date\"\n" +
-                    "            },\n" +
-                    "            \"subject\": {\n" +
-                    "              \"reference\": \"Patient\\/KAW\\/CP2\\/04216\"\n" +
-                    "            },\n" +
-                    "            \"encounter\": {\n" +
-                    "              \"reference\": \"Encounter\\/KAW\\/CP2\\/04216\"\n" +
-                    "            },\n" +
-                    "            \"issued\": \"2021-05-31 13:50:52\",\n" +
-                    "            \"valueDateTime\": \"2021-05-31 13:50:52\"\n" +
-                    "          },\n" +
-                    "          {\n" +
-                    "            \"resourceType\": \"Encounter\",\n" +
-                    "            \"id\": 557,\n" +
-                    "            \"text\": {\n" +
-                    "              \"status\": \"generated\"\n" +
-                    "            },\n" +
-                    "            \"identifier\": [\n" +
-                    "              {\n" +
-                    "                \"use\": \"temp\",\n" +
-                    "                \"value\": \"Encounter\\/KAW\\/CP2\\/04216\"\n" +
-                    "              }\n" +
-                    "            ],\n" +
-                    "            \"class\": {\n" +
-                    "              \"system\": \"Patient\\/KAW\\/CP2\\/04216\",\n" +
-                    "              \"code\": \"ART_refill\",\n" +
-                    "              \"display\": \"Art refill\"\n" +
-                    "            },\n" +
-                    "            \"type\": [\n" +
-                    "              {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"0\": {\n" +
-                    "                    \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                    \"code\": \"KAW\\/CP2\\/04216\",\n" +
-                    "                    \"display\": \"ART Number\"\n" +
-                    "                  },\n" +
-                    "                  \"text\": \"ART Number\"\n" +
-                    "                }\n" +
-                    "              }\n" +
-                    "            ],\n" +
-                    "            \"priority\": {\n" +
-                    "              \"coding\": [\n" +
-                    "                {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": \"KAW\\/CP2\\/04216\",\n" +
-                    "                  \"display\": \"ART Number\"\n" +
-                    "                }\n" +
-                    "              ]\n" +
-                    "            },\n" +
-                    "            \"subject\": {\n" +
-                    "              \"reference\": \"Patient\\/KAW\\/CP2\\/04216\",\n" +
-                    "              \"display\": \"Roel\"\n" +
-                    "            },\n" +
-                    "            \"reasonCode\": [\n" +
-                    "              {\n" +
-                    "                \"text\": \"Patient Needs a Refill\"\n" +
-                    "              }\n" +
-                    "            ],\n" +
-                    "            \"serviceProvider\": {\n" +
-                    "              \"reference\": \"Organization\\/IDI\"\n" +
-                    "            }\n" +
-                    "          },\n" +
-                    "          {\n" +
-                    "            \"resourceType\": \"Encounter\",\n" +
-                    "            \"id\": 557,\n" +
-                    "            \"text\": {\n" +
-                    "              \"status\": \"generated\"\n" +
-                    "            },\n" +
-                    "            \"identifier\": [\n" +
-                    "              {\n" +
-                    "                \"use\": \"temp\",\n" +
-                    "                \"value\": \"Encounter\\/KAW\\/CP2\\/04216\"\n" +
-                    "              }\n" +
-                    "            ],\n" +
-                    "            \"class\": {\n" +
-                    "              \"system\": \"Patient\\/KAW\\/CP2\\/04216\",\n" +
-                    "              \"code\": \"ART_refill\",\n" +
-                    "              \"display\": \"Art refill\"\n" +
-                    "            },\n" +
-                    "            \"type\": [\n" +
-                    "              {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"0\": {\n" +
-                    "                    \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                    \"code\": \"KAW\\/CP2\\/04216\",\n" +
-                    "                    \"display\": \"ART Number\"\n" +
-                    "                  },\n" +
-                    "                  \"text\": \"ART Number\"\n" +
-                    "                }\n" +
-                    "              }\n" +
-                    "            ],\n" +
-                    "            \"priority\": {\n" +
-                    "              \"coding\": [\n" +
-                    "                {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": \"KAW\\/CP2\\/04216\",\n" +
-                    "                  \"display\": \"ART Number\"\n" +
-                    "                }\n" +
-                    "              ]\n" +
-                    "            },\n" +
-                    "            \"subject\": {\n" +
-                    "              \"reference\": \"Patient\\/KAW\\/CP2\\/04216\",\n" +
-                    "              \"display\": \"Roel\"\n" +
-                    "            },\n" +
-                    "            \"reasonCode\": [\n" +
-                    "              {\n" +
-                    "                \"text\": \"Patient Needs a Refill\"\n" +
-                    "              }\n" +
-                    "            ],\n" +
-                    "            \"serviceProvider\": {\n" +
-                    "              \"reference\": \"Organization\\/IDI\"\n" +
-                    "            },\n" +
-                    "            \"regimen\": {\n" +
-                    "              \"coding\": {\n" +
-                    "                \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                \"code\": \"TDF\\/3TC\\/EFV\",\n" +
-                    "                \"display\": \"regimen\"\n" +
-                    "              },\n" +
-                    "              \"subject\": {\n" +
-                    "                \"reference\": \"Patient\\/KAW\\/CP2\\/04216\",\n" +
-                    "                \"regimen\": \"TDF\\/3TC\\/EFV\"\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"0\": {\n" +
-                    "              \"visit_date\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": \"2021-05-31 13:50:52\",\n" +
-                    "                  \"display\": \"visit date\"\n" +
-                    "                },\n" +
-                    "                \"period\": \"2021-05-31 13:50:52\"\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"1\": {\n" +
-                    "              \"next_visit_date\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": \"2021-11-22\",\n" +
-                    "                  \"display\": \"Next visit date\"\n" +
-                    "                },\n" +
-                    "                \"period\": \"2021-11-22\"\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"2\": {\n" +
-                    "              \"medicine_picked\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": null,\n" +
-                    "                  \"display\": \"Medicine Picked\"\n" +
-                    "                },\n" +
-                    "                \"text\": null\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"3\": {\n" +
-                    "              \"clinical_status\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": null,\n" +
-                    "                  \"display\": \"Clinical Status\"\n" +
-                    "                },\n" +
-                    "                \"text\": null\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"4\": {\n" +
-                    "              \"adherence\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": null,\n" +
-                    "                  \"display\": \"Adherence\"\n" +
-                    "                },\n" +
-                    "                \"text\": null\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"5\": {\n" +
-                    "              \"viral_load\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": null,\n" +
-                    "                  \"display\": \"Viral Load\"\n" +
-                    "                },\n" +
-                    "                \"text\": null\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"6\": {\n" +
-                    "              \"complaints\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": \"null\",\n" +
-                    "                  \"display\": \"Complaints\"\n" +
-                    "                },\n" +
-                    "                \"text\": \"null\"\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"7\": {\n" +
-                    "              \"other_complaints\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": null,\n" +
-                    "                  \"display\": \"Other Complaints\"\n" +
-                    "                },\n" +
-                    "                \"text\": null\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"8\": {\n" +
-                    "              \"reference_reason\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": null,\n" +
-                    "                  \"display\": \"Reference reason\"\n" +
-                    "                },\n" +
-                    "                \"text\": null\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"9\": {\n" +
-                    "              \"client_representative\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": null,\n" +
-                    "                  \"display\": \"Client representative\"\n" +
-                    "                },\n" +
-                    "                \"text\": null\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"10\": {\n" +
-                    "              \"discontinue_reason\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": \"\",\n" +
-                    "                  \"display\": \"Discontinue reason\"\n" +
-                    "                },\n" +
-                    "                \"text\": \"\"\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"11\": {\n" +
-                    "              \"admission_since_last_visit\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": \"2021-11-22\",\n" +
-                    "                  \"display\": \"Admission since last visit\"\n" +
-                    "                },\n" +
-                    "                \"text\": \"2021-11-22\"\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"12\": {\n" +
-                    "              \"pharmacist_name\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": \"Test Pharmacy\",\n" +
-                    "                  \"display\": \"Pharmacist name\"\n" +
-                    "                },\n" +
-                    "                \"text\": \"Test Pharmacy\"\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"13\": {\n" +
-                    "              \"other_drugs\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": null,\n" +
-                    "                  \"display\": \"other drugs\"\n" +
-                    "                },\n" +
-                    "                \"text\": null\n" +
-                    "              }\n" +
-                    "            },\n" +
-                    "            \"14\": {\n" +
-                    "              \"next_facility_visit\": {\n" +
-                    "                \"coding\": {\n" +
-                    "                  \"system\": \"http:\\/\\/52.12.36.20:8070\",\n" +
-                    "                  \"code\": \"2021-11-22\",\n" +
-                    "                  \"display\": \"Next facility visit\"\n" +
-                    "                },\n" +
-                    "                \"text\": \"2021-11-22\"\n" +
-                    "              }\n" +
-                    "            }\n" +
-                    "          }\n" +
-                    "        ]\n" +
-                    "      }\n" +
-                    "    ]\n" +
-                    "}";
+            results = ugandaEMRHttpURLConnection.getJson(ARTAccessServerUrlEndPoint);
+
         } catch (Exception e) {
             log.error("Failed to fetch results",e);
         }
@@ -428,7 +85,20 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
     }
 
     public String addParametersToUrl(String url) {
-        String newUrl =url;
+        String uuid  = syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID);
+        String lastSyncDate = syncGlobalProperties.getGlobalProperty(GP_ART_ACCESS_LAST_SYNC_DATE);
+        System.out.println(lastSyncDate+"last sync date");
+        String uuidParameter  = "&managingOrganisation="+uuid;
+        String startDateParameter ="";
+        Date endDate  = new Date(); //Today
+        String newEndDate = new SimpleDateFormat("yyyy-MM-dd").format(endDate);
+        String endDateParameter = "&%20periodEnd="+ newEndDate+"%20"+"00:00:00";
+        if(lastSyncDate!=null&& lastSyncDate!=""){
+            startDateParameter = "?periodStart="+lastSyncDate+"%20"+"00:00:00";
+        }else{
+           startDateParameter=  "?periodStart="+"2021-05-01"+"%20"+"00:00:00";
+        }
+        String newUrl =url+startDateParameter+endDateParameter+uuidParameter;
         return newUrl;
     }
 
@@ -475,22 +145,28 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             String adherence = getJSONObjectValue(jsonObject.getJSONObject("4"),"adherence");
             Concept adherence_concept = conceptService.getConcept((int)conceptsCaptured.get("adherence"));
             Concept adherence_answer = convertAdherence(adherence);
-            addObs(obsList,adherence,adherence_concept, adherence_answer, null, null, patient, user, new Date());
+            addObs(obsList,adherence,adherence_concept, adherence_answer, null, null, patient, user, startVisitDate);
 
-            Visit visit =createVisit(patient,startVisitDate,stopVisitDate,user, pharmacyLocation);
-            Encounter encounter = createEncounter(patient,startVisitDate,user, pharmacyLocation);
-            encounter.setObs(obsList);
-            encounter.setVisit(visit);
-            encounterService.saveEncounter(encounter);
-            System.out.println("Visit for patient: "+ visit.getPatient().getId()+ "saved successfully");
+            String regimen= convertObjectToStringIfNotNull(jsonObject.getJSONObject("regimen").getJSONObject("coding").get("code"));
+            Concept regimenConcept = conceptService.getConcept((int) conceptsCaptured.get("regimen"));
+            Concept regimenAnswer = convertRegimen(regimen);
+            if(regimenAnswer!=null){
+                addObs(obsList,regimen,regimenConcept, regimenAnswer, null, null, patient, user, startVisitDate);
+            }
+
+            String other_drugs = getJSONObjectValue(jsonObject.getJSONObject("13"),"other_drugs");
+            Concept other_medicationsConcept = conceptService.getConcept((int)conceptsCaptured.get("other_drugs"));
+            addObs(obsList,other_drugs,other_medicationsConcept,null,null,other_drugs,patient,user,startVisitDate);
+
+            addObsToEncounter(patient,startVisitDate,stopVisitDate,obsList,user);
 
 
 //            String medicine_picked = getJSONObjectValue(jsonObject.getJSONObject("2"),"medicine_picked");
 //        String clinical_status = getJSONObjectValue(jsonObject.getJSONObject("3"),"clinical_status");
-////        String adherence = getJSONObjectValue(jsonObject.getJSONObject("4"),"adherence");
+//        String adherence = getJSONObjectValue(jsonObject.getJSONObject("4"),"adherence");
 //        String viral_load = getJSONObjectValue(jsonObject.getJSONObject("5"),"viral_load");
-//        String complaints = getJSONObjectValue(jsonObject.getJSONObject("6"),"complaints");
-//        String other_complaints = getJSONObjectValue(jsonObject.getJSONObject("7"),"other_complaints");
+        String complaints = getJSONObjectValue(jsonObject.getJSONObject("6"),"complaints");
+        String other_complaints = getJSONObjectValue(jsonObject.getJSONObject("7"),"other_complaints");
 //        String reference_reason = getJSONObjectValue(jsonObject.getJSONObject("8"),"reference_reason");
 //        String client_representative = getJSONObjectValue(jsonObject.getJSONObject("9"),"client_representative");
 //        String discontinue_reason = getJSONObjectValue(jsonObject.getJSONObject("10"),"discontinue_reason");
@@ -498,7 +174,6 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
 //        String pharmacist_name = getJSONObjectValue(jsonObject.getJSONObject("12"),"pharmacist_name");
 //        String other_drugs = getJSONObjectValue(jsonObject.getJSONObject("13"),"other_drugs");
 //        String next_facility_visit = getJSONObjectValue(jsonObject.getJSONObject("14"),"next_facility_visit");
-//        String regimen = (String)jsonObject.getJSONObject("regimen").getJSONObject("coding").get("code");
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -623,4 +298,70 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         }
     }
 
+    private Concept convertRegimen(String regimenName){
+        int conceptValue =0 ;
+        HashMap<String, Integer> map =new HashMap<>();
+        map.put("TDF/3TC/EFV",99040);
+        map.put("ZDV/3TC/NVP" ,0);
+        map.put("ZDV/3TC/EFV",0);
+        map.put("TDF/FTC/EFV",99042);
+        map.put("TDF/ZDV/3TC",0);
+        map.put("ZDV/3TC/ABC",0);
+        map.put("NVP/TDF/3TC",99039);
+        map.put("AZT/3TC/DTG",164979);
+        map.put("TDF/3TC/NVT",0);
+        map.put("AZT/3TC/EFV",99006);
+        map.put("AZT/3TC/NVP",99005);
+        map.put("TDF/3TC/NVP",99039);
+        map.put("TDF/3TC/DTG",164977);
+        map.put("ABC/3TC/DTG",164978);
+        map.put("AZT/3TC/ATV/r",99286);
+        map.put("TDF/3TC/ATV/r",99887);
+        map.put("ABC/3TC/EFV",99885);
+        map.put("ABC/3TC/LPV/r",163017);
+        map.put("TDF/3TC/LPV/r",99044);
+        map.put("AZT/3TC/LPV/r",99046);
+        map.put("ABC/3TC/ATV/r",99888);
+        map.put("Other Specify",0);
+
+        if(regimenName!=null){
+            conceptValue = map.get(regimenName);
+            return conceptService.getConcept(conceptValue);
+        }else{
+           return null;
+        }
+    }
+
+
+
+    private String convertObjectToStringIfNotNull(Object object){
+        if(object!=null){
+            return (String)object;
+        }else{
+            return null;
+        }
+    }
+
+    private void addObsToEncounter(Patient patient,Date startVisitDate,Date stopVisitDate,Set<Obs> obsList,User creator){
+        EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteria(patient, pharmacyLocation, startVisitDate, stopVisitDate, null, null, Arrays.asList(ARTCardEncounterType), null, Arrays.asList(visitService.getVisitTypeByUuid("2ce24f40-8f4c-4bfa-8fde-09d475783468")), null, false);
+        List<Encounter> savedEncounters = encounterService.getEncounters(encounterSearchCriteria);
+
+        if(!savedEncounters.isEmpty()&& savedEncounters.size()>0){
+            Encounter encounter =savedEncounters.get(0);
+            if(!obsList.isEmpty()&& obsList.size()>0){
+                for (Obs o:obsList) {
+                    o.setEncounter(encounter);
+                }
+            }
+            encounter.setObs(obsList);
+            encounterService.saveEncounter(encounter);
+            System.out.println("Obs for patient: "+ savedEncounters.get(0).getPatient().getId()+ "saved successfully");
+        }else{
+            Visit visit =createVisit(patient,startVisitDate,stopVisitDate,creator, pharmacyLocation);
+            Encounter encounter = createEncounter(patient,startVisitDate,creator, pharmacyLocation);
+            encounter.setVisit(visit);
+            encounterService.saveEncounter(encounter);
+            addObsToEncounter(patient,startVisitDate,stopVisitDate,obsList,creator);
+        }
+    }
 }
