@@ -9,6 +9,7 @@ import org.openmrs.api.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
+import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.parameter.EncounterSearchCriteria;
@@ -33,7 +34,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
     LocationService locationService = Context.getLocationService();
     Location pharmacyLocation = locationService.getLocationByUuid("3ec8ff90-3ec1-408e-bf8c-22e4553d6e17");
     EncounterType ARTCardEncounterType = encounterService.getEncounterTypeByUuid("8d5b2be0-c2cc-11de-8d13-0010c6dffd0f");
-
+    SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(ART_ACCESS_PULL_TYPE_UUID);
 
     @Override
     public void execute() {
@@ -47,7 +48,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             return;
         }
 
-        SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(ART_ACCESS_PULL_TYPE_UUID);
+
 
         String ARTAccessServerUrlEndPoint="";
         String results="";
@@ -90,13 +91,14 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         System.out.println(lastSyncDate+"last sync date");
         String uuidParameter  = "&managingOrganisation="+uuid;
         String startDateParameter ="";
-        Date endDate  = new Date(); //Today
+        Date endDate = new Date(System.currentTimeMillis()-24*60*60*1000);
+
         String newEndDate = new SimpleDateFormat("yyyy-MM-dd").format(endDate);
-        String endDateParameter = "&%20periodEnd="+ newEndDate+"%20"+"00:00:00";
+        String endDateParameter = "&%20periodEnd="+ newEndDate+"%20"+"23:59:59";
         if(lastSyncDate!=null&& lastSyncDate!=""){
             startDateParameter = "?periodStart="+lastSyncDate+"%20"+"00:00:00";
         }else{
-           startDateParameter=  "?periodStart="+"2021-05-01"+"%20"+"00:00:00";
+           startDateParameter=  "?periodStart="+"2021-06-01"+"%20"+"00:00:00";
         }
         String newUrl =url+startDateParameter+endDateParameter+uuidParameter;
         return newUrl;
@@ -109,13 +111,15 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
           for (Object o : patientRecords) {
              JSONObject patientRecord = (JSONObject)o;
            JSONObject patientAttributes = patientRecord.getJSONArray("entry").getJSONObject(0);
+           int no_of_days =(int) patientRecord.getJSONArray("entry").getJSONObject(1).get("number_of_days");
+           int no_of_pills =(int) patientRecord.getJSONArray("entry").getJSONObject(1).get("number_of_pills");
            JSONObject patientEncounterDetails = patientRecord.getJSONArray("entry").getJSONObject(3);
 
            String patientARTNo = getIdentifier(patientAttributes);
            Patient patient = ugandaEMRSyncService.getPatientByPatientIdentifier(patientARTNo);
            if(patient!=null){
                System.out.println(patientARTNo);
-                processARTAccessData(patientEncounterDetails,patient);
+                processPatientBundle(patientEncounterDetails,patient,no_of_days,no_of_pills);
            }
 
           }
@@ -123,7 +127,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
 
     }
 
-    private void processARTAccessData(JSONObject jsonObject,Patient patient){
+    private void processPatientBundle(JSONObject jsonObject, Patient patient,Integer no_of_days,Integer no_of_pills){
         HashMap conceptsCaptured = getARTAccessRecordsConcepts();
         UserService userService = Context.getUserService();
         User user = userService.getUserByUuid("9bd6584f-33e0-11e7-9528-1866da16840d");
@@ -137,10 +141,10 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             Date stopVisitDate = ugandaEMRSyncService.convertStringToDate(visit_date, "23:59:59", dateFormat);
 
             String next_visit_date = getJSONObjectValue(jsonObject.getJSONObject("1"), "next_visit_date");
-            Date return_date = ugandaEMRSyncService.convertStringToDate(next_visit_date, "00:00:00", ugandaEMRSyncService.getDateFormat(next_visit_date));
+           try{ Date return_date = ugandaEMRSyncService.convertStringToDate(next_visit_date, "00:00:00", ugandaEMRSyncService.getDateFormat(next_visit_date));
             if(next_visit_date!=""&&next_visit_date!=null) {
                 addObs(obsList, next_visit_date, conceptService.getConcept((int) conceptsCaptured.get("next_visit_date")), null, return_date, null, patient, user, startVisitDate);
-            }
+            }}catch (Exception e){e.printStackTrace();}
 
             String adherence = getJSONObjectValue(jsonObject.getJSONObject("4"),"adherence");
             Concept adherence_concept = conceptService.getConcept((int)conceptsCaptured.get("adherence"));
@@ -151,13 +155,50 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             Concept regimenConcept = conceptService.getConcept((int) conceptsCaptured.get("regimen"));
             Concept regimenAnswer = convertRegimen(regimen);
             if(regimenAnswer!=null){
-                addObs(obsList,regimen,regimenConcept, regimenAnswer, null, null, patient, user, startVisitDate);
+                Obs regimenObs =  processObs(regimenConcept, regimenAnswer, null, null, patient, user, startVisitDate);
+                Obs pills =processObs(conceptService.getConcept(99038),no_of_pills,patient,user,startVisitDate); // mo of pills
+                Obs days =processObs(conceptService.getConcept(99036),no_of_days,patient,user,startVisitDate); // mo of days
+                Obs groupObs = processObs(conceptService.getConcept(165430),null,null,null,patient,user,startVisitDate);
+                groupObs.addGroupMember(regimenObs);
+                groupObs.addGroupMember(pills);
+                groupObs.addGroupMember(days);
+                obsList.add(groupObs);
             }
 
             String other_drugs = getJSONObjectValue(jsonObject.getJSONObject("13"),"other_drugs");
             Concept other_medicationsConcept = conceptService.getConcept((int)conceptsCaptured.get("other_drugs"));
             addObs(obsList,other_drugs,other_medicationsConcept,null,null,other_drugs,patient,user,startVisitDate);
 
+            String complaint = getJSONObjectValue(jsonObject.getJSONObject("6"),"complaints");
+            Concept complaintQuestion  = conceptService.getConcept((int) conceptsCaptured.get("complaints"));
+//            if(!complaint.contains("null")&& complaint!=null){
+//                if(complaint.contains(",")){
+//                    List<String> complaints = Arrays.asList(complaint.split(","));
+//                    for (String s:complaints) {
+//                        Concept answer = convertComplaints(s);
+//                        addObs(obsList,complaint,complaintQuestion,answer,null,null,patient,user,startVisitDate);
+//                    }
+//
+//                }else{
+//                    Concept answer = convertComplaints(complaint);
+//                    addObs(obsList,complaint,complaintQuestion,answer,null,null,patient,user,startVisitDate);
+//                }
+//
+//            }
+//
+//            String other_complaint =getJSONObjectValue(jsonObject.getJSONObject("7"),"other_complaints");
+//            if(!other_complaint.contains("null")&& other_complaint!=null){
+//                if(other_complaint.contains(",")){
+//                    List<String> complaints = Arrays.asList(other_complaint.split(","));
+//                    for (String s:complaints) {
+//                        Concept answer = convertComplaints(s);
+//                        addObs(obsList,other_complaint,complaintQuestion,answer,null,null,patient,user,startVisitDate);
+//                    }
+//                }else{
+//                    Concept other_answer = convertComplaints(other_complaint);
+//                    addObs(obsList,complaint,complaintQuestion,other_answer,null,null,patient,user,startVisitDate);
+//                }
+//            }
             addObsToEncounter(patient,startVisitDate,stopVisitDate,obsList,user);
 
 
@@ -165,7 +206,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
 //        String clinical_status = getJSONObjectValue(jsonObject.getJSONObject("3"),"clinical_status");
 //        String adherence = getJSONObjectValue(jsonObject.getJSONObject("4"),"adherence");
 //        String viral_load = getJSONObjectValue(jsonObject.getJSONObject("5"),"viral_load");
-        String complaints = getJSONObjectValue(jsonObject.getJSONObject("6"),"complaints");
+
         String other_complaints = getJSONObjectValue(jsonObject.getJSONObject("7"),"other_complaints");
 //        String reference_reason = getJSONObjectValue(jsonObject.getJSONObject("8"),"reference_reason");
 //        String client_representative = getJSONObjectValue(jsonObject.getJSONObject("9"),"client_representative");
@@ -261,13 +302,14 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         newObs.setLocation(pharmacyLocation);
         return newObs;
     }
-    private Obs processObs(Concept question,double valueNumeric,Patient patient,User creator,Date created){
+    private Obs processObs(Concept question,double valueNumeric,Patient patient,User creator,Date visitDate){
         Obs newObs = new Obs();
         newObs.setConcept(question);
         newObs.setValueNumeric(valueNumeric);
         newObs.setCreator(creator);
-        newObs.setDateCreated(created);
+        newObs.setObsDatetime(visitDate);
         newObs.setPerson(patient);
+        newObs.setLocation(pharmacyLocation);
         return newObs;
     }
 
@@ -289,6 +331,28 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
                 conceptValue =90157;
             } else {
                 conceptValue = 90001; // unknown
+            }
+        }
+        if(conceptValue!=0){
+            return conceptService.getConcept(conceptValue);
+        }else{
+            return  null;
+        }
+    }
+
+    private Concept convertComplaints(String complaint){
+        int conceptValue =0 ;
+        if(complaint!=null) {
+            if (complaint.contains("cough")) {
+                conceptValue = 90132;
+            } else if (complaint.contains("fever")) {
+                conceptValue = 90116;
+            } else if (complaint.contains("weight loss")) {
+                conceptValue =90135;
+            } else if (complaint.contains("Diarrhoea")) {
+                conceptValue =16;
+            } else if (complaint.contains("Headache")) {
+                conceptValue =90094;
             }
         }
         if(conceptValue!=0){
@@ -349,13 +413,11 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         if(!savedEncounters.isEmpty()&& savedEncounters.size()>0){
             Encounter encounter =savedEncounters.get(0);
             if(!obsList.isEmpty()&& obsList.size()>0){
-                for (Obs o:obsList) {
-                    o.setEncounter(encounter);
-                }
+                voidObsFound( encounter, obsList);
             }
             encounter.setObs(obsList);
             encounterService.saveEncounter(encounter);
-            System.out.println("Obs for patient: "+ savedEncounters.get(0).getPatient().getId()+ "saved successfully");
+            savedSyncTask();
         }else{
             Visit visit =createVisit(patient,startVisitDate,stopVisitDate,creator, pharmacyLocation);
             Encounter encounter = createEncounter(patient,startVisitDate,creator, pharmacyLocation);
@@ -363,5 +425,41 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             encounterService.saveEncounter(encounter);
             addObsToEncounter(patient,startVisitDate,stopVisitDate,obsList,creator);
         }
+    }
+    private void assignEncounterToGroupMember(Obs obs, Encounter encounter){
+        if(obs.hasGroupMembers()){
+            for (Obs o:obs.getGroupMembers()) {
+                o.setEncounter(encounter);
+            }
+            obs.setEncounter(encounter);
+        }else{
+            obs.setEncounter(encounter);
+        }
+    }
+
+    private void voidObsFound(Encounter encounter, Set<Obs> obsList){
+        for (Obs o:obsList) {
+            ObsService obsService = Context.getObsService();
+            Concept concept = o.getConcept();
+            List<Obs> obsListToIgnore = obsService.getObservationsByPersonAndConcept(encounter.getPatient(), concept);
+            for (Obs obsToVoid : obsListToIgnore) {
+                if (obsToVoid.getEncounter() == encounter) {
+                    obsService.voidObs(obsToVoid, "Observation has been replaced or updated.");
+                }
+            }
+            assignEncounterToGroupMember(o,encounter);
+        }
+    }
+    private void savedSyncTask(){
+        SyncTask syncTask = new SyncTask();
+        syncTask.setActionCompleted(true);
+        syncTask.setDateSent(new Date());
+        syncTask.setSyncTaskType(syncTaskType);
+        syncTask.setCreator(Context.getUserService().getUser(1));
+        syncTask.setSentToUrl(syncTaskType.getUrl());
+        syncTask.setRequireAction(false);
+        syncTask.setSyncTask("ART Access receive date as of "+ new Date());
+        syncTask.setStatus("SUCCESS");
+        ugandaEMRSyncService.saveSyncTask(syncTask);
     }
 }
