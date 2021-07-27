@@ -420,6 +420,7 @@
             <column name="date_voided" type="datetime"/>
             <column name="voided_by" type="INT"/>
             <column name="void_reason" type="VARCHAR(255)"/>
+            <column name="uuid" type="VARCHAR(38)"/>
         </createTable>
     </changeSet>
     <changeSet author="slubwama" id="ugandaemrsync-1622796471833-2">
@@ -470,6 +471,7 @@
             <column name="date_voided" type="datetime"/>
             <column name="voided_by" type="INT"/>
             <column name="void_reason" type="VARCHAR(255)"/>
+            <column name="uuid" type="VARCHAR(38)"/>
         </createTable>
     </changeSet>
     <changeSet author="slubwama" id="ugandaemrsync-1622796883778-2">
@@ -523,6 +525,7 @@
             <column name="date_voided" type="datetime"/>
             <column name="voided_by" type="INT"/>
             <column name="void_reason" type="VARCHAR(255)"/>
+            <column name="uuid" type="VARCHAR(38)"/>
         </createTable>
     </changeSet>
     <changeSet author="slubwama" id="ugandaemrsync-1622797783660-2">

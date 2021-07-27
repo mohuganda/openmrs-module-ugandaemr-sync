@@ -15,7 +15,12 @@ import org.openmrs.Patient;
 import org.openmrs.Order;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
-import org.openmrs.module.ugandaemrsync.model.*;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirProfile;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirResource;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirProfileLog;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirCase;
+import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
+import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
@@ -176,6 +181,7 @@ public interface UgandaEMRSyncService extends OpenmrsService {
      * @param syncFhirProfile the Sync FHIR Profile to be saved
      * @return the saved Sync FHIR Profile
      */
+    @Transactional
     public SyncFhirProfile saveSyncFhirProfile(SyncFhirProfile syncFhirProfile);
 
     /**
@@ -208,6 +214,7 @@ public interface UgandaEMRSyncService extends OpenmrsService {
      * @param syncFHIRResource the resource to be saved
      * @return the saved sync fhir resource
      */
+    @Transactional
     public SyncFhirResource saveFHIRResource(SyncFhirResource syncFHIRResource);
 
 
@@ -232,6 +239,7 @@ public interface UgandaEMRSyncService extends OpenmrsService {
      * @param syncFhirResources the resource to be marked synced
      * @return the resource that is marked synced.
      */
+    @Transactional
     public SyncFhirResource markSyncFHIRResourceSynced(SyncFhirResource syncFhirResources);
 
 
@@ -245,6 +253,7 @@ public interface UgandaEMRSyncService extends OpenmrsService {
     /**
      * Purges all resources that have  expired
      */
+    @Transactional
     public void purgeExpiredFHIRResource(Date date);
 
     /**
@@ -252,6 +261,7 @@ public interface UgandaEMRSyncService extends OpenmrsService {
      * @param syncFhirProfileLog the log to be saved
      * @return the SyncFhirProfileLog that has been saved
      */
+    @Transactional
     public SyncFhirProfileLog saveSyncFhirProfileLog(SyncFhirProfileLog syncFhirProfileLog);
 
     /**
@@ -286,8 +296,14 @@ public interface UgandaEMRSyncService extends OpenmrsService {
      * @param syncFHIRCase the case to be saved
      * @return the saved case
      */
+    @Transactional
     public SyncFhirCase saveSyncFHIRCase(SyncFhirCase syncFHIRCase);
 
+    /**
+     * This Method gets a List of all Sync Fhir Profiles
+     * @return a List of Sync Fhir Profiles
+     */
+    @Transactional
     public List<SyncFhirProfile> getAllSyncFhirProfile();
 }
 

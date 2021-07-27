@@ -651,7 +651,7 @@ public class SyncFHIRRecord {
     private JSONObject getSearchParametersInJsonObject(String resourceType, String searchParameterString) {
         JSONObject jsonObject = new JSONObject(searchParameterString);
         if (jsonObject.isNull(resourceType)) {
-            jsonObject = jsonObject.getJSONObject(resourceType.toLowerCase() + "Filter");
+            jsonObject = jsonObject.getJSONObject(resourceType.toLowerCase() + "Filters");
         }
         return jsonObject;
     }
@@ -766,7 +766,7 @@ public class SyncFHIRRecord {
 
         ReferenceAndListParam encounterReference = new ReferenceAndListParam();
         for (org.openmrs.Encounter encounter : encounterList) {
-            patientReference.addValue(new ReferenceOrListParam().add(new ReferenceParam(Encounter.SP_IDENTIFIER, encounter.getUuid())));
+            encounterReference.addValue(new ReferenceOrListParam().add(new ReferenceParam(Encounter.SP_IDENTIFIER, encounter.getUuid())));
         }
 
 

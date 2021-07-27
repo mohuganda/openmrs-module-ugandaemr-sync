@@ -25,7 +25,7 @@ public class SyncFhirProfilePageController {
     public void controller(@SpringBean PageModel pageModel, @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride, UiSessionContext sessionContext, PageModel model, UiUtils ui) {
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
 
-        pageModel.put("syncFhirProfiles", null);
+        pageModel.put("syncFhirProfiles", ugandaEMRSyncService.getAllSyncFhirProfile());
         pageModel.put("patientIdentifierType", Context.getPatientService().getAllPatientIdentifierTypes());
         pageModel.put("breadcrumbOverride", breadcrumbOverride);
     }
@@ -51,9 +51,10 @@ public class SyncFhirProfilePageController {
                      UiSessionContext uiSessionContext, UiUtils uiUtils, HttpServletRequest request) {
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
 
+        String resourceSearchParams = FHIR_FILTER_OBJECT_STRING.replace("encounterTypeUUID", encounterTypeUUIDS).replace("conceptQuestionUUID", observationCodeUUIDs).replace("episodeOfCareTypeUUID", episodeOfCareUUIDS);
+
 
         if (profileId.equals("")) {
-            String resourceSearchParams = FHIR_FILTER_OBJECT_STRING.replace("encounterTypeUUID", encounterTypeUUIDS).replace("conceptQuestionUUID", observationCodeUUIDs).replace("episodeOfCareTypeUUID", episodeOfCareUUIDS);
             SyncFhirProfile newSyncFhirProfile = new SyncFhirProfile();
 
             newSyncFhirProfile.setName(syncFhirProfileName);
@@ -65,6 +66,7 @@ public class SyncFhirProfilePageController {
             newSyncFhirProfile.setCaseBasedPrimaryResourceTypeId(caseBasedPrimaryResourceUUID);
             newSyncFhirProfile.setPatientIdentifierType(Context.getPatientService().getPatientIdentifierTypeByUuid(patientIdentifierType));
             newSyncFhirProfile.setNumberOfResourcesInBundle(noOfResourcesInBundle);
+            newSyncFhirProfile.setResourceSearchParameter(resourceSearchParams);
             newSyncFhirProfile.setUrl(url);
             newSyncFhirProfile.setUrlUserName(username);
             newSyncFhirProfile.setUrlPassword(password);
@@ -85,11 +87,11 @@ public class SyncFhirProfilePageController {
             syncFhirProfile.setCaseBasedPrimaryResourceTypeId(caseBasedPrimaryResourceUUID);
             syncFhirProfile.setPatientIdentifierType(Context.getPatientService().getPatientIdentifierTypeByUuid(patientIdentifierType));
             syncFhirProfile.setNumberOfResourcesInBundle(noOfResourcesInBundle);
+            syncFhirProfile.setResourceSearchParameter(resourceSearchParams);
             syncFhirProfile.setUrl(url);
             syncFhirProfile.setUrlUserName(username);
             syncFhirProfile.setUrlPassword(password);
             syncFhirProfile.setUrlToken(token);
-            syncFhirProfile.setCreator(Context.getAuthenticatedUser());
             syncFhirProfile.setDateChanged(new Date());
             syncFhirProfile.setChangedBy(Context.getAuthenticatedUser());
             ugandaEMRSyncService.saveSyncFhirProfile(syncFhirProfile);

@@ -252,4 +252,11 @@ public class UgandaEMRSyncDao {
 
         return syncFHIRCase;
     }
+
+    /**
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getAllSyncFhirProfile()
+     */
+    public List<SyncFhirProfile> getAllSyncFhirProfile() {
+        return (List<SyncFhirProfile>) getSession().createCriteria(SyncFhirProfile.class).list();
+    }
 }

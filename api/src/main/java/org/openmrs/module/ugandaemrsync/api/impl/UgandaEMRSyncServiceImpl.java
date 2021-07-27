@@ -15,7 +15,6 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
-import org.openmrs.event.api.db.hibernate.HibernateEventInterceptor;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
@@ -25,7 +24,12 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
 import org.openmrs.module.ugandaemrsync.api.dao.UgandaEMRSyncDao;
-import org.openmrs.module.ugandaemrsync.model.*;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirProfile;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirResource;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirProfileLog;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirCase;
+import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
+import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.module.ugandaemrsync.util.UgandaEMRSyncUtil;
 import org.openmrs.scheduler.TaskDefinition;
@@ -100,7 +104,7 @@ public class UgandaEMRSyncServiceImpl extends BaseOpenmrsService implements Ugan
     /**
      * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getAllSyncTask()
      */
-    @Transactional
+    @Override
     public List<SyncTask> getAllSyncTask() {
         return dao.getAllSyncTask();
     }
@@ -363,7 +367,7 @@ public class UgandaEMRSyncServiceImpl extends BaseOpenmrsService implements Ugan
     /**
      * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveSyncFhirProfile(SyncFhirProfile)
      */
-    @Transactional
+    @Override
     public SyncFhirProfile saveSyncFhirProfile(SyncFhirProfile syncFhirProfile) {
         return dao.saveSyncFhirProfile(syncFhirProfile);
     }
@@ -465,7 +469,7 @@ public class UgandaEMRSyncServiceImpl extends BaseOpenmrsService implements Ugan
     /**
      * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#saveSyncFhirProfileLog(SyncFhirProfileLog)
      */
-    @Transactional
+    @Override
     public SyncFhirProfileLog saveSyncFhirProfileLog(SyncFhirProfileLog syncFhirProfileLog) {
         return dao.saveSyncFhirProfileLog(syncFhirProfileLog);
     }
@@ -511,9 +515,13 @@ public class UgandaEMRSyncServiceImpl extends BaseOpenmrsService implements Ugan
         return dao.saveSyncFHIRCase(syncFHIRCase);
     }
 
+    /**
+     *
+     * @see org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService#getAllSyncFhirProfile()
+     */
     @Override
     public List<SyncFhirProfile> getAllSyncFhirProfile() {
-        return null;
+        return dao.getAllSyncFhirProfile();
     }
 
 

@@ -124,7 +124,7 @@
                     <div class="">
 
                         <button type="button" style="font-size: 25px" class="confirm icon-plus-sign" data-toggle="modal"
-                                data-target="#addEditSyncFhirProfileModel" data-whatever="@mdo">Create</button>
+                                data-target="#addEditSyncFhirProfileModel" data-whatever="@mdo"> Create </button>
                     </div>
 
                     <div class="vertical"></div>
@@ -157,7 +157,7 @@
                 <% if (syncFhirProfiles?.size() > 0) {
                     syncFhirProfiles?.each { %>
                 <tr>
-                    <td>${it?.profileId}</td>
+                    <td>${it?.syncFhirProfileId}</td>
                     <td>${it?.name}</td>
                     <td>${it?.url}</td>
                     <td>${it?.uuid}</td>
