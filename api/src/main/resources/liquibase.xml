@@ -406,7 +406,9 @@
 
     <changeSet author="slubwama" id="ugandaemrsync-1622796471833-1">
         <createTable tableName="sync_fhir_resource">
-            <column name="resource_id" type="INT"/>
+            <column autoIncrement="true" name="resource_id" type="INT">
+                <constraints primaryKey="true" unique="true"/>
+            </column>
             <column name="synced" type="TINYINT(3)"/>
             <column name="date_synced" type="datetime"/>
             <column name="expiry_date" type="datetime"/>

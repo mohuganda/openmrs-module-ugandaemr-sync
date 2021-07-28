@@ -12,11 +12,13 @@ import org.hibernate.SessionFactory;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Practitioner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openmrs.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
+import org.openmrs.logic.op.In;
 import org.openmrs.module.fhir2.api.*;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
@@ -29,6 +31,7 @@ import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.*;
 
@@ -171,7 +174,7 @@ public class SyncFHIRRecord {
 
         DateRangeParam lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBound(lastUpdateOnDate);
         IParser iParser = FhirContext.forR4().newJsonParser();
-        IBundleProvider results = null;
+        Collection<IBaseResource> results = null;
         List<String> jsoStrings = new ArrayList<>();
 
         String bundleWrapperString = "{\"resourceType\":\"Bundle\",\"type\":\"transaction\",\"entry\":%s}";
@@ -207,21 +210,20 @@ public class SyncFHIRRecord {
 
         if (resourceType == "Patient") {
             results = fhirPatientService.searchForPatients(null, null, null, null, null, null, null, null, null,
-                    null, null, null, null, lastUpdated, null, null);
+                    null, null, null, null, lastUpdated, null, null).getResources(0, Integer.MAX_VALUE);
         } else if (resourceType.equals("Person")) {
             results = fhirPersonService.searchForPeople(null, null, null, null,
-                    null, null, null, null, lastUpdated, null, null);
+                    null, null, null, null, lastUpdated, null, null).getResources(0, Integer.MAX_VALUE);
         } else if (resourceType.equals("Encounter")) {
-            results = fhirEncounterService.searchForEncounters(null,
-                    null, null, null, null, lastUpdated, null, null);
+            results = fhirEncounterService.searchForEncounters(null, null, null, null, null, lastUpdated, null, null).getResources(0, Integer.MAX_VALUE);
         } else if (resourceType.equals("Observation")) {
             results = fhirObservationService.searchForObservations(null,
                     null, null, null,
                     null, null, null,
-                    null, null, null, null, lastUpdated, null, null, null);
+                    null, null, null, null, lastUpdated, null, null, null).getResources(0, Integer.MAX_VALUE);
         } else if (resourceType.equals("Practitioner")) {
             results = fhirPractitionerService.searchForPractitioners(null, null, null, null, null,
-                    null, null, null, null, lastUpdated, null);
+                    null, null, null, null, lastUpdated, null).getResources(0, Integer.MAX_VALUE);
         }
 
         return groupInBundles(resourceType, results, interval, null);
@@ -317,7 +319,7 @@ public class SyncFHIRRecord {
             }
         } else if (syncFhirProfile.getCaseBasedPrimaryResourceType().equals("Encounter")) {
             List<org.openmrs.EncounterType> encounterTypes = new ArrayList<>();
-            DateRangeParam encounterLastUpdated = new DateRangeParam().setUpperBoundInclusive(currentDate).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, "Encounter"));
+            DateRangeParam encounterLastUpdated = new DateRangeParam().setUpperBoundInclusive(currentDate).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, "Encounter",,,,,,,,,,,,,,,,,,,,));
 
             encounterTypes.add(Context.getEncounterService().getEncounterTypeByUuid(syncFhirProfile.getCaseBasedPrimaryResourceTypeId()));
 
@@ -346,7 +348,7 @@ public class SyncFHIRRecord {
         }
 
         String resource = generateFHIRCaseResource(syncFhirProfile, syncFHIRCase);
-        if (!resource.equals("")) {
+        if (resource != null && !resource.equals("")) {
             SyncFhirResource syncFHIRResource = new SyncFhirResource();
             syncFHIRResource.setGeneratorProfile(syncFhirProfile);
             syncFHIRResource.setResource(resource);
@@ -412,7 +414,7 @@ public class SyncFHIRRecord {
                     break;
                 case "Observation":
                     if (encounters.size() > 0) {
-                        resources.addAll(groupInCaseBundle("Observation", getObservationResourceBundle(syncFhirProfile, encounters, getPatientIdentifierFromEncounter(encounters, syncFhirProfile.getPatientIdentifierType())), syncFhirProfile.getPatientIdentifierType().getName()));
+                        resources.addAll(groupInCaseBundle("Observation", getObservationResourceBundle(syncFhirProfile, encounters, getPersonsFromEncounterList(encounters)), syncFhirProfile.getPatientIdentifierType().getName()));
                     }
                     break;
                 case "Patient":
@@ -433,11 +435,14 @@ public class SyncFHIRRecord {
             }
         }
 
-        for (String resource : resources) {
-            resourcesToBundle.append(resource);
+        String finalCaseBundle = null;
+
+        if (resources.size() > 0) {
+            finalCaseBundle = String.format(FHIR_BUNDLE_RESOURCE_TRANSACTION, resources.toString());
         }
 
-        return resourcesToBundle.toString();
+
+        return finalCaseBundle;
     }
 
 
@@ -467,7 +472,7 @@ public class SyncFHIRRecord {
                     break;
                 case "Observation":
                     if (encounters.size() > 0) {
-                        saveSyncFHIRResources(groupInBundles("Observation", getObservationResourceBundle(syncFhirProfile, encounters, getPatientIdentifierFromEncounter(encounters, syncFhirProfile.getPatientIdentifierType())), syncFhirProfile.getNumberOfResourcesInBundle(), null), "Observation", syncFhirProfile, currentDate);
+                        saveSyncFHIRResources(groupInBundles("Observation", getObservationResourceBundle(syncFhirProfile, encounters, getPersonsFromEncounterList(encounters)), syncFhirProfile.getNumberOfResourcesInBundle(), null), "Observation", syncFhirProfile, currentDate);
                     } else {
                         saveSyncFHIRResources(groupInBundles("Observation", getObservationResourceBundle(syncFhirProfile, null, null), syncFhirProfile.getNumberOfResourcesInBundle(), null), "Observation", syncFhirProfile, currentDate);
                     }
@@ -537,15 +542,22 @@ public class SyncFHIRRecord {
         return patientIdentifiers;
     }
 
-    private Collection<String> groupInBundles(String resourceType, IBundleProvider iBundleProvider, Integer interval, String identifierTypeName) {
+    private List<org.openmrs.Person> getPersonFromEncounter(List<org.openmrs.Encounter> encounters) {
+        List<Person> personList = new ArrayList<>();
+        for (org.openmrs.Encounter encounter : encounters) {
+            personList.add(encounter.getPatient().getPerson());
+        }
+        return personList;
+    }
+
+    private Collection<String> groupInBundles(String resourceType, Collection<IBaseResource> iBaseResources, Integer interval, String identifierTypeName) {
         List<String> resourceBundles = new ArrayList<>();
         StringBuilder currentBundleString = new StringBuilder();
         Integer currentNumberOfBundlesCollected = 0;
         IParser iParser = FhirContext.forR4().newJsonParser();
-        Collection<IBaseResource> iBaseResources = iBundleProvider.getResources(0, Integer.MAX_VALUE);
 
         for (IBaseResource iBaseResource : iBaseResources) {
-            String jsonString = encodeResourceToString(resourceType, identifierTypeName, iParser, iBaseResource);
+            String jsonString = encodeResourceToString(resourceType, identifierTypeName, iBaseResource);
 
             if (currentNumberOfBundlesCollected < interval) {
                 currentBundleString.append(jsonString);
@@ -567,16 +579,16 @@ public class SyncFHIRRecord {
         return resourceBundles;
     }
 
-    private Collection<String> groupInCaseBundle(String resourceType, IBundleProvider iBundleProvider, String identifierTypeName) {
+    private Collection<String> groupInCaseBundle(String resourceType, Collection<IBaseResource> iBaseResources, String identifierTypeName) {
 
         Collection<String> resourceBundles = new ArrayList<>();
 
         IParser iParser = FhirContext.forR4().newJsonParser();
-        Collection<IBaseResource> iBaseResources = iBundleProvider.getResources(0, Integer.MAX_VALUE);
+
 
         for (IBaseResource iBaseResource : iBaseResources) {
 
-            String jsonString = encodeResourceToString(resourceType, identifierTypeName, iParser, iBaseResource);
+            String jsonString = encodeResourceToString(resourceType, identifierTypeName, iBaseResource);
 
             resourceBundles.add(jsonString);
         }
@@ -585,28 +597,35 @@ public class SyncFHIRRecord {
         return resourceBundles;
     }
 
-    private String encodeResourceToString(String resourceType, String identifierTypeName, IParser iParser, IBaseResource iBaseResource) {
-        String jsonString = iParser.encodeResourceToString(iBaseResource);
+    private String encodeResourceToString(String resourceType, String identifierTypeName, IBaseResource iBaseResource) {
+        IParser iParser = FhirContext.forR4().newJsonParser();
 
-        if (resourceType.equals("Patient") || resourceType.equals("Practitioner")) {
-            addOrganizationToRecord(jsonString);
-        }
+        String jsonString = "";
+        try {
+            jsonString = iParser.encodeResourceToString(iBaseResource);
 
-        if (resourceType.equals("Patient") || resourceType.equals("Practitioner") || resourceType.equals("Person")) {
-            JSONObject jsonObject = new JSONObject(jsonString);
-            String resourceIdentifier = "";
-            if (resourceType.equals("Patient") && identifierTypeName != null) {
-                for (Object identifierObject : jsonObject.getJSONArray("identifier")) {
-                    JSONObject identifier = new JSONObject(identifierObject.toString());
-                    if (identifier.getJSONObject("type").get("text").equals(identifierTypeName)) {
-                        resourceIdentifier = identifier.get("value").toString();
+            if (resourceType.equals("Patient") || resourceType.equals("Practitioner")) {
+                addOrganizationToRecord(jsonString);
+            }
+
+            if (resourceType.equals("Patient") || resourceType.equals("Practitioner") || resourceType.equals("Person")) {
+                JSONObject jsonObject = new JSONObject(jsonString);
+                String resourceIdentifier = "";
+                if (resourceType.equals("Patient") && identifierTypeName != null) {
+                    for (Object identifierObject : jsonObject.getJSONArray("identifier")) {
+                        JSONObject identifier = new JSONObject(identifierObject.toString());
+                        if (identifier.getJSONObject("type").get("text").equals(identifierTypeName)) {
+                            resourceIdentifier = identifier.get("value").toString();
+                        }
                     }
-                }
-            } else resourceIdentifier = jsonObject.get("id").toString();
+                } else resourceIdentifier = jsonObject.get("id").toString();
 
-            jsonString = wrapResourceInPUTRequest(jsonString, resourceType, resourceIdentifier);
-        } else {
-            jsonString = wrapResourceInPostRequest(jsonString);
+                jsonString = wrapResourceInPUTRequest(jsonString, resourceType, resourceIdentifier);
+            } else {
+                jsonString = wrapResourceInPostRequest(jsonString);
+            }
+        } catch (Exception e) {
+            log.error(e);
         }
         return jsonString;
     }
@@ -651,12 +670,12 @@ public class SyncFHIRRecord {
     private JSONObject getSearchParametersInJsonObject(String resourceType, String searchParameterString) {
         JSONObject jsonObject = new JSONObject(searchParameterString);
         if (jsonObject.isNull(resourceType)) {
-            jsonObject = jsonObject.getJSONObject(resourceType.toLowerCase() + "Filters");
+            jsonObject = jsonObject.getJSONObject(resourceType.toLowerCase() + "Filter");
         }
         return jsonObject;
     }
 
-    public String addSearchParameter(String resourceType, String searchParam, String searchParamString){
+    public String addSearchParameter(String resourceType, String searchParam, String searchParamString) {
 
 
         return searchParamString;
@@ -692,7 +711,7 @@ public class SyncFHIRRecord {
     }
 
 
-    private IBundleProvider getPatientResourceBundle(SyncFhirProfile syncFhirProfile, List<PatientIdentifier> patientIdentifiers) {
+    private Collection<IBaseResource> getPatientResourceBundle(SyncFhirProfile syncFhirProfile, List<PatientIdentifier> patientIdentifiers) {
 
         DateRangeParam lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, "Patient"));
 
@@ -703,85 +722,102 @@ public class SyncFHIRRecord {
 
 
         return getApplicationContext().getBean(FhirPatientService.class).searchForPatients(null, null, null, patientReference, null, null, null, null, null,
-                null, null, null, null, lastUpdated, null, null);
+                null, null, null, null, lastUpdated, null, null).getResources(0, Integer.MAX_VALUE);
     }
 
-    private IBundleProvider getPractitionerResourceBundle(SyncFhirProfile syncFhirProfile, List<org.openmrs.Encounter> encounterList) {
+    private Collection<IBaseResource> getPractitionerResourceBundle(SyncFhirProfile syncFhirProfile, List<org.openmrs.Encounter> encounterList) {
 
-        DateRangeParam lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, "Practitioner"));
-
-        TokenAndListParam patientReference = new TokenAndListParam();
+        Collection<String> providerUUIDs = new ArrayList<>();
         for (org.openmrs.Encounter encounter : encounterList) {
-            TokenParam tokenParam = new TokenParam();
-            tokenParam.setValue(getProviderFromEncounter(encounter).getUuid());
-            patientReference.addAnd(tokenParam);
+            if (getProviderFromEncounter(encounter).getDateChanged().after(getLastSyncDate(syncFhirProfile, "Practitioner"))) {
+                providerUUIDs.add(getProviderFromEncounter(encounter).getUuid());
+            }
+        }
+
+        Collection<IBaseResource> iBaseResources = new ArrayList<>();
+
+        if (providerUUIDs.size() == 0 && !syncFhirProfile.getCaseBasedProfile()) {
+            DateRangeParam lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, "Practitioner"));
+
+            iBaseResources = getApplicationContext().getBean(FhirPractitionerService.class).searchForPractitioners(null, null, null, null, null,
+                    null, null, null, null, lastUpdated, null).getResources(0, Integer.MAX_VALUE);
+        } else {
+            iBaseResources.addAll(getApplicationContext().getBean(FhirPractitionerService.class).get(providerUUIDs));
         }
 
 
-        return getApplicationContext().getBean(FhirPractitionerService.class).searchForPractitioners(null, null, null, null, null,
-                null, null, null, patientReference, lastUpdated, null);
+        return iBaseResources;
 
     }
 
-    private IBundleProvider getPersonResourceBundle(SyncFhirProfile syncFhirProfile, List<org.openmrs.Person> personList) {
+    private Collection<IBaseResource> getPersonResourceBundle(SyncFhirProfile syncFhirProfile, List<org.openmrs.Person> personList) {
 
         DateRangeParam lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, "Person"));
 
-        TokenAndListParam personReference = new TokenAndListParam();
-        for (org.openmrs.Person person : personList) {
-            TokenParam tokenParam = new TokenParam();
-            tokenParam.setValue(person.getUuid());
-            personReference.addAnd(tokenParam);
+
+        Collection<IBaseResource> iBaseResources = new ArrayList<>();
+        if (personList != null) {
+            Collection<String> personListUUID = personList.stream().map(org.openmrs.Person::getUuid).collect(Collectors.toCollection(ArrayList::new));
+            iBaseResources.addAll(getApplicationContext().getBean(FhirPersonService.class).get(personListUUID));
+
+        } else {
+            iBaseResources = getApplicationContext().getBean(FhirPersonService.class).searchForPeople(null, null, null, null,
+                    null, null, null, null, lastUpdated, null, null).getResources(0, Integer.MAX_VALUE);
         }
 
-        return getApplicationContext().getBean(FhirPersonService.class).searchForPeople(null, null, null, null,
-                null, null, null, personReference, lastUpdated, null, null);
+        return iBaseResources;
     }
 
 
-    private IBundleProvider getEncounterResourceBundle(List<org.openmrs.Encounter> encounters) {
+    private Collection<IBaseResource> getEncounterResourceBundle(List<org.openmrs.Encounter> encounters) {
 
+        Collection<String> encounterUUIDS = new ArrayList<>();
+        Collection<IBaseResource> iBaseResources = new ArrayList<>();
         TokenAndListParam encounterReference = new TokenAndListParam();
         for (org.openmrs.Encounter encounter : encounters) {
-            encounterReference.addAnd(new TokenParam(encounter.getUuid()));
+            encounterUUIDS.add(encounter.getUuid());
         }
 
-        return getApplicationContext().getBean(FhirEncounterService.class).searchForEncounters(null,
-                null, null, null, encounterReference, null, null, null);
+
+        getApplicationContext().getBean(FhirEncounterService.class).get(encounterUUIDS);
+
+        iBaseResources.addAll(getApplicationContext().getBean(FhirEncounterService.class).get(encounterUUIDS));
+
+        return iBaseResources;
     }
 
-    private IBundleProvider getObservationResourceBundle(SyncFhirProfile syncFhirProfile, List<org.openmrs.Encounter> encounterList, List<org.openmrs.PatientIdentifier> patientIdentifiers) {
+    private Collection<IBaseResource> getObservationResourceBundle(SyncFhirProfile syncFhirProfile, List<org.openmrs.Encounter> encounterList, List<Person> personList) {
 
         JSONObject searchParams = getSearchParametersInJsonObject("Observation", syncFhirProfile.getResourceSearchParameter());
 
         JSONArray codes = searchParams.getJSONArray("code");
 
-        DateRangeParam lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, "Observation"));
+        List<Concept> conceptQuestionList = new ArrayList<>();
 
-        ReferenceAndListParam patientReference = new ReferenceAndListParam();
-
-        for (org.openmrs.PatientIdentifier patientIdentifier : patientIdentifiers) {
-            patientReference.addValue(new ReferenceOrListParam().add(new ReferenceParam(Patient.SP_IDENTIFIER, patientIdentifier.getIdentifier())));
-        }
-
-        ReferenceAndListParam encounterReference = new ReferenceAndListParam();
-        for (org.openmrs.Encounter encounter : encounterList) {
-            encounterReference.addValue(new ReferenceOrListParam().add(new ReferenceParam(Encounter.SP_IDENTIFIER, encounter.getUuid())));
-        }
-
-
-        TokenAndListParam code = new TokenAndListParam();
         for (Object conceptUID : codes) {
             try {
-                TokenParam codingToken = new TokenParam();
-                codingToken.setValue(Context.getConceptService().getConcept(conceptUID.toString()).getConceptId().toString());
-                code.addAnd(codingToken);
+
+                Concept concept = Context.getConceptService().getConcept(conceptUID.toString());
+                if (concept != null) {
+                    conceptQuestionList.add(concept);
+                }
+
             } catch (Exception e) {
                 log.error("Error while adding concept with uuid " + conceptUID, e);
             }
 
         }
-        return getApplicationContext().getBean(FhirObservationService.class).searchForObservations(encounterReference, patientReference, null, null, null, null, null, null, code, null, null, lastUpdated, null, null, null);
+
+        List<Obs> observationList = Context.getObsService().getObservations(personList, encounterList, conceptQuestionList, null, null, null, null, null, null, getLastSyncDate(syncFhirProfile, "Observation"), new Date(), false);
+
+        Collection<String> obsListUUID = observationList.stream().map(Obs::getUuid).collect(Collectors.toCollection(ArrayList::new));
+
+
+        Collection<IBaseResource> iBaseResources = new ArrayList<>();
+        iBaseResources.addAll(getApplicationContext().getBean(FhirObservationService.class).get(obsListUUID));
+
+
+        return iBaseResources;
 
     }
 
@@ -797,17 +833,29 @@ public class SyncFHIRRecord {
     }
 
 
-    private Date getLastSyncDate(SyncFhirProfile syncFhirProfile, String resourceType) {
+    private Date getLastSyncDate(SyncFhirProfile syncFhirProfile, String resourceType, SyncFhirCase syncFhirCase) {
         Date date;
 
         SyncFhirProfileLog syncFhirProfileLog = Context.getService(UgandaEMRSyncService.class).getLatestSyncFhirProfileLogByProfileAndResourceName(syncFhirProfile, resourceType);
 
-        if (syncFhirProfileLog != null) {
-            date = syncFhirProfileLog.getLastGenerationDate();
-        } else {
-            date = getDefaultLastSyncDate();
+        if (syncFhirProfile.getCaseBasedProfile() && syncFhirCase.getLastUpdateDate() != null) {
+            date = syncFhirCase.getLastUpdateDate();
 
+            if (date == null) {
+                date = getDefaultLastSyncDate();
+            }
+
+        } else if (syncFhirProfile.getCaseBasedProfile() && syncFhirCase.getLastUpdateDate() == null) {
+            date = getDefaultLastSyncDate();
+        } else {
+            if (syncFhirProfileLog != null) {
+                date = syncFhirProfileLog.getLastGenerationDate();
+            } else {
+                date = getDefaultLastSyncDate();
+
+            }
         }
+
         return date;
     }
 
