@@ -17,6 +17,8 @@ import org.openmrs.scheduler.tasks.AbstractTask;
 
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -91,9 +93,10 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         System.out.println(lastSyncDate+"last sync date");
         String uuidParameter  = "&managingOrganisation="+uuid;
         String startDateParameter ="";
-        Date endDate = new Date(System.currentTimeMillis()-24*60*60*1000);
+        LocalDate today = LocalDate.now();
+        LocalDate endDate = today.minusDays(1);
 
-        String newEndDate = new SimpleDateFormat("yyyy-MM-dd").format(endDate);
+        String newEndDate = endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String endDateParameter = "&%20periodEnd="+ newEndDate+"%20"+"23:59:59";
         if(lastSyncDate!=null&& lastSyncDate!=""){
             startDateParameter = "?periodStart="+lastSyncDate+"%20"+"00:00:00";
@@ -461,5 +464,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         syncTask.setSyncTask("ART Access receive date as of "+ new Date());
         syncTask.setStatus("SUCCESS");
         ugandaEMRSyncService.saveSyncTask(syncTask);
+
+       syncGlobalProperties.setGlobalProperty(GP_ART_ACCESS_LAST_SYNC_DATE,LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 }
