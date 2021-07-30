@@ -3,6 +3,8 @@ package org.openmrs.module.ugandaemrsync.server;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Encounter;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
 import org.openmrs.module.ugandaemrsync.model.SyncFhirProfile;
@@ -67,4 +69,5 @@ public class SyncFHIRRecordTest extends BaseModuleContextSensitiveTest {
         Assert.assertEquals(syncFhirProfileLogsBeforeSave.size() + 1, syncFhirProfileLogsAfterSave.size());
         Assert.assertEquals(syncFhirResourcesBeforeSave.size() + 4, syncFhirResourcesAfterSave.size());
     }
+
 }

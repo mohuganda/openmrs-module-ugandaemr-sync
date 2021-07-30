@@ -3,26 +3,38 @@ package org.openmrs.module.ugandaemrsync.server;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
-import ca.uhn.fhir.rest.param.*;
+import ca.uhn.fhir.rest.param.DateRangeParam;
+import ca.uhn.fhir.rest.param.TokenAndListParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.Encounter;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Practitioner;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openmrs.*;
+import org.openmrs.Concept;
+import org.openmrs.PatientProgram;
+import org.openmrs.Provider;
+import org.openmrs.EncounterRole;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.Person;
+import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
-import org.openmrs.logic.op.In;
-import org.openmrs.module.fhir2.api.*;
+import org.openmrs.module.fhir2.api.FhirPersonService;
+import org.openmrs.module.fhir2.api.FhirEncounterService;
+import org.openmrs.module.fhir2.api.FhirObservationService;
+import org.openmrs.module.fhir2.api.FhirPractitionerService;
+import org.openmrs.module.fhir2.api.FhirPatientService;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
-import org.openmrs.module.ugandaemrsync.model.*;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirCase;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirProfile;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirProfileLog;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirResource;
+import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.springframework.context.ApplicationContext;
 
@@ -291,7 +303,7 @@ public class SyncFHIRRecord {
     }
 
     public Collection<SyncFhirResource> generateCaseBasedFHIRResourceBundles(SyncFhirProfile syncFhirProfile) {
-        if (!syncFhirProfile.getCaseBasedProfile() || syncFhirProfile.getCaseBasedPrimaryResourceType() == null) {
+        if (syncFhirProfile != null && (!syncFhirProfile.getCaseBasedProfile() || syncFhirProfile.getCaseBasedPrimaryResourceType() == null)) {
             return null;
         }
 
@@ -319,7 +331,7 @@ public class SyncFHIRRecord {
             }
         } else if (syncFhirProfile.getCaseBasedPrimaryResourceType().equals("Encounter")) {
             List<org.openmrs.EncounterType> encounterTypes = new ArrayList<>();
-            DateRangeParam encounterLastUpdated = new DateRangeParam().setUpperBoundInclusive(currentDate).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, "Encounter",,,,,,,,,,,,,,,,,,,,));
+            DateRangeParam encounterLastUpdated = new DateRangeParam().setUpperBoundInclusive(currentDate).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, "Encounter"));
 
             encounterTypes.add(Context.getEncounterService().getEncounterTypeByUuid(syncFhirProfile.getCaseBasedPrimaryResourceTypeId()));
 
@@ -335,10 +347,20 @@ public class SyncFHIRRecord {
                     syncFhirResources.add(syncFHIRResource);
             }
         }
+
+        if (syncFhirResources.size() > 0) {
+            SyncFhirProfileLog syncFhirProfileLog = new SyncFhirProfileLog();
+            syncFhirProfileLog.setNumberOfResources(syncFhirResources.size());
+            syncFhirProfileLog.setProfile(syncFhirProfile);
+            syncFhirProfileLog.setResourceType(syncFhirProfile.getCaseBasedPrimaryResourceType());
+            syncFhirProfileLog.setLastGenerationDate(currentDate);
+            Context.getService(UgandaEMRSyncService.class).saveSyncFhirProfileLog(syncFhirProfileLog);
+        }
+
         return syncFhirResources;
     }
 
-    private SyncFhirResource saveSyncFHIRCase(SyncFhirProfile syncFhirProfile, Date currentDate, org.openmrs.Patient patient, String caseIdentifier) {
+    public SyncFhirResource saveSyncFHIRCase(SyncFhirProfile syncFhirProfile, Date currentDate, org.openmrs.Patient patient, String caseIdentifier) {
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
         SyncFhirCase syncFHIRCase = ugandaEMRSyncService.getSyncFHIRCaseBySyncFhirProfileAndPatient(syncFhirProfile, patient, caseIdentifier);
         if (syncFHIRCase == null) {
@@ -552,28 +574,24 @@ public class SyncFHIRRecord {
 
     private Collection<String> groupInBundles(String resourceType, Collection<IBaseResource> iBaseResources, Integer interval, String identifierTypeName) {
         List<String> resourceBundles = new ArrayList<>();
-        StringBuilder currentBundleString = new StringBuilder();
-        Integer currentNumberOfBundlesCollected = 0;
-        IParser iParser = FhirContext.forR4().newJsonParser();
+        List<String> currentBundleList = new ArrayList<>();
 
         for (IBaseResource iBaseResource : iBaseResources) {
             String jsonString = encodeResourceToString(resourceType, identifierTypeName, iBaseResource);
 
-            if (currentNumberOfBundlesCollected < interval) {
-                currentBundleString.append(jsonString);
-                currentNumberOfBundlesCollected++;
+            if (currentBundleList.size() < interval) {
+                currentBundleList.add(jsonString);
             } else {
-                if (!currentBundleString.toString().equals("")) {
-                    resourceBundles.add(String.format(FHIR_BUNDLE_RESOURCE_TRANSACTION, currentBundleString.toString()));
+                if (!currentBundleList.toString().equals("")) {
+                    resourceBundles.add(String.format(FHIR_BUNDLE_RESOURCE_TRANSACTION, currentBundleList.toString()));
                 }
-                currentNumberOfBundlesCollected = 1;
-                currentBundleString = new StringBuilder();
-                currentBundleString.append(jsonString);
+                currentBundleList = new ArrayList<>();
+                currentBundleList.add(jsonString);
             }
         }
 
-        if (iBaseResources.size() > 0 && currentNumberOfBundlesCollected < interval) {
-            resourceBundles.add(String.format(FHIR_BUNDLE_RESOURCE_TRANSACTION, currentBundleString.toString()));
+        if (iBaseResources.size() > 0 && currentBundleList.size() < interval) {
+            resourceBundles.add(String.format(FHIR_BUNDLE_RESOURCE_TRANSACTION, currentBundleList.toString()));
         }
 
         return resourceBundles;
@@ -582,9 +600,6 @@ public class SyncFHIRRecord {
     private Collection<String> groupInCaseBundle(String resourceType, Collection<IBaseResource> iBaseResources, String identifierTypeName) {
 
         Collection<String> resourceBundles = new ArrayList<>();
-
-        IParser iParser = FhirContext.forR4().newJsonParser();
-
 
         for (IBaseResource iBaseResource : iBaseResources) {
 
@@ -833,29 +848,17 @@ public class SyncFHIRRecord {
     }
 
 
-    private Date getLastSyncDate(SyncFhirProfile syncFhirProfile, String resourceType, SyncFhirCase syncFhirCase) {
+    private Date getLastSyncDate(SyncFhirProfile syncFhirProfile, String resourceType) {
         Date date;
 
         SyncFhirProfileLog syncFhirProfileLog = Context.getService(UgandaEMRSyncService.class).getLatestSyncFhirProfileLogByProfileAndResourceName(syncFhirProfile, resourceType);
 
-        if (syncFhirProfile.getCaseBasedProfile() && syncFhirCase.getLastUpdateDate() != null) {
-            date = syncFhirCase.getLastUpdateDate();
-
-            if (date == null) {
-                date = getDefaultLastSyncDate();
-            }
-
-        } else if (syncFhirProfile.getCaseBasedProfile() && syncFhirCase.getLastUpdateDate() == null) {
-            date = getDefaultLastSyncDate();
+        if (syncFhirProfileLog != null) {
+            date = syncFhirProfileLog.getLastGenerationDate();
         } else {
-            if (syncFhirProfileLog != null) {
-                date = syncFhirProfileLog.getLastGenerationDate();
-            } else {
-                date = getDefaultLastSyncDate();
+            date = getDefaultLastSyncDate();
 
-            }
         }
-
         return date;
     }
 

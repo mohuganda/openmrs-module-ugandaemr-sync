@@ -460,7 +460,9 @@
 
     <changeSet author="slubwama" id="ugandaemrsync-1622796883778-1">
         <createTable tableName="sync_fhir_case">
-            <column name="case_id" type="INT"/>
+            <column autoIncrement="true" name="case_id" type="INT">
+                <constraints primaryKey="true" unique="true"/>
+            </column>
             <column name="case_identifier" type="VARCHAR(255)"/>
             <column name="patient" type="INT"/>
             <column name="profile" type="INT"/>
@@ -514,7 +516,9 @@
 
     <changeSet author="slubwama" id="ugandaemrsync-1622797783660-1">
         <createTable tableName="sync_fhir_profile_log">
-            <column name="profile_log_id" type="INT"/>
+            <column autoIncrement="true" name="profile_log_id" type="INT">
+                <constraints primaryKey="true" unique="true"/>
+            </column>
             <column name="resource_type" type="VARCHAR(255)"/>
             <column name="profile" type="INT"/>
             <column name="last_generation_date" type="datetime"/>

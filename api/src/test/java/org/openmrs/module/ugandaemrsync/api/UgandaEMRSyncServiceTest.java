@@ -364,7 +364,7 @@ public class UgandaEMRSyncServiceTest extends BaseModuleContextSensitiveTest {
 
         syncFHIRCase.setPatient(Context.getPatientService().getPatient(2));
         syncFHIRCase.setProfile(ugandaEMRSyncService.getSyncFhirProfileByUUID("c91b12c3-65fe-4b1c-aba4-99e3a7e58cfa"));
-        syncFHIRCase.setCaseIdentifier(Context.getPatientService().getPatient(2).getPatientIdentifier(14).getIdentifier());
+        syncFHIRCase.setCaseIdentifier(Context.getPatientService().getPatient(2).getPatientIdentifier(4).getIdentifier());
         syncFHIRCase.setLastUpdateDate(date);
 
         SyncFhirCase syncFhirCase1 = ugandaEMRSyncService.saveSyncFHIRCase(syncFHIRCase);
