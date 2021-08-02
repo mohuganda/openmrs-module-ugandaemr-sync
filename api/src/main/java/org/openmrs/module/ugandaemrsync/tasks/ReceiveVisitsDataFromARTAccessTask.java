@@ -143,6 +143,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
            }
 
           }
+          savedSyncTask();
       }
 
     }
@@ -191,20 +192,24 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
 
             String complaint = getJSONObjectValue(jsonObject.getJSONObject("6"),"complaints");
             Concept complaintQuestion  = conceptService.getConcept((int) conceptsCaptured.get("complaints"));
-//            if(!complaint.contains("null")&& complaint!=null){
-//                if(complaint.contains(",")){
-//                    List<String> complaints = Arrays.asList(complaint.split(","));
-//                    for (String s:complaints) {
-//                        Concept answer = convertComplaints(s);
-//                        addObs(obsList,complaint,complaintQuestion,answer,null,null,patient,user,startVisitDate);
-//                    }
-//
-//                }else{
-//                    Concept answer = convertComplaints(complaint);
-//                    addObs(obsList,complaint,complaintQuestion,answer,null,null,patient,user,startVisitDate);
-//                }
-//
-//            }
+            if(!(complaint.contains("null"))&& complaint!=null){
+                if(complaint.contains(",")){
+                    List<String> complaints = Arrays.asList(complaint.split(","));
+                    for (String s:complaints) {
+                        Concept answer = convertComplaints(s);
+                        if(answer!=null) {
+                            addObs(obsList, complaint, complaintQuestion, answer, null, null, patient, user, startVisitDate);
+                        }
+                    }
+
+                }else{
+                    Concept answer = convertComplaints(complaint);
+                    if(answer!=null) {
+                        addObs(obsList, complaint, complaintQuestion, answer, null, null, patient, user, startVisitDate);
+                    }
+                }
+
+            }
 //
 //            String other_complaint =getJSONObjectValue(jsonObject.getJSONObject("7"),"other_complaints");
 //            if(!other_complaint.contains("null")&& other_complaint!=null){
@@ -437,7 +442,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             }
             encounter.setObs(obsList);
             encounterService.saveEncounter(encounter);
-            savedSyncTask();
+
         }else{
             Visit visit =createVisit(patient,startVisitDate,stopVisitDate,creator, pharmacyLocation);
             Encounter encounter = createEncounter(patient,startVisitDate,creator, pharmacyLocation);
