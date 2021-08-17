@@ -74,9 +74,9 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         if(syncTaskType.getUrl()!=null){
             ARTAccessServerUrlEndPoint = syncTaskType.getUrl();
             ARTAccessServerUrlEndPoint = addParametersToUrl(ARTAccessServerUrlEndPoint);
-            System.out.println(ARTAccessServerUrlEndPoint);
 
-            if (!ugandaEMRHttpURLConnection.isServerAvailable(ugandaEMRHttpURLConnection.getBaseURL(ARTAccessServerUrlEndPoint))) {
+            if (!ugandaEMRHttpURLConnection.isServerAvailable(ARTAccessServerUrlEndPoint)) {
+                log.error("server not available ");
                 return;
             }
 
@@ -93,6 +93,8 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
              JSONObject object = new JSONObject(results);
              processData(object);
 
+         }else{
+             log.error("Results are empty");
          }
     }
 
