@@ -237,7 +237,7 @@
             <column name="name" value="Receive ART Access Visits Data" />
             <column name="data_type" value="org.openmrs.Encounter" />
             <column name="data_type_id" value="" />
-            <column name="url_end_point" value="http://52.12.36.20:8070/api/read_visits/2021-07-05/2021-07-08" />
+            <column name="url_end_point" value="http://52.12.36.20:8070/api/read_visits/" />
             <column name="url_username" value="" />
             <column name="url_password" value="" />
             <column name="url_token" value="" />
