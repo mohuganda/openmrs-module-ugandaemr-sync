@@ -52,7 +52,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
     EncounterService encounterService =Context.getEncounterService();
     LocationService locationService = Context.getLocationService();
     Location pharmacyLocation = locationService.getLocationByUuid("3ec8ff90-3ec1-408e-bf8c-22e4553d6e17");
-    EncounterType ARTCardEncounterType = encounterService.getEncounterTypeByUuid("8d5b2be0-c2cc-11de-8d13-0010c6dffd0f");
+    EncounterType artCardEncounterType = encounterService.getEncounterTypeByUuid("8d5b2be0-c2cc-11de-8d13-0010c6dffd0f");
     SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(ART_ACCESS_PULL_TYPE_UUID);
 
     @Override
@@ -69,13 +69,13 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
 
 
 
-        String ARTAccessServerUrlEndPoint="";
+        String artAccessServerUrlEndPoint="";
         String results="";
         if(syncTaskType.getUrl()!=null){
-            ARTAccessServerUrlEndPoint = syncTaskType.getUrl();
-            ARTAccessServerUrlEndPoint = addParametersToUrl(ARTAccessServerUrlEndPoint);
+            artAccessServerUrlEndPoint = syncTaskType.getUrl();
+            artAccessServerUrlEndPoint = addParametersToUrl(artAccessServerUrlEndPoint);
 
-            if (!ugandaEMRHttpURLConnection.isServerAvailable(ARTAccessServerUrlEndPoint)) {
+            if (!ugandaEMRHttpURLConnection.isServerAvailable(artAccessServerUrlEndPoint)) {
                 log.error("server not available ");
                 return;
             }
@@ -83,7 +83,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         }
 
         try {
-            results = ugandaEMRHttpURLConnection.getJson(ARTAccessServerUrlEndPoint);
+            results = ugandaEMRHttpURLConnection.getJson(artAccessServerUrlEndPoint);
 
         } catch (Exception e) {
             log.error("Failed to fetch results",e);
@@ -434,7 +434,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
     }
 
     private void addObsToEncounter(Patient patient,Date startVisitDate,Date stopVisitDate,Set<Obs> obsList,User creator){
-        EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteria(patient, pharmacyLocation, startVisitDate, stopVisitDate, null, null, Arrays.asList(ARTCardEncounterType), null, Arrays.asList(visitService.getVisitTypeByUuid("2ce24f40-8f4c-4bfa-8fde-09d475783468")), null, false);
+        EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteria(patient, pharmacyLocation, startVisitDate, stopVisitDate, null, null, Arrays.asList(artCardEncounterType), null, Arrays.asList(visitService.getVisitTypeByUuid("2ce24f40-8f4c-4bfa-8fde-09d475783468")), null, false);
         List<Encounter> savedEncounters = encounterService.getEncounters(encounterSearchCriteria);
 
         if(!savedEncounters.isEmpty()&& savedEncounters.size()>0){
