@@ -424,12 +424,9 @@ public class SyncFHIRRecord {
             List list=  Context.getAdministrationService().executeSQL("select Distinct patient_id from  orders where date_activated <= now()",true);
             List<Patient> patientList=new ArrayList<>();
 
-
-
             if (list.size() > 0) {
                 for (Object o : list) {
-                    patientList.add( Context.getPatientService().getPatient(Integer.parseUnsignedInt(((ArrayList) o).get(0).toString())));
-
+                    patientList.add( Context.getPatientService().getPatient(Integer.parseUnsignedInt(((ArrayList) o).get(0).toString()))); 
                 }
             }
             for (Patient patient : patientList) {
