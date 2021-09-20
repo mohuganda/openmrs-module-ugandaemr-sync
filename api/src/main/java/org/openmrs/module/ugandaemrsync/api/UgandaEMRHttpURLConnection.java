@@ -25,6 +25,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -167,8 +168,6 @@ public class UgandaEMRHttpURLConnection {
                 httpGet.addHeader(new BasicScheme().authenticate(credentials, httpGet, null));
             }
 
-            HttpEntity httpEntity = new StringEntity(content, ContentType.APPLICATION_JSON);
-
 
             response = client.execute(httpGet);
 
@@ -178,10 +177,11 @@ public class UgandaEMRHttpURLConnection {
             map.put("responseCode", responseCode);
             if ((responseCode == CONNECTION_SUCCESS_200 || responseCode == CONNECTION_SUCCESS_201)) {
                 InputStream inputStreamReader = response.getEntity().getContent();
+                HttpEntity entityResponse = response.getEntity();
                 if (resultType.equals("String")) {
                     map.put("result", getStringOfResults(inputStreamReader));
                 } else if (resultType.equals("Map")) {
-                    map = getMapOfResults(inputStreamReader, responseCode);
+                    map = getMapOfResults(entityResponse, responseCode);
                 }
             } else {
                 map.put("responseCode", responseCode);
@@ -246,8 +246,8 @@ public class UgandaEMRHttpURLConnection {
             String responseMessage = response.getStatusLine().getReasonPhrase();
             //reading the response
             if ((responseCode == CONNECTION_SUCCESS_200 || responseCode == CONNECTION_SUCCESS_201)) {
-                InputStream inputStreamReader = response.getEntity().getContent();
-                map = getMapOfResults(inputStreamReader, responseCode);
+                HttpEntity responseEntity = response.getEntity();
+                map = getMapOfResults(responseEntity, responseCode);
             } else {
                 map.put("responseCode", responseCode);
                 log.info(responseMessage);
@@ -282,23 +282,16 @@ public class UgandaEMRHttpURLConnection {
         return sendPostByWithBasicAuth(contentTypeJSON, data, facilitySyncId, url, username, password, token);
     }
 
-    public Map getMapOfResults(InputStream inputStreamReader, int responseCode) throws IOException {
+    public Map getMapOfResults(HttpEntity inputStreamReader, int responseCode) throws IOException {
         Map map = new HashMap();
-        InputStreamReader reader = new InputStreamReader(inputStreamReader);
-        StringBuilder buf = new StringBuilder();
-        char[] cbuf = new char[2048];
-        int num;
-        while (true) {
-            if (!(-1 != (num = reader.read(cbuf)))) break;
-            buf.append(cbuf, 0, num);
-        }
-        String result = buf.toString();
-        ObjectMapper mapper = new ObjectMapper();
-        if (isJSONValid(result)) {
-            map = mapper.readValue(result, Map.class);
+        String responseString = EntityUtils.toString(inputStreamReader);
+
+        if (isJSONValid(responseString)) {
+            map = new JSONObject(responseString).toMap();
         }
 
         map.put("responseCode", responseCode);
+
         return map;
     }
 
