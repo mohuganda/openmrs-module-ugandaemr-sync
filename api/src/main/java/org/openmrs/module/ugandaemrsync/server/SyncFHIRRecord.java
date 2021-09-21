@@ -424,20 +424,23 @@ public class SyncFHIRRecord {
             OrderService orderService = Context.getOrderService();
             OrderType orderType = orderService.getOrderTypeByUuid(syncFhirProfile.getCaseBasedPrimaryResourceTypeId());
 
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            String formattedDate = formatter.format(new Date());
+            if (orderType != null){
 
-            List list=  Context.getAdministrationService().executeSQL("select Distinct patient_id from  orders where order_type_id = 3 AND date_activated >= "+ formattedDate +" and date_stopped is NULL ;",true);
-            List<Patient> patientList=new ArrayList<>();
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                String formattedDate = formatter.format(new Date());
 
-            if (list.size() > 0) {
-                for (Object o : list) {
-                    patientList.add( Context.getPatientService().getPatient(Integer.parseUnsignedInt(((ArrayList) o).get(0).toString())));
+                List list = Context.getAdministrationService().executeSQL("select Distinct patient_id from  orders where order_type_id = "+ orderType.getId() + "  AND date_activated >= " + formattedDate + " and date_stopped is NULL ;", true);
+                List<Patient> patientList = new ArrayList<>();
+
+                if (list.size() > 0) {
+                    for (Object o : list) {
+                        patientList.add(Context.getPatientService().getPatient(Integer.parseUnsignedInt(((ArrayList) o).get(0).toString())));
+                    }
                 }
-            }
-            for (Patient patient : patientList) {
+                for (Patient patient : patientList) {
                     String patientIdentifier = patient.getPatientId().toString();
                     saveSyncFHIRCase(syncFhirProfile, currentDate, patient, patientIdentifier);
+                }
             }
         }
     }
