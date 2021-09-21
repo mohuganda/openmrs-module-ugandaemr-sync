@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Date;
+import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
@@ -83,7 +84,10 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         }
 
         try {
-            results = ugandaEMRHttpURLConnection.getJson(artAccessServerUrlEndPoint);
+            String username = syncTaskType.getUrlUserName();
+            String password = syncTaskType.getUrlPassword();
+            Map resultMap = ugandaEMRHttpURLConnection.getByWithBasicAuth(artAccessServerUrlEndPoint, username, password, "String");
+            results = (String)resultMap.get("result");
 
         } catch (Exception e) {
             log.error("Failed to fetch results",e);

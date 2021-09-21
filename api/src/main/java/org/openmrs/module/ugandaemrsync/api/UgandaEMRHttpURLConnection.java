@@ -136,16 +136,13 @@ public class UgandaEMRHttpURLConnection {
     /**
      * HTTP Get request
      *
-     * @param contentType
-     * @param content
-     * @param facilityId
      * @param url
      * @param username
      * @param password
      * @return
      * @throws Exception
      */
-    public Map getByWithBasicAuth(String contentType, String content, String facilityId, String url, String username, String password, String resultType) throws Exception {
+    public Map getByWithBasicAuth(String url, String username, String password, String resultType) throws Exception {
 
 
         HttpResponse response = null;
