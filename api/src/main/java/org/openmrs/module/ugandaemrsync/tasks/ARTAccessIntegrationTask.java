@@ -8,8 +8,6 @@ import org.openmrs.module.ugandaemrsync.model.SyncFhirProfile;
 import org.openmrs.module.ugandaemrsync.server.SyncFHIRRecord;
 import org.openmrs.scheduler.tasks.AbstractTask;
 
-import java.text.ParseException;
-
 public class ARTAccessIntegrationTask extends AbstractTask {
     Log log = LogFactory.getLog(SyncFHIRRecord.class);
     @Override
@@ -20,11 +18,7 @@ public class ARTAccessIntegrationTask extends AbstractTask {
 
         log.info("Generating Resources and cases for Profile "+syncFhirProfile.getName());
 
-        try {
-            syncFHIRRecord.generateCaseBasedFHIRResourceBundles(syncFhirProfile);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        syncFHIRRecord.generateCaseBasedFHIRResourceBundles(syncFhirProfile);
 
     }
 }

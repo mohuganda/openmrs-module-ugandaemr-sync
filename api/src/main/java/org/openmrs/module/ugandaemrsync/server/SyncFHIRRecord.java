@@ -323,7 +323,7 @@ public class SyncFHIRRecord {
     }
 
 
-    public Collection<SyncFhirResource> generateCaseBasedFHIRResourceBundles(SyncFhirProfile syncFhirProfile) throws ParseException {
+    public Collection<SyncFhirResource> generateCaseBasedFHIRResourceBundles(SyncFhirProfile syncFhirProfile){
 
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
         if (syncFhirProfile != null && (!syncFhirProfile.getCaseBasedProfile() || syncFhirProfile.getCaseBasedPrimaryResourceType() == null)) {
@@ -371,7 +371,7 @@ public class SyncFHIRRecord {
      * @param syncFhirProfile the profile for which the cases belong to
      * @param currentDate     Date when this task is being executed,
      */
-    public void identifyNewCases(SyncFhirProfile syncFhirProfile, Date currentDate) throws ParseException {
+    public void identifyNewCases(SyncFhirProfile syncFhirProfile, Date currentDate) {
 
         List<org.openmrs.PatientProgram> patientProgramList;
 
@@ -424,14 +424,10 @@ public class SyncFHIRRecord {
             OrderService orderService = Context.getOrderService();
             OrderType orderType = orderService.getOrderTypeByUuid(syncFhirProfile.getCaseBasedPrimaryResourceTypeId());
 
-            String input = OpenmrsUtil.firstSecondOfDay(new Date()).toString();
-            SimpleDateFormat parser = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
-            Date date = parser.parse(input);
-
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            String formattedDate = formatter.format(date);
+            String formattedDate = formatter.format(new Date());
 
-            List list=  Context.getAdministrationService().executeSQL("select Distinct patient_id from  orders where date_activated >= "+ formattedDate +" and date_stopped is NULL;",true);
+            List list=  Context.getAdministrationService().executeSQL("select Distinct patient_id from  orders where order_type_id = 3 AND date_activated >= "+ formattedDate +" and date_stopped is NULL ;",true);
             List<Patient> patientList=new ArrayList<>();
 
             if (list.size() > 0) {

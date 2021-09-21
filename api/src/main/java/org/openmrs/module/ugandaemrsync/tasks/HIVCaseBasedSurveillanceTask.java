@@ -6,18 +6,12 @@ import org.openmrs.module.ugandaemrsync.model.SyncFhirProfile;
 import org.openmrs.module.ugandaemrsync.server.SyncFHIRRecord;
 import org.openmrs.scheduler.tasks.AbstractTask;
 
-import java.text.ParseException;
-
 public class HIVCaseBasedSurveillanceTask extends AbstractTask {
     @Override
     public void execute() {
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
         SyncFhirProfile syncFhirProfile = ugandaEMRSyncService.getSyncFhirProfileByScheduledTaskName("HIV CASE BASED SURVEILLANCE");
         SyncFHIRRecord syncFHIRRecord = new SyncFHIRRecord();
-        try {
-            syncFHIRRecord.generateCaseBasedFHIRResourceBundles(syncFhirProfile);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        syncFHIRRecord.generateCaseBasedFHIRResourceBundles(syncFhirProfile);
     }
 }
