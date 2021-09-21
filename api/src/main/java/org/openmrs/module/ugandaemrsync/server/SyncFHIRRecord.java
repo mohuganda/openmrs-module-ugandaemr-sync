@@ -37,6 +37,8 @@ import org.openmrs.module.ugandaemrsync.model.SyncFhirResource;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.module.ugandaemrsync.util.UgandaEMRSyncUtil;
 import org.openmrs.parameter.EncounterSearchCriteria;
+import org.openmrs.util.OpenmrsDateFormat;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.context.ApplicationContext;
 
 import javax.validation.constraints.NotNull;
@@ -321,7 +323,7 @@ public class SyncFHIRRecord {
     }
 
 
-    public Collection<SyncFhirResource> generateCaseBasedFHIRResourceBundles(SyncFhirProfile syncFhirProfile) {
+    public Collection<SyncFhirResource> generateCaseBasedFHIRResourceBundles(SyncFhirProfile syncFhirProfile) throws ParseException {
 
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
         if (syncFhirProfile != null && (!syncFhirProfile.getCaseBasedProfile() || syncFhirProfile.getCaseBasedPrimaryResourceType() == null)) {
@@ -369,7 +371,7 @@ public class SyncFHIRRecord {
      * @param syncFhirProfile the profile for which the cases belong to
      * @param currentDate     Date when this task is being executed,
      */
-    public void identifyNewCases(SyncFhirProfile syncFhirProfile, Date currentDate) {
+    public void identifyNewCases(SyncFhirProfile syncFhirProfile, Date currentDate) throws ParseException {
 
         List<org.openmrs.PatientProgram> patientProgramList;
 
@@ -421,12 +423,20 @@ public class SyncFHIRRecord {
         } else if (syncFhirProfile.getCaseBasedPrimaryResourceType().equals("Order")){
             OrderService orderService = Context.getOrderService();
             OrderType orderType = orderService.getOrderTypeByUuid(syncFhirProfile.getCaseBasedPrimaryResourceTypeId());
-            List list=  Context.getAdministrationService().executeSQL("select Distinct patient_id from  orders where date_activated <= now()",true);
+
+            String input = OpenmrsUtil.firstSecondOfDay(new Date()).toString();
+            SimpleDateFormat parser = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+            Date date = parser.parse(input);
+
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = formatter.format(date);
+
+            List list=  Context.getAdministrationService().executeSQL("select Distinct patient_id from  orders where date_activated >= "+ formattedDate +" and date_stopped is NULL;",true);
             List<Patient> patientList=new ArrayList<>();
 
             if (list.size() > 0) {
                 for (Object o : list) {
-                    patientList.add( Context.getPatientService().getPatient(Integer.parseUnsignedInt(((ArrayList) o).get(0).toString()))); 
+                    patientList.add( Context.getPatientService().getPatient(Integer.parseUnsignedInt(((ArrayList) o).get(0).toString())));
                 }
             }
             for (Patient patient : patientList) {
