@@ -155,6 +155,7 @@ public class UgandaEMRHttpURLConnection {
 
 
         try {
+            SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
             CloseableHttpClient client = createAcceptSelfSignedCertificateClient();
 
             httpGet.addHeader(UgandaEMRSyncConfig.HEADER_EMR_DATE, new Date().toString());
@@ -163,6 +164,9 @@ public class UgandaEMRHttpURLConnection {
                 UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
 
                 httpGet.addHeader(new BasicScheme().authenticate(credentials, httpGet, null));
+                httpGet.addHeader("x-ugandaemr-facilityname", syncGlobalProperties.getGlobalProperty(GP_FACILITY_NAME));
+
+                httpGet.addHeader("x-ugandaemr-dhis2uuid", syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
             }
 
 
