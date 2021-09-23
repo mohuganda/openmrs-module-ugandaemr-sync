@@ -756,7 +756,7 @@
     </changeSet>
 
 
-    <changeSet id="ugandaemrsync-20210921-1616" author="mmwanje">
+    <changeSet id="ugandaemrsync-20210922-1016" author="mmwanje">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM sync_fhir_profile WHERE uuid = '2f0ef683-c988-448b-b928-e3e2cf6657af'
@@ -782,7 +782,7 @@
         </insert>
     </changeSet>
 
-    <changeSet id="ugandaemrsync-20210921-1616" author="mmwanje" dbms="mysql">
+    <changeSet id="ugandaemrsync-20210923-1916" author="mmwanje" dbms="mysql">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="1">
                 SELECT COUNT(*) FROM scheduler_task_config WHERE uuid = '8cf5a732-51e4-4c7c-9b36-96eb2644a99a'
