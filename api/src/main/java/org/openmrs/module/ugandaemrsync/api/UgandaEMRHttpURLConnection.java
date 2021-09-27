@@ -164,10 +164,9 @@ public class UgandaEMRHttpURLConnection {
                 UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
 
                 httpGet.addHeader(new BasicScheme().authenticate(credentials, httpGet, null));
-                httpGet.addHeader("x-ugandaemr-facilityname", syncGlobalProperties.getGlobalProperty(GP_FACILITY_NAME));
-
-                httpGet.addHeader("x-ugandaemr-dhis2uuid", syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
             }
+            httpGet.addHeader("x-ugandaemr-facilityname", syncGlobalProperties.getGlobalProperty(GP_FACILITY_NAME));
+            httpGet.addHeader("x-ugandaemr-dhis2uuid", syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
 
 
             response = client.execute(httpGet);
