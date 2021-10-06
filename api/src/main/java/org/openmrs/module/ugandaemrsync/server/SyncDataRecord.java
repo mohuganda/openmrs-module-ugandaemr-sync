@@ -23,9 +23,6 @@ import java.util.Arrays;
 
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.*;
 
-/**
- * Created by lubwamasamuel on 07/11/2016.
- */
 public class SyncDataRecord {
 
     UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
