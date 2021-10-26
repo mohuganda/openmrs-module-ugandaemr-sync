@@ -8,18 +8,13 @@ import org.openmrs.module.ugandaemrsync.model.SyncFhirProfile;
 import org.openmrs.module.ugandaemrsync.server.SyncFHIRRecord;
 import org.openmrs.scheduler.tasks.AbstractTask;
 
-public class HIVCaseBasedSurveillanceTask extends AbstractTask {
+import java.util.Date;
 
+public class DeleteSyncedFhirResourceTask extends AbstractTask {
     Log log = LogFactory.getLog(SyncFHIRRecord.class);
     @Override
     public void execute() {
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
-        SyncFhirProfile syncFhirProfile = ugandaEMRSyncService.getSyncFhirProfileByScheduledTaskName("HIV CASE BASED SURVEILLANCE");
-        SyncFHIRRecord syncFHIRRecord = new SyncFHIRRecord();
-
-        if(syncFhirProfile.getProfileEnabled()) {
-            log.info("Generating Resources and cases for Profile " + syncFhirProfile.getName());
-            syncFHIRRecord.generateCaseBasedFHIRResourceBundles(syncFhirProfile);
-        }
+        ugandaEMRSyncService.purgeExpiredFHIRResource(new Date());
     }
 }
