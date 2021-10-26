@@ -73,6 +73,7 @@ public class SyncConstant {
     public static final String FHIRSERVER_SYNC_TASK_TYPE_UUID = "3c1ce940-8ade-11ea-bc55-0242ac130003";
     public static final String VIRAL_LOAD_RESULT_PULL_TYPE_UUID = "3396dcf0-2106-4e73-9b90-c63978c3a8b4";
     public static final String ART_ACCESS_PULL_TYPE_UUID = "4c4e9551-d9d6-4882-93bd-e61a42e2f755";
+	public static final String ALIS_LAB_RESULTS_PULL_TYPE_UUID = "f947128e-93d7-46d5-aa32-645e38a125fe";
 
     public static final String PATIENT_IDENTIFIER_TYPE = "e1731641-30ab-102d-86b0-7a5022ba4115";
 
