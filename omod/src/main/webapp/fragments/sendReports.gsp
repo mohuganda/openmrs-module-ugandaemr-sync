@@ -52,6 +52,64 @@
 
     }
 
+    function stripDisplayAttributes(dataObject){
+        var arrayLength = dataObject.group.length;
+        if(arrayLength > 0){
+            var myArray = dataObject.group;
+
+            for (var i=0; i < myArray.length; i++) {
+                var myObject = myArray[i];
+                var attr1 = myObject.code.coding;
+               attr1 = attr1.map(u=>({"code":u.code}));
+               myArray[i].code.coding=attr1;
+
+               var attr2 = myObject.stratifier[0];
+               var attr2Child =attr2.code
+                if(attr2Child.length>0){
+                    for(var x=0; x < attr2Child.length;x++){
+                        var myObject = attr2Child[x];
+                        var child = myObject.coding;
+                        child = child.map(u =>({"code":u.code}));
+                        attr2Child[x].coding = child;
+                    }
+                }
+                myArray[i].stratifier[0].code=attr2Child;
+
+
+                var attr2Child1 =attr2.stratum;
+                if(attr2Child1.length>0){
+                    for(var k=0; k < attr2Child1.length;k++){
+                        var myObject = attr2Child1[k];
+                        if(typeof myObject.value == "undefined"){
+                            var componentObject = myObject.component
+                            if(componentObject.length>0){
+                                for(var j=0; j < componentObject.length;j++){
+                                    var child = componentObject[j].value.coding;
+                                    child = child.map(u =>({"code":u.code}));
+                                    attr2Child1[k].component[j].value.coding = child;
+                                }
+
+                            }
+
+
+                        }else{
+                        var child = myObject.value.coding;
+                        child = child.map(u =>({"code":u.code}));
+                        attr2Child1[k].value.coding = child;
+                        }
+
+                    }
+                }
+                myArray[i].stratifier[0].stratum=attr2Child1;
+
+            }
+            dataObject.group = []
+            dataObject.group= myArray;
+        }
+        return dataObject;
+
+    }
+
     function post(url, dataObject) {
         jq("#loader").show();
         return jq.ajax({
@@ -99,7 +157,8 @@
         }
 
         jq('#sendData').click(function(){
-            var data = JSON.stringify(previewBody);
+            previewBody = stripDisplayAttributes(previewBody);
+            var data = JSON.stringify(previewBody,null,0);
             sendData(data);
         });
 

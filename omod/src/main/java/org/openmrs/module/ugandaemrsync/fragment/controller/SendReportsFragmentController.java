@@ -38,7 +38,6 @@ import java.io.FileOutputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -91,6 +90,7 @@ public class SendReportsFragmentController {
 			Date endDate = dateFormat.parse(periodEndDate);
 			String bodyText="";
 			bodyText = generateReport(uuid,startDate,endDate);
+			bodyText = trimJsonBody(bodyText);
 			if(bodyText!=""){
 				String displayTitle= getReportDefinitionService().getDefinitionByUuid(uuid).getName()+" For Period \n"+
 						displayDateFormat.format(startDate) +" To " +displayDateFormat.format(endDate);
@@ -100,7 +100,7 @@ public class SendReportsFragmentController {
 
 			}
 
-		}catch (ParseException e){
+		}catch (Exception e){
 			pageModel.put("errorMessage", e.getMessage());
 			pageModel.put("previewBody",null);
 			pageModel.put("report_title","");
@@ -206,6 +206,12 @@ public class SendReportsFragmentController {
 		fstreamItem.close();
 
 		return strOutput;
+	}
+
+	public String  trimJsonBody(String jsonObject) throws Exception {
+		jsonObject =  jsonObject.trim();
+		jsonObject =  jsonObject.replaceAll("[\\n\\t ]", "");
+		return jsonObject;
 	}
 	
 }
