@@ -21,10 +21,12 @@
         var tableFooter = "</tbody></table>";
 
         jq.each(report.group, function (index, rowValue) {
+            var indicatorCode="";
             var total_Display_Name="";
             var dataValueToDisplay = "";
             dataValueToDisplay += "<tr>";
 
+                indicatorCode = rowValue.code.coding[0].code;
                 total_Display_Name = rowValue.stratifier[0].code[0].coding[0].display;
                 var total_Display_Value = rowValue.measureScore.value;
                 var disaggregated_rows = rowValue.stratifier[0].stratum;
@@ -32,11 +34,23 @@
             var rowspanAttribute="rowspan= \""+disaggregated_rows.length+"\"";
 
             jq.each(disaggregated_rows,function(key,obj){
-                var row_displayName = obj.value.coding[0].display;
                 var row_displayValue = obj.measureScore.value;
+                var row_displayName="";
+                if(typeof obj.value !== "undefined"){
+                    row_displayName = obj.value.coding[0].display;
+
+                }else{
+                    var componentObject = obj.component;
+                    if(componentObject.length>0){
+                        for(var j=0; j < componentObject.length;j++){
+                            var displayName =  componentObject[j].code.coding[0].code +"<span>:</span> "+ componentObject[j].value.coding[0].display + "<br/>" ;
+                            row_displayName = row_displayName + displayName
+                        }
+                    }
+                }
                 dataValueToDisplay += "<tr>";
                 if(key==0){
-                    dataValueToDisplay += "<th " + rowspanAttribute+ " width='20%'>" +total_Display_Name +"</th>";
+                    dataValueToDisplay += "<th " + rowspanAttribute+ " width='20%'>"+ indicatorCode + "<br/>" +total_Display_Name +"</th>";
                 }
                 dataValueToDisplay += "<td>" +row_displayName +"</td>";
                 dataValueToDisplay += "<td>" +row_displayValue + "</td>";
