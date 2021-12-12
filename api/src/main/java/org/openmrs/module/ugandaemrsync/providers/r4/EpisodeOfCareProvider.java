@@ -82,20 +82,8 @@ public class EpisodeOfCareProvider implements IResourceProvider {
 
                                                @OptionalParam(name = EpisodeOfCare.SP_DATE) DateRangeParam date,
                                                @OptionalParam(name = EpisodeOfCare.SP_IDENTIFIER) TokenAndListParam identifier) {
-        if (patientParam != null) {
-            subjectReference = patientParam;
-        }
 
-        if (CollectionUtils.isEmpty(includes)) {
-            includes = null;
-        }
-
-        if (CollectionUtils.isEmpty(revIncludes)) {
-            revIncludes = null;
-        }
-
-        return episodeOfCareService.searchForEpisodeOfCares(date, participantReference, subjectReference, id, lastUpdated,
-                includes, revIncludes);
+        return episodeOfCareService.searchForEpisodeOfCares(participantReference,null ,identifier, date, null,null);
     }
 
 }

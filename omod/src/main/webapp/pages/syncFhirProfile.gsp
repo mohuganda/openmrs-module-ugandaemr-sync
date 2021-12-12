@@ -51,6 +51,7 @@
                 modal.find("resourceTypePerson").checked = false;
                 modal.find("resourceTypeObservation").checked = false;
                 modal.find("resourceTypeEpisodeOfCare").checked = false;
+                modal.find("resourceTypePractitioner").checked = false;
                 modal.find("resourceTypeServiceRequest").checked = false;
                 modal.find("resourceTypeMedicationRequest").checked = false;
 
@@ -93,7 +94,7 @@
 
                     var obervationFilters = JSON.parse(syncFhirProfile.syncFhirProfile.resourceSearchParameter).observationFilter.code;
 
-                    var episodeOfCareFilters = JSON.parse(syncFhirProfile.syncFhirProfile.resourceSearchParameter).episodeOfCareFilter.type;
+                    var episodeOfCareFilters = JSON.parse(syncFhirProfile.syncFhirProfile.resourceSearchParameter).episodeofcareFilter.type;
 
 
                     modal.find("#encounterTypeUUIDS").val(encounterFilters);
@@ -419,6 +420,17 @@
                                                                     <label class="form-check-label"
                                                                            for="resourceTypeMedicationRequest">
                                                                         MedicationRequest (Medication Orders)
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input type="checkbox"
+                                                                           id="resourceTypePractitioner"
+                                                                           name="resourceType"
+                                                                           class="resourceType"
+                                                                           value="Practitioner">
+                                                                    <label class="form-check-label"
+                                                                           for="resourceTypePractitioner">
+                                                                        Practitioner (Provider)
                                                                     </label>
                                                                 </div>
                                                             </div>

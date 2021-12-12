@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
 @Component
 @Setter(AccessLevel.PACKAGE)
 public class FhirEpisodeOfCareDaoImpl extends BaseFhirDao<PatientProgram> implements FhirEpisodeOfCareDao {
+
 	
 	@Override
 	protected void setupSearchParams(Criteria criteria, SearchParameterMap theParams) {

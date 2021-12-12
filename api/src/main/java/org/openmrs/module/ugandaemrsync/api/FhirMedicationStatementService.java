@@ -8,28 +8,22 @@
  * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.module.ugandaemrsync.api;
-
-import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
-import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.ReferenceAndListParam;
 import ca.uhn.fhir.rest.param.TokenAndListParam;
-import org.hl7.fhir.r4.model.EpisodeOfCare;
+import org.hl7.fhir.r4.model.MedicationStatement;
 import org.openmrs.module.fhir2.api.FhirService;
-
 import javax.annotation.Nonnull;
-import java.util.HashSet;
 
-public interface FhirEpisodeOfCareService extends FhirService<EpisodeOfCare> {
-	
-	EpisodeOfCare get(@Nonnull String uuid);
-	
-	EpisodeOfCare create(@Nonnull EpisodeOfCare episodeOfCare);
-	
-	EpisodeOfCare update(@Nonnull String uuid, @Nonnull EpisodeOfCare episodeOfCare);
-	
-	EpisodeOfCare delete(@Nonnull String uuid);
-	
-	IBundleProvider searchForEpisodeOfCares(ReferenceAndListParam patient, ReferenceAndListParam type, TokenAndListParam id,
-                                        DateRangeParam lastUpdated, HashSet<Include> includes, HashSet<Include> revIncludes);
+public interface FhirMedicationStatementService extends FhirService<MedicationStatement> {
+
+	MedicationStatement get(@Nonnull String uuid);
+
+	MedicationStatement create(@Nonnull MedicationStatement medicationStatement);
+
+	MedicationStatement update(@Nonnull String uuid, @Nonnull MedicationStatement medicationStatement);
+
+	MedicationStatement delete(@Nonnull String uuid);
+
+	IBundleProvider searchForMedicationStatements(TokenAndListParam category, TokenAndListParam code, TokenAndListParam identifier, ReferenceAndListParam patientReference, TokenAndListParam identifier1, TokenAndListParam status);
 }

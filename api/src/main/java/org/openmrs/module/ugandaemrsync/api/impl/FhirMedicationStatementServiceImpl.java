@@ -18,11 +18,8 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.poi.ss.formula.functions.T;
-import org.hl7.fhir.instance.model.api.IAnyResource;
-import org.hl7.fhir.r4.model.EpisodeOfCare;
-import org.openmrs.PatientProgram;
-import org.openmrs.api.ProgramWorkflowService;
+import org.hl7.fhir.r4.model.MedicationStatement;
+import org.hl7.fhir.r4.model.Observation;
 import org.openmrs.module.fhir2.FhirConstants;
 import org.openmrs.module.fhir2.api.dao.FhirDao;
 import org.openmrs.module.fhir2.api.impl.BaseFhirService;
@@ -30,43 +27,38 @@ import org.openmrs.module.fhir2.api.search.SearchQuery;
 import org.openmrs.module.fhir2.api.search.SearchQueryInclude;
 import org.openmrs.module.fhir2.api.search.param.SearchParameterMap;
 import org.openmrs.module.fhir2.api.translators.OpenmrsFhirTranslator;
-import org.openmrs.module.ugandaemrsync.api.FhirEpisodeOfCareService;
-import org.openmrs.module.ugandaemrsync.api.dao.FhirEpisodeOfCareDao;
-import org.openmrs.module.ugandaemrsync.api.translators.EpisodeOfCareTranslator;
-import org.openmrs.module.ugandaemrsync.api.translators.impl.EpisodeOfCareTranslatorImpl;
+import org.openmrs.module.ugandaemrsync.api.FhirMedicationStatementService;
+import org.openmrs.module.ugandaemrsync.api.dao.FhirMedicationStatementDao;
+import org.openmrs.module.ugandaemrsync.api.translators.MedicationStatementTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 @Transactional
 @Setter(AccessLevel.PACKAGE)
 @Getter(AccessLevel.PROTECTED)
-public class FhirEpisodeOfCareServiceImpl extends BaseFhirService<EpisodeOfCare, PatientProgram> implements FhirEpisodeOfCareService {
+public class FhirMedicationStatementServiceImpl extends BaseFhirService<MedicationStatement, Observation> implements FhirMedicationStatementService {
 
     @Autowired
-    private FhirEpisodeOfCareDao dao;
+    private FhirMedicationStatementDao dao;
 
     @Autowired
-    private EpisodeOfCareTranslator<PatientProgram> translator;
+    private MedicationStatementTranslator<Observation> translator;
 
     @Autowired
-    private SearchQueryInclude<EpisodeOfCare> searchQueryInclude;
+    private SearchQueryInclude<MedicationStatement> searchQueryInclude;
 
     @Autowired
-    private SearchQuery<PatientProgram, EpisodeOfCare, FhirEpisodeOfCareDao, EpisodeOfCareTranslator<PatientProgram>, SearchQueryInclude<EpisodeOfCare>> searchQuery;
+    private SearchQuery<Observation, MedicationStatement, FhirMedicationStatementDao, MedicationStatementTranslator<Observation>, SearchQueryInclude<MedicationStatement>> searchQuery;
 
     @Override
-    public EpisodeOfCare get(@Nonnull String uuid) {
+    public MedicationStatement get(@Nonnull String uuid) {
 
-        EpisodeOfCare result = null;
+        MedicationStatement result = null;
         try {
             result = super.get(uuid);
         } catch (ResourceNotFoundException e) {
@@ -77,20 +69,20 @@ public class FhirEpisodeOfCareServiceImpl extends BaseFhirService<EpisodeOfCare,
     }
 
     @Override
-    protected FhirDao<PatientProgram> getDao() {
+    protected FhirDao<Observation> getDao() {
         return this.dao;
     }
 
 
     @Override
-    protected OpenmrsFhirTranslator<PatientProgram, EpisodeOfCare> getTranslator() {
+    protected OpenmrsFhirTranslator<Observation, MedicationStatement> getTranslator() {
         return this.translator;
     }
 
 
     @Override
     @Transactional(readOnly = true)
-    public IBundleProvider searchForEpisodeOfCares(ReferenceAndListParam patient, ReferenceAndListParam type, TokenAndListParam id,
+    public IBundleProvider searchForMedicationStatements(ReferenceAndListParam patient, ReferenceAndListParam type, TokenAndListParam id,
                                                    DateRangeParam lastUpdated, HashSet<Include> includes, HashSet<Include> revIncludes) {
         SearchParameterMap theParams = new SearchParameterMap().addParameter(FhirConstants.DATE_RANGE_SEARCH_HANDLER, lastUpdated)
                 .addParameter(FhirConstants.PARTICIPANT_REFERENCE_SEARCH_HANDLER, patient)

@@ -25,23 +25,4 @@ public interface EpisodeOfCareTranslator<T> extends OpenmrsFhirUpdatableTranslat
      */
     @Override
     EpisodeOfCare toFhirResource(@Nonnull T patientProgram);
-
-    /**
-     * Maps {@link EpisodeOfCare} to {@link org.openmrs.PatientProgram}
-     *
-     * @param episodeOfCare the FHIR episodeOfCare to translate
-     * @return the corresponding OpenMRS PatientProgram
-     */
-    @Override
-    T toOpenmrsType(@Nonnull EpisodeOfCare episodeOfCare);
-
-    /**
-     * Maps a {@link EpisodeOfCare} to an existing {@link org.openmrs.PatientProgram}
-     *
-     * @param existingEncounter the existingEncounter to update
-     * @param episodeOfCare     the encounter to map
-     * @return an updated version of the existingEncounter
-     */
-    @Override
-    T toOpenmrsType(@Nonnull T existingEncounter, @Nonnull EpisodeOfCare episodeOfCare);
 }
