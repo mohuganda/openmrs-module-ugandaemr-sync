@@ -66,6 +66,27 @@
 
     }
 
+    function sendPayLoadInPortionsWithIndicators(dataObject,chunkSize){
+        var groupArrayLength = dataObject.group.length;
+        console.log(groupArrayLength);
+
+        if(groupArrayLength % chunkSize===0){
+            var myArray = dataObject.group;
+            var setNumber = groupArrayLength/chunkSize;
+            console.log(setNumber);
+
+            for (var i=0,len=myArray.length; i<len; i+=chunkSize){
+                dataObject.group = [];
+                dataObject.group.push(myArray.slice(i,i+chunkSize));
+                console.log("Sending batch "+ (i+chunkSize)/chunkSize)
+                console.log(dataObject);
+                // sendData(dataObject);
+            }
+            console.log("All batches successfully sent")
+        }
+
+    }
+
     function stripDisplayAttributes(dataObject){
         var arrayLength = dataObject.group.length;
         if(arrayLength > 0){
@@ -172,8 +193,9 @@
 
         jq('#sendData').click(function(){
             previewBody = stripDisplayAttributes(previewBody);
-            var data = JSON.stringify(previewBody,null,0);
-            sendData(data);
+            // var data = JSON.stringify(previewBody,null,0);
+            // sendPayLoadInPortionsWithIndicators(previewBody,3);
+            sendData(previewBody);
         });
 
        if(previewBody!=null){
