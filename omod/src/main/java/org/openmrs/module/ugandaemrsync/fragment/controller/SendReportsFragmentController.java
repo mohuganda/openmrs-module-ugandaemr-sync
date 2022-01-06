@@ -90,7 +90,6 @@ public class SendReportsFragmentController {
 			Date endDate = dateFormat.parse(periodEndDate);
 			String bodyText="";
 			bodyText = generateReport(uuid,startDate,endDate);
-			bodyText = trimJsonBody(bodyText);
 			if(bodyText!=""){
 				String displayTitle= getReportDefinitionService().getDefinitionByUuid(uuid).getName()+" For Period \n"+
 						displayDateFormat.format(startDate) +" To " +displayDateFormat.format(endDate);
@@ -206,12 +205,6 @@ public class SendReportsFragmentController {
 		fstreamItem.close();
 
 		return strOutput;
-	}
-
-	public String  trimJsonBody(String jsonObject) throws Exception {
-		jsonObject =  jsonObject.trim();
-		jsonObject =  jsonObject.replaceAll("[\\n\\t ]", "");
-		return jsonObject;
 	}
 	
 }

@@ -26,10 +26,10 @@
             var dataValueToDisplay = "";
             dataValueToDisplay += "<tr>";
 
-                indicatorCode = rowValue.code.coding[0].code;
-                total_Display_Name = rowValue.stratifier[0].code[0].coding[0].display;
-                var total_Display_Value = rowValue.measureScore.value;
-                var disaggregated_rows = rowValue.stratifier[0].stratum;
+            indicatorCode = rowValue.code.coding[0].code;
+            total_Display_Name = rowValue.stratifier[0].code[0].coding[0].display;
+            var total_Display_Value = rowValue.measureScore.value;
+            var disaggregated_rows = rowValue.stratifier[0].stratum;
 
             var rowspanAttribute="rowspan= \""+disaggregated_rows.length+"\"";
 
@@ -67,24 +67,19 @@
     }
 
     function sendPayLoadInPortionsWithIndicators(dataObject,chunkSize){
+        var objectsToSend =[];
         var groupArrayLength = dataObject.group.length;
-        console.log(groupArrayLength);
 
         if(groupArrayLength % chunkSize===0){
-            var myArray = dataObject.group;
-            var setNumber = groupArrayLength/chunkSize;
-            console.log(setNumber);
 
-            for (var i=0,len=myArray.length; i<len; i+=chunkSize){
-                dataObject.group = [];
-                dataObject.group.push(myArray.slice(i,i+chunkSize));
-                console.log("Sending batch "+ (i+chunkSize)/chunkSize)
-                console.log(dataObject);
-                // sendData(dataObject);
+            for (var i=0,len=dataObject.group.length; i<len; i+=chunkSize){
+                var slicedArray = dataObject.group.slice(i,i+chunkSize);
+                dataObject.group =[];
+                 dataObject.group =slicedArray;
+                objectsToSend.push(dataObject);
             }
-            console.log("All batches successfully sent")
         }
-
+        return objectsToSend;
     }
 
     function stripDisplayAttributes(dataObject){
@@ -95,11 +90,11 @@
             for (var i=0; i < myArray.length; i++) {
                 var myObject = myArray[i];
                 var attr1 = myObject.code.coding;
-               attr1 = attr1.map(u=>({"code":u.code}));
-               myArray[i].code.coding=attr1;
+                attr1 = attr1.map(u=>({"code":u.code}));
+                myArray[i].code.coding=attr1;
 
-               var attr2 = myObject.stratifier[0];
-               var attr2Child =attr2.code
+                var attr2 = myObject.stratifier[0];
+                var attr2Child =attr2.code
                 if(attr2Child.length>0){
                     for(var x=0; x < attr2Child.length;x++){
                         var myObject = attr2Child[x];
@@ -128,9 +123,9 @@
 
 
                         }else{
-                        var child = myObject.value.coding;
-                        child = child.map(u =>({"code":u.code}));
-                        attr2Child1[k].value.coding = child;
+                            var child = myObject.value.coding;
+                            child = child.map(u =>({"code":u.code}));
+                            attr2Child1[k].value.coding = child;
                         }
 
                     }
@@ -193,9 +188,10 @@
 
         jq('#sendData').click(function(){
             previewBody = stripDisplayAttributes(previewBody);
-            // var data = JSON.stringify(previewBody,null,0);
-            // sendPayLoadInPortionsWithIndicators(previewBody,3);
-            sendData(previewBody);
+            var objectsToSend = sendPayLoadInPortionsWithIndicators(previewBody,3);
+            var data = JSON.stringify(objectsToSend,null,0);
+            console.log(data);
+            // sendData(data);
         });
 
        if(previewBody!=null){
@@ -243,12 +239,12 @@
                 ])}
 
                 <p></p>
-                    <span>
-                        <button type="submit" class="confirm right" ng-class="{disabled: submitting}" ng-disabled="submitting">
-                            <i class="icon-play"></i>
-                            Run
-                        </button>
-                    </span>
+                <span>
+                    <button type="submit" class="confirm right" ng-class="{disabled: submitting}" ng-disabled="submitting">
+                        <i class="icon-play"></i>
+                        Run
+                    </button>
+                </span>
 
             </fieldset>
             <input type="hidden" name="errorMessage" id="errorMessage" value="${errorMessage}">

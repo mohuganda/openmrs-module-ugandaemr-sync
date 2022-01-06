@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.json.JSONArray;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.scheduler.tasks.AbstractTask;
@@ -67,6 +68,8 @@ public class SendReportsTask extends AbstractTask {
         log.info("Sending Report to server ");
 
         if(previewBody!="") {
+            JSONArray array = new JSONArray(previewBody);
+            previewBody = array.getJSONObject(0).toString();
             HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(reportsServerUrlEndPoint, previewBody, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
             if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                 sent = true;
