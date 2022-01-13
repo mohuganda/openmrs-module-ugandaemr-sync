@@ -37,6 +37,8 @@ import org.openmrs.module.ugandaemrsync.model.SyncFhirResource;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.module.ugandaemrsync.util.UgandaEMRSyncUtil;
 import org.openmrs.parameter.EncounterSearchCriteria;
+import org.openmrs.util.OpenmrsDateFormat;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.context.ApplicationContext;
 
 import javax.validation.constraints.NotNull;
@@ -192,7 +194,7 @@ public class SyncFHIRRecord {
             return "";
         }
 
-        String organizationString = String.format("{\"reference\": \"Organization/%s\"}", healthCenterIdentifier);
+        String organizationString = String.format("{\"reference\":\"Organization/%s\",\"type\":\"Organization\",\"identifier\":{\"use\":\"official\",\"value\":\"%s\"},\"display\":\"%s\"}", healthCenterIdentifier, healthCenterIdentifier, healthCenterName);
         JSONObject finalPayLoadJson = new JSONObject(payload);
         JSONObject organization = new JSONObject(organizationString);
 
@@ -374,15 +376,17 @@ public class SyncFHIRRecord {
         List<org.openmrs.PatientProgram> patientProgramList;
 
         if (syncFhirProfile.getCaseBasedPrimaryResourceType().equals("EpisodeOfCare")) {
-            List<org.openmrs.Program> programs = new ArrayList<>();
-            patientProgramList = Context.getProgramWorkflowService().getPatientPrograms(null, programs);
+            Collection<Program> programs = new ArrayList<>();
+            Program program = Context.getProgramWorkflowService().getProgramByUuid(syncFhirProfile.getCaseBasedPrimaryResourceTypeId());
+            patientProgramList = Context.getProgramWorkflowService().getPatientPrograms(null, program, null, null, null, null, false);
 
-            programs.add(Context.getProgramWorkflowService().getProgramByUuid(syncFhirProfile.getCaseBasedPrimaryResourceTypeId()));
 
             for (org.openmrs.PatientProgram patientProgram : patientProgramList) {
                 org.openmrs.Patient patient = patientProgram.getPatient();
-                String caseIdentifier = patientProgram.getUuid();
-                saveSyncFHIRCase(syncFhirProfile, currentDate, patient, caseIdentifier);
+                if (!patient.getVoided()) {
+                    String caseIdentifier = patientProgram.getUuid();
+                    saveSyncFHIRCase(syncFhirProfile, currentDate, patient, caseIdentifier);
+                }
             }
         } else if (syncFhirProfile.getCaseBasedPrimaryResourceType().equals("Encounter")) {
             List<org.openmrs.EncounterType> encounterTypes = new ArrayList<>();
@@ -418,23 +422,27 @@ public class SyncFHIRRecord {
                 }
             }
 
-        } else if (syncFhirProfile.getCaseBasedPrimaryResourceType().equals("Order")){
+        } else if (syncFhirProfile.getCaseBasedPrimaryResourceType().equals("Order")) {
             OrderService orderService = Context.getOrderService();
             OrderType orderType = orderService.getOrderTypeByUuid(syncFhirProfile.getCaseBasedPrimaryResourceTypeId());
-            List list=  Context.getAdministrationService().executeSQL("select Distinct patient_id from  orders where date_activated <= now()",true);
-            List<Patient> patientList=new ArrayList<>();
 
+            if (orderType != null) {
 
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                String formattedDate = formatter.format(new Date());
 
-            if (list.size() > 0) {
-                for (Object o : list) {
-                    patientList.add( Context.getPatientService().getPatient(Integer.parseUnsignedInt(((ArrayList) o).get(0).toString())));
+                List list = Context.getAdministrationService().executeSQL("select Distinct patient_id from  orders where order_type_id = " + orderType.getId() + "  AND date_activated >= " + formattedDate + " and date_stopped is NULL ;", true);
+                List<Patient> patientList = new ArrayList<>();
 
+                if (list.size() > 0) {
+                    for (Object o : list) {
+                        patientList.add(Context.getPatientService().getPatient(Integer.parseUnsignedInt(((ArrayList) o).get(0).toString())));
+                    }
                 }
-            }
-            for (Patient patient : patientList) {
+                for (Patient patient : patientList) {
                     String patientIdentifier = patient.getPatientId().toString();
                     saveSyncFHIRCase(syncFhirProfile, currentDate, patient, patientIdentifier);
+                }
             }
         }
     }
@@ -546,9 +554,9 @@ public class SyncFHIRRecord {
                     resources.addAll(groupInCaseBundle("Person", getPersonResourceBundle(syncFhirProfile, personList, syncFHIRCase), syncFhirProfile.getPatientIdentifierType().getName()));
                     break;
                 case "ServiceRequest":
-                        OrderService orderService= Context.getOrderService();
-                        List<Order> testOrders=orderService.getActiveOrders(syncFHIRCase.getPatient(),orderService.getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID),null,null);
-                        resources.addAll(groupInCaseBundle("ServiceRequest", getServiceRequestResourceBundle(testOrders), syncFhirProfile.getPatientIdentifierType().getName()));
+                    OrderService orderService = Context.getOrderService();
+                    List<Order> testOrders = orderService.getActiveOrders(syncFHIRCase.getPatient(), orderService.getOrderTypeByUuid(OrderType.TEST_ORDER_TYPE_UUID), null, null);
+                    resources.addAll(groupInCaseBundle("ServiceRequest", getServiceRequestResourceBundle(testOrders), syncFhirProfile.getPatientIdentifierType().getName()));
                     break;
             }
         }

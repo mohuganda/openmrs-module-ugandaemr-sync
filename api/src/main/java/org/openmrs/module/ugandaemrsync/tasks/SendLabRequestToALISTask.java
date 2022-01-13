@@ -9,16 +9,21 @@ import org.openmrs.module.ugandaemrsync.server.SyncFHIRRecord;
 import org.openmrs.scheduler.tasks.AbstractTask;
 
 public class SendLabRequestToALISTask extends AbstractTask {
+
     Log log = LogFactory.getLog(SyncFHIRRecord.class);
+
     @Override
     public void execute() {
+
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
         SyncFhirProfile syncFhirProfile = ugandaEMRSyncService.getSyncFhirProfileByScheduledTaskName("Send Lab Request to ALIS Task");
         SyncFHIRRecord syncFHIRRecord = new SyncFHIRRecord();
 
-        log.info("Generating Resources and cases for Profile "+syncFhirProfile.getName());
+        if(syncFhirProfile.getProfileEnabled()) {
+            log.info("Generating Resources and cases for Profile " + syncFhirProfile.getName());
 
-        syncFHIRRecord.generateCaseBasedFHIRResourceBundles(syncFhirProfile);
+            syncFHIRRecord.generateCaseBasedFHIRResourceBundles(syncFhirProfile);
+        }
 
     }
 }
