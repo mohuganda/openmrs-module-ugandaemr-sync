@@ -26,10 +26,10 @@
             var dataValueToDisplay = "";
             dataValueToDisplay += "<tr>";
 
-            indicatorCode = rowValue.code.coding[0].code;
-            total_Display_Name = rowValue.stratifier[0].code[0].coding[0].display;
-            var total_Display_Value = rowValue.measureScore.value;
-            var disaggregated_rows = rowValue.stratifier[0].stratum;
+                indicatorCode = rowValue.code.coding[0].code;
+                total_Display_Name = rowValue.stratifier[0].code[0].coding[0].display;
+                var total_Display_Value = rowValue.measureScore.value;
+                var disaggregated_rows = rowValue.stratifier[0].stratum;
 
             var rowspanAttribute="rowspan= \""+disaggregated_rows.length+"\"";
 
@@ -71,12 +71,16 @@
         var groupArrayLength = dataObject.group.length;
 
         if(groupArrayLength % chunkSize===0){
+            dataObject = stripDisplayAttributes(dataObject);
+            var myArray = dataObject.group;
 
-            for (var i=0,len=dataObject.group.length; i<len; i+=chunkSize){
-                var slicedArray = dataObject.group.slice(i,i+chunkSize);
-                dataObject.group =[];
-                 dataObject.group =slicedArray;
-                objectsToSend.push(dataObject);
+            var setNumber = groupArrayLength/chunkSize;
+            for (var i=0,len=myArray.length; i<len; i+=chunkSize){
+                var slicedArray = myArray.slice(i,i+chunkSize);
+                delete dataObject.group;
+                var reportObject =Object.assign({},dataObject);
+                reportObject.group =  myArray.slice(i,i+chunkSize);
+                objectsToSend.push(reportObject);
             }
         }
         return objectsToSend;
@@ -188,10 +192,10 @@
 
         jq('#sendData').click(function(){
             previewBody = stripDisplayAttributes(previewBody);
-            var objectsToSend = sendPayLoadInPortionsWithIndicators(previewBody,3);
-            var data = JSON.stringify(objectsToSend,null,0);
-            console.log(data);
-            // sendData(data);
+            var data = sendPayLoadInPortionsWithIndicators(previewBody,3);
+            // data = JSON.stringify(previewBody,null,0);
+             data = JSON.stringify(data);
+            sendData(data);
         });
 
        if(previewBody!=null){

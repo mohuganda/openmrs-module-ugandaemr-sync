@@ -69,17 +69,22 @@ public class SendReportsTask extends AbstractTask {
 
         if(previewBody!="") {
             JSONArray array = new JSONArray(previewBody);
-            previewBody = array.getJSONObject(0).toString();
-            HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(reportsServerUrlEndPoint, previewBody, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
-            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-                sent = true;
-                log.info("Report  has been sent to central server");
-            } else {
-                log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: " + httpResponse.getStatusLine().getReasonPhrase());
+            for(int i =0 ; i < array.length();i++){
+                String payload = array.getJSONObject(i).toString();
+               sendPost(payload,reportsServerUrlEndPoint);
             }
         }
     }
 
+    public void sendPost(String requestBody,String reportsServerUrlEndPoint){
+        HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(reportsServerUrlEndPoint, requestBody, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
+        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+            sent = true;
+            log.info("Report  has been sent to central server");
+        } else {
+            log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: " + httpResponse.getStatusLine().getReasonPhrase());
+        }
+    }
 
 
 
