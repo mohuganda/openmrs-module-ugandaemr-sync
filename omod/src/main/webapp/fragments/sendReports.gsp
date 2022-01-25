@@ -10,6 +10,7 @@
     ];
 
     var previewBody;
+    var uuid;
 
     function clearDisplayReport(){
         jq("#display-report").empty();
@@ -154,12 +155,13 @@
         });
     }
 
-    function sendData(jsonData) {
+    function sendData(jsonData,urlEndPoint) {
 
         jq.ajax({
             url:'${ui.actionLink("ugandaemrsync","sendReports","sendData")}',
             type: "POST",
-            data: {body:jsonData},
+            data: {body:jsonData,
+                    uuid:urlEndPoint},
             dataType:'json',
 
             beforeSend : function()
@@ -181,6 +183,7 @@
     }
     jq(document).ready(function () {
         previewBody =${previewBody};
+        uuid ="${reportuuid}";
 
         jq("#loader").hide();
         jq("#submit-button").css('display', 'none');
@@ -195,7 +198,7 @@
             var data = sendPayLoadInPortionsWithIndicators(previewBody,3);
             // data = JSON.stringify(previewBody,null,0);
              data = JSON.stringify(data);
-            sendData(data);
+            sendData(data,uuid);
         });
 
        if(previewBody!=null){

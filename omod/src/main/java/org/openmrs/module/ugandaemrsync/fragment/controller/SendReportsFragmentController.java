@@ -46,9 +46,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-
-import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.GP_SEND_NEXT_GEN_REPORTS_SERVER_REPORT_UUIDS;
-import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.JSON_REPORT_RENDERER_TYPE;
+import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
 
 /**
  *  * Controller for a fragment that sends a report 
@@ -60,16 +58,23 @@ public class SendReportsFragmentController {
 
 
 	SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-	String reportUuids=  syncGlobalProperties.getGlobalProperty(GP_SEND_NEXT_GEN_REPORTS_SERVER_REPORT_UUIDS);
+	String reportUuids=  syncGlobalProperties.getGlobalProperty(GP_SEND_NEXT_GEN_REPORTS_SERVER_REPORT_UUIDS)+ ","+ syncGlobalProperties.getGlobalProperty(GP_SEND_HMIS_REPORTS_SERVER_REPORT_UUIDS);
 	List<ReportDefinition> rds = getReportDefinitions(reportUuids);
 
+	String merUrlEndPoint = syncGlobalProperties.getGlobalProperty(GP_SEND_NEXT_GEN_REPORTS_SERVER_URL);
+	String hmisUrlEndPoint = syncGlobalProperties.getGlobalProperty(GP_SEND_HMIS_REPORTS_SERVER_URL);
 
+	String hmisReportUuids=  syncGlobalProperties.getGlobalProperty(GP_SEND_HMIS_REPORTS_SERVER_REPORT_UUIDS);
+	String merReportUuids=  syncGlobalProperties.getGlobalProperty(GP_SEND_NEXT_GEN_REPORTS_SERVER_REPORT_UUIDS);
+	List<String> hmisReports = Arrays.asList(hmisReportUuids.split(","));
+	List<String> merReports = Arrays.asList(merReportUuids.split(","));
 
 	public void controller(@SpringBean PageModel pageModel, @RequestParam(value = "breadcrumbOverride",
 			required = false) String breadcrumbOverride) {
 
 		pageModel.put("breadcrumbOverride", breadcrumbOverride);
 		pageModel.put("previewBody",null);
+		pageModel.put("reportuuid",null);
 		pageModel.put("reportDefinitions", rds);
 		pageModel.put("errorMessage", "");
 		pageModel.put("report_title","");
@@ -94,6 +99,7 @@ public class SendReportsFragmentController {
 				String displayTitle= getReportDefinitionService().getDefinitionByUuid(uuid).getName()+" For Period \n"+
 						displayDateFormat.format(startDate) +" To " +displayDateFormat.format(endDate);
 				pageModel.put("previewBody",bodyText);
+				pageModel.put("reportuuid",uuid);
 				pageModel.put("errorMessage", "");
 				pageModel.put("report_title",displayTitle);
 
@@ -102,6 +108,7 @@ public class SendReportsFragmentController {
 		}catch (Exception e){
 			pageModel.put("errorMessage", e.getMessage());
 			pageModel.put("previewBody",null);
+			pageModel.put("reportuuid",null);
 			pageModel.put("report_title","");
 		}
 		pageModel.put("breadcrumbOverride", breadcrumbOverride);
@@ -109,8 +116,7 @@ public class SendReportsFragmentController {
 	}
 
 
-	public SimpleObject sendData(HttpServletRequest request,
-								 @RequestParam("body") String body){
+	public SimpleObject sendData(HttpServletRequest request,@RequestParam("body") String body,@RequestParam("uuid")String uuid){
 
 		String response="";
 		String status="";
@@ -118,7 +124,15 @@ public class SendReportsFragmentController {
 
 		if(jsonData!=null){
 
-			sendReportsTask= new SendReportsTask(jsonData);
+			String reportsServerUrlEndPoint = "";
+			if(hmisReports.contains(uuid)){
+				reportsServerUrlEndPoint = hmisUrlEndPoint;
+			}else if(merReports.contains(uuid)){
+				reportsServerUrlEndPoint = merUrlEndPoint;
+			}
+
+			System.out.println(reportsServerUrlEndPoint);
+			sendReportsTask= new SendReportsTask(jsonData,reportsServerUrlEndPoint);
 			sendReportsTask.execute();
 			if(sendReportsTask.isSent()){
 				response= "Report successfully sent";

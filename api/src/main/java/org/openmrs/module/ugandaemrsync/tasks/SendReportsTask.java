@@ -26,20 +26,22 @@ public class SendReportsTask extends AbstractTask {
 
      String previewBody;
 
+     String urlEndPoint;
+
      SimpleObject response;
 
     public SendReportsTask() {
         super();
     }
 
-    public SendReportsTask(String previewBody) {
+
+    public SendReportsTask(String previewBody,String urlEndPoint) {
         this.previewBody = previewBody;
+        this.urlEndPoint = urlEndPoint;
     }
 
     UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
-
     SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-
 
     @Override
     public void execute() {
@@ -52,26 +54,22 @@ public class SendReportsTask extends AbstractTask {
             return;
         }
 
-        String reportsServerUrlEndPoint = syncGlobalProperties.getGlobalProperty(GP_SEND_NEXT_GEN_REPORTS_SERVER_URL);
-        String reportsBaseUrl = ugandaEMRHttpURLConnection.getBaseURL(reportsServerUrlEndPoint);
-
-
         //Check internet connectivity
         if (!ugandaEMRHttpURLConnection.isConnectionAvailable()) {
             return;
         }
 
-        //Check destination server availability
-        if (!ugandaEMRHttpURLConnection.isServerAvailable(reportsBaseUrl)) {
-            return;
-        }
         log.info("Sending Report to server ");
 
-        if(previewBody!="") {
+        if(previewBody!=""&& urlEndPoint !="") {
+
+            if (!ugandaEMRHttpURLConnection.isServerAvailable(urlEndPoint)) {
+                return;
+            }
             JSONArray array = new JSONArray(previewBody);
             for(int i =0 ; i < array.length();i++){
                 String payload = array.getJSONObject(i).toString();
-               sendPost(payload,reportsServerUrlEndPoint);
+               sendPost(payload, urlEndPoint);
             }
         }
     }
