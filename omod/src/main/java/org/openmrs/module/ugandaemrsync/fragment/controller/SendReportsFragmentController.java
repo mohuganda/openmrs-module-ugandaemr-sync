@@ -138,7 +138,7 @@ public class SendReportsFragmentController {
 				response= "Report successfully sent";
 				status="success";
 			}else{
-				response= "Report not sent";
+				response= "Report not sent \n Regenerate Report and submit again";
 				status="failure";
 			}
 		}else{

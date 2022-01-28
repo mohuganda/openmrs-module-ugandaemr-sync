@@ -72,7 +72,6 @@
         var groupArrayLength = dataObject.group.length;
 
         if(groupArrayLength % chunkSize===0){
-            dataObject = stripDisplayAttributes(dataObject);
             var myArray = dataObject.group;
 
             var setNumber = groupArrayLength/chunkSize;
@@ -194,8 +193,8 @@
         }
 
         jq('#sendData').click(function(){
-            previewBody = stripDisplayAttributes(previewBody);
-            var data = sendPayLoadInPortionsWithIndicators(previewBody,3);
+            var strippedPreviewBody = stripDisplayAttributes(previewBody);
+            var data = sendPayLoadInPortionsWithIndicators(strippedPreviewBody,3);
             // data = JSON.stringify(previewBody,null,0);
              data = JSON.stringify(data);
             sendData(data,uuid);
