@@ -1,6 +1,38 @@
 <%
     def breadcrumbMiddle = breadcrumbOverride ?: '';
 %>
+<style type="text/css">
+.grey {
+    background-color:#c7c5c5 !important;
+}
+
+/* Tooltip container */
+.tooltips {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip text */
+.tooltips .tooltiptext {
+    visibility: hidden;
+    left: 0;
+    top: 110%;
+    width: 200px;
+    background-color:#c7c5c5;
+    color: #000000;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    text-wrap: none !important;
+    position: absolute;
+    z-index: 1
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltips:hover .tooltiptext {
+    visibility: visible;
+}
+</style>
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
@@ -16,7 +48,7 @@
         jq("#display-report").empty();
         jq('#submit-button').empty();
     }
-    function displayReport(report){
+    function displayMERReport(report){
         var reportDataString="";
         var tableHeader = "<table><thead><tr><th>Indicator</th><th>Data Element</th><th>Value</th></thead><tbody>";
         var tableFooter = "</tbody></table>";
@@ -64,6 +96,76 @@
         jq("#display-report").append(tableHeader + reportDataString + tableFooter);
         jq('#submit-button').show();
 
+
+    }
+
+    function displayHMISReport(report){
+        var reportDataString="";
+        var tableHeader = "<table><thead><tr rowspan='2'><th>Data element</th>";
+        var sexRow = "<tr><th></th>";
+        var endTableHeader ="</thead><tbody>";
+        var tableFooter = "</tbody></table>";
+        var ageHeaders="";
+        var sexHeaders="";
+        var total_Value ="";
+        var dataElementsNo;
+
+        jq.each(report.group, function (index, rowValue) {
+            var indicatorCode="";
+            var total_Display_Name="";
+            var dataValueToDisplay = "";
+            dataValueToDisplay += "<tr>";
+
+
+
+            indicatorCode = rowValue.code.coding[0].code;
+            var indicatorDisplay = rowValue.code.coding[0].display;
+            // total_Display_Name = rowValue.stratifier[0].code[0].coding[0].display;
+             total_Value = rowValue.measureScore.value;
+            dataValueToDisplay += "<td class='tooltips'>"+indicatorCode+ "<span class='tooltiptext'>"+indicatorDisplay+"</span>"+"</td>";
+
+            if(rowValue.stratifier.length!==0) {
+                var disaggregated_rows = rowValue.stratifier[0].stratum;
+
+                jq.each(disaggregated_rows, function (key, obj) {
+                    var row_displayAgeKey = obj.component[0].value.coding[0].code;
+                    var row_displaySexKey = obj.component[1].value.coding[0].code;
+                    var row_displayValue = obj.measureScore.value;
+                    var row_displayAgeName = obj.component[0].value.coding[0].display;
+
+                    if (index == 0) {
+                        if (key % 2) {
+                            ageHeaders = ageHeaders + "<th colspan='2'>" + row_displayAgeName + "</th>";
+                        }
+                        sexHeaders = sexHeaders + "<th>" + row_displaySexKey + "</th>";
+                        dataElementsNo = disaggregated_rows.length;
+                    }
+
+                    dataValueToDisplay += "<td>" + row_displayValue + "</td>";
+
+                });
+            }else{
+                if(typeof dataElementsNo !=="undefined"){
+                    for(var x=1;x<=dataElementsNo;x++){
+                        dataValueToDisplay += "<td class='grey'></td>";
+                    }
+                }
+            }
+
+                dataValueToDisplay += "<td>" + total_Value + "</td>";
+
+            dataValueToDisplay += "</tr>";
+            reportDataString += dataValueToDisplay;
+        });
+        ageHeaders = ageHeaders + "<th></th>";
+        sexHeaders= sexHeaders+ "<th>Total</th>";
+
+        tableHeader +=ageHeaders +"</tr>";
+        sexRow+=sexHeaders + "</tr>";
+        tableHeader+=sexRow;
+
+        jq("#display-report").append(tableHeader+endTableHeader + reportDataString + tableFooter);
+        jq('#submit-button').show();
 
     }
 
@@ -201,7 +303,8 @@
         });
 
        if(previewBody!=null){
-           displayReport(previewBody);
+           // displayMERReport(previewBody);
+           displayHMISReport(previewBody);
        }
     });
 </script>
@@ -218,49 +321,17 @@
                 [ value: it.uuid, label: ui.message(it.name) ]
             }
 %>
+<div>
+    <button type="button" style="font-size: 25px" class="confirm" data-toggle="modal"
+            data-target="#run-report"  data-whatever="@mdo"> Run a report</button>
+</div>
 <div class="row">
-    <div class="col-md-4">
-        <form method="post" id="sendReports">
-            <fieldset>
-                <legend> Run the Report</legend>
-                ${ui.includeFragment("uicommons","field/dropDown",[
-                        formFieldName: "reportDefinition",
-                        label: "Report",
-                        hideEmptyLabel: false,
-                        options: renderingOptions
 
-                ])}
-
-                ${ ui.includeFragment("uicommons", "field/datetimepicker", [
-                        formFieldName: "startDate",
-                        label: "StartDate",
-                        useTime: false,
-                        defaultDate: ""
-                ])}
-                ${ ui.includeFragment("uicommons", "field/datetimepicker", [
-                        formFieldName: "endDate",
-                        label: "EndDate",
-                        useTime: false,
-                        defaultDate: ""
-                ])}
-
-                <p></p>
-                <span>
-                    <button type="submit" class="confirm right" ng-class="{disabled: submitting}" ng-disabled="submitting">
-                        <i class="icon-play"></i>
-                        Run
-                    </button>
-                </span>
-
-            </fieldset>
-            <input type="hidden" name="errorMessage" id="errorMessage" value="${errorMessage}">
-        </form>
-    </div>
-    <div class="col-md-8">
+    <div class="col-md-12">
         <div id="loader">
             <img src="/openmrs/ms/uiframework/resource/uicommons/images/spinner.gif">
         </div>
-        <div id="display-report" style="height:500px;overflow-y:scroll;">
+        <div id="display-report" style="overflow-y:scroll;">
             <div class='modal-header'> <label style="text-align: center"><h1> ${report_title}</h1></label></div>
         </div>
         <div id="submit-button">
@@ -268,6 +339,57 @@
         </div>
     </div>
 
+</div>
+
+<div class="modal fade" id="run-report" tabindex="-1" role="dialog"
+     aria-labelledby="addEditSyncTaskTypeModelLabel"
+     aria-hidden="true">
+    <div class="modal-dialog  modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEditSyncTaskTypeModelLabel">Run the Report</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div>
+                <form method="post" id="sendReports">
+                    <fieldset>
+                        ${ui.includeFragment("uicommons","field/dropDown",[
+                                formFieldName: "reportDefinition",
+                                label: "Report",
+                                hideEmptyLabel: false,
+                                options: renderingOptions
+
+                        ])}
+
+                        ${ ui.includeFragment("uicommons", "field/datetimepicker", [
+                                formFieldName: "startDate",
+                                label: "StartDate",
+                                useTime: false,
+                                defaultDate: ""
+                        ])}
+                        ${ ui.includeFragment("uicommons", "field/datetimepicker", [
+                                formFieldName: "endDate",
+                                label: "EndDate",
+                                useTime: false,
+                                defaultDate: ""
+                        ])}
+
+                        <p></p>
+                        <span>
+                            <button type="submit" class="confirm right" ng-class="{disabled: submitting}" ng-disabled="submitting">
+                                <i class="icon-play"></i>
+                                Run
+                            </button>
+                        </span>
+
+                    </fieldset>
+                    <input type="hidden" name="errorMessage" id="errorMessage" value="${errorMessage}">
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 
