@@ -50,8 +50,14 @@
     }
     function displayMERReport(report){
         var reportDataString="";
-        var tableHeader = "<table><thead><tr><th>Indicator</th><th>Data Element</th><th>Value</th></thead><tbody>";
+        var tableHeader = "<table><thead><tr><th>Indicator Code</th><th>Indicator Name and Disaggregations </th>";
+        var endTableHeader ="</thead><tbody>";
         var tableFooter = "</tbody></table>";
+        var ageHeaders="";
+        var sexHeaders="";
+        var total_Value ="";
+        var dataElementsNo;
+        var firstSexPosition="";
 
         jq.each(report.group, function (index, rowValue) {
             var indicatorCode="";
@@ -60,43 +66,64 @@
             dataValueToDisplay += "<tr>";
 
                 indicatorCode = rowValue.code.coding[0].code;
-                total_Display_Name = rowValue.stratifier[0].code[0].coding[0].display;
-                var total_Display_Value = rowValue.measureScore.value;
+                var indicatorDisplay = rowValue.code.coding[0].display;
+                total_Value = rowValue.measureScore.value;
+                // total_Display_Name = rowValue.stratifier[0].code[0].coding[0].display;
+
+
+
+            if(rowValue.stratifier.length!==0) {
                 var disaggregated_rows = rowValue.stratifier[0].stratum;
+                if(disaggregated_rows.length>1){
+                    var rowspanAttribute="rowspan= \""+((disaggregated_rows.length)/2)+"\"";
+                }
 
-            var rowspanAttribute="rowspan= \""+disaggregated_rows.length+"\"";
+                dataValueToDisplay += "<td "+ rowspanAttribute+ ">"+indicatorCode+ "<span>"+indicatorDisplay+"</span>"+"</td>";
+                jq.each(disaggregated_rows, function (key, obj) {
+                    var row_displaySexKey = "";
+                    var row_displaySexName = "";
+                    var row_displayDisaggregateName = "";
+                    jq.each(obj.component,function(k,v){
+                       if(v.code.coding[0].code=='SEX'){
+                           row_displaySexKey = v.value.coding[0].code;
+                           row_displaySexName = v.value.coding[0].display;
+                       }else{
+                           row_displayDisaggregateName = v.value.coding[0].display;
+                       }
+                    });
 
-            jq.each(disaggregated_rows,function(key,obj){
-                var row_displayValue = obj.measureScore.value;
-                var row_displayName="";
-                if(typeof obj.value !== "undefined"){
-                    row_displayName = obj.value.coding[0].display;
+                    var row_displayValue = obj.measureScore.value;
 
-                }else{
-                    var componentObject = obj.component;
-                    if(componentObject.length>0){
-                        for(var j=0; j < componentObject.length;j++){
-                            var displayName =  componentObject[j].code.coding[0].code +"<span>:</span> "+ componentObject[j].value.coding[0].display + "<br/>" ;
-                            row_displayName = row_displayName + displayName
-                        }
+                    var row ="";
+
+                    if (index === 0 && key===0) {
+                        firstSexPosition = row_displaySexKey;
                     }
-                }
-                dataValueToDisplay += "<tr>";
-                if(key==0){
-                    dataValueToDisplay += "<th " + rowspanAttribute+ " width='20%'>"+ indicatorCode + "<br/>" +total_Display_Name +"</th>";
-                }
-                dataValueToDisplay += "<td>" +row_displayName +"</td>";
-                dataValueToDisplay += "<td>" +row_displayValue + "</td>";
-                dataValueToDisplay += "</tr>";
-            });
+                    if (index === 0 && (key===1 || key===0)){
+                            sexHeaders = sexHeaders + "<th>" + row_displaySexName + "</th>";
+                    }
+                    if(key%2===0 && key!==0){
+                        row+="<tr>";
+                    }
+                    if(row_displaySexKey === firstSexPosition){
+                        row+= "<td>" + row_displayDisaggregateName + "</td><td>"+row_displayValue+"</td>";
+                    }else{
+                        row+= "<td>" + row_displayValue + "</td></tr>";
+                    }
+                    dataValueToDisplay += row;
+                });
+            }else{
+                dataValueToDisplay+="</tr>";
+            }
+
 
             reportDataString += dataValueToDisplay;
         });
 
-        jq("#display-report").append(tableHeader + reportDataString + tableFooter);
+        tableHeader+=sexHeaders;
+
+        jq("#display-report").append(tableHeader+endTableHeader + reportDataString + tableFooter);
         jq('#submit-button').show();
-
-
     }
 
     function displayHMISReport(report){
@@ -303,8 +330,8 @@
         });
 
        if(previewBody!=null){
-           // displayMERReport(previewBody);
-           displayHMISReport(previewBody);
+           displayMERReport(previewBody);
+           // displayHMISReport(previewBody);
        }
     });
 </script>
