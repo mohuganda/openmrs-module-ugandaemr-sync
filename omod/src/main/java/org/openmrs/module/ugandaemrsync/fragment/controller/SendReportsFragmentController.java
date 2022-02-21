@@ -78,6 +78,8 @@ public class SendReportsFragmentController {
 		pageModel.put("reportDefinitions", rds);
 		pageModel.put("errorMessage", "");
 		pageModel.put("report_title","");
+		pageModel.put("hmis_uuids","");
+		pageModel.put("mer_uuids","");
 
 	}
 
@@ -113,6 +115,8 @@ public class SendReportsFragmentController {
 		}
 		pageModel.put("breadcrumbOverride", breadcrumbOverride);
 		pageModel.put("reportDefinitions", rds);
+		pageModel.put("hmis_uuids",hmisReportUuids);
+		pageModel.put("mer_uuids",merReportUuids);
 	}
 
 

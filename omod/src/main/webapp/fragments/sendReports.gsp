@@ -43,6 +43,8 @@
 
     var previewBody;
     var uuid;
+    var merUuids;
+    var hmisUuids;
 
     function clearDisplayReport(){
         jq("#display-report").empty();
@@ -199,18 +201,14 @@
     function sendPayLoadInPortionsWithIndicators(dataObject,chunkSize){
         var objectsToSend =[];
         var groupArrayLength = dataObject.group.length;
-
-        if(groupArrayLength % chunkSize===0){
-            var myArray = dataObject.group;
-
-            var setNumber = groupArrayLength/chunkSize;
-            for (var i=0,len=myArray.length; i<len; i+=chunkSize){
-                var slicedArray = myArray.slice(i,i+chunkSize);
-                delete dataObject.group;
-                var reportObject =Object.assign({},dataObject);
-                reportObject.group =  myArray.slice(i,i+chunkSize);
-                objectsToSend.push(reportObject);
-            }
+        var myArray = dataObject.group;
+        var setNumber = groupArrayLength/chunkSize;
+        for (var i=0,len=myArray.length; i<len; i+=chunkSize){
+            var slicedArray = myArray.slice(i,i+chunkSize);
+            delete dataObject.group;
+            var reportObject =Object.assign({},dataObject);
+            reportObject.group =  myArray.slice(i,i+chunkSize);
+            objectsToSend.push(reportObject);
         }
         return objectsToSend;
     }
@@ -222,18 +220,18 @@
 
             for (var i=0; i < myArray.length; i++) {
                 var myObject = myArray[i];
-                var attr1 = myObject.code.coding;
-                attr1 = attr1.map(u=>({"code":u.code}));
-                myArray[i].code.coding=attr1;
+                var attr1 = myObject.code.coding[0];
+                attr1  = {"code":attr1.code};
+                myArray[i].code.coding[0]=attr1;
 
                 var attr2 = myObject.stratifier[0];
-                var attr2Child =attr2.code
+                var attr2Child =attr2.code;
                 if(attr2Child.length>0){
                     for(var x=0; x < attr2Child.length;x++){
                         var myObject = attr2Child[x];
-                        var child = myObject.coding;
-                        child = child.map(u =>({"code":u.code}));
-                        attr2Child[x].coding = child;
+                        var child = myObject.coding[0];
+                        child = {"code":child.code};
+                        attr2Child[x].coding[0] = child;
                     }
                 }
                 myArray[i].stratifier[0].code=attr2Child;
@@ -244,12 +242,15 @@
                     for(var k=0; k < attr2Child1.length;k++){
                         var myObject = attr2Child1[k];
                         if(typeof myObject.value == "undefined"){
-                            var componentObject = myObject.component
+                            var componentObject = myObject.component;
                             if(componentObject.length>0){
                                 for(var j=0; j < componentObject.length;j++){
-                                    var child = componentObject[j].value.coding;
-                                    child = child.map(u =>({"code":u.code}));
-                                    attr2Child1[k].component[j].value.coding = child;
+                                    var child = componentObject[j].value.coding[0];
+                                    var child1 = componentObject[j].code.coding[0];
+                                    child = {"code":child.code};
+                                    child1 = {"code":child1.code};
+                                    attr2Child1[k].component[j].value.coding[0] = child;
+                                    attr2Child1[k].component[j].code.coding[0] = child1;
                                 }
 
                             }
@@ -266,7 +267,7 @@
                 myArray[i].stratifier[0].stratum=attr2Child1;
 
             }
-            dataObject.group = []
+            dataObject.group = [];
             dataObject.group= myArray;
         }
         return dataObject;
@@ -312,6 +313,8 @@
     jq(document).ready(function () {
         previewBody =${previewBody};
         uuid ="${reportuuid}";
+        merUuids ="${mer_uuids}";
+        hmisUuids ="${hmis_uuids}";
 
         jq("#loader").hide();
         jq("#submit-button").css('display', 'none');
@@ -323,15 +326,19 @@
 
         jq('#sendData').click(function(){
             var strippedPreviewBody = stripDisplayAttributes(previewBody);
-            var data = sendPayLoadInPortionsWithIndicators(strippedPreviewBody,3);
+            var data = sendPayLoadInPortionsWithIndicators(strippedPreviewBody,5);
+            console.log(data)
             // data = JSON.stringify(previewBody,null,0);
              data = JSON.stringify(data);
             sendData(data,uuid);
         });
 
-       if(previewBody!=null){
-           displayMERReport(previewBody);
-           // displayHMISReport(previewBody);
+       if(previewBody!=null && uuid!=null){
+           if(merUuids.split(",").includes(uuid)){
+               displayMERReport(previewBody);
+           }else if(hmisUuids.split(",").includes(uuid)) {
+               displayHMISReport(previewBody);
+           }
        }
     });
 </script>
