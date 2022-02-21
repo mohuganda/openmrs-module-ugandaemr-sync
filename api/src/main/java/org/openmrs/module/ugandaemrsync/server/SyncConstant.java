@@ -96,7 +96,7 @@ public class SyncConstant {
     public static final String VL_SEND_SAMPLE_FHIR_JSON_STRING = "{\"resourceType\":\"ServiceRequest\",\"locationCode\":\"%s\",\"locationReference\":\"%s\",\"code\":\"%s\",\"performerType\":\"????\",\"status\":\"active\",\"intent\":\"order\",\"subject\":{\"resourceType\":\"Location\",\"name\":\"%s\"},\"specimen\":[{\"subject\":{\"resourceType\":\"Patient\",\"identifier\":\"%s\"},\"resourceType\":\"Specimen\",\"identifier\":\"%s\",\"type\":\"%s\",\"status\":\"available\",\"collection\":{\"collectedDateTime\":\"%s\",\"collector\":{\"resourceType\":\"Practitioner\",\"name\":\"%s\",\"telecom\":\"%s\"}}}],\"requester\":{\"resourceType\":\"Practitioner\",\"name\":\"%s\",\"telecom\":\"%s\"},\"performer\":[{\"resourceType\":\"Organization\",\"endpoint\":\"%s\"}]}";
 
     public static final String VL_RECEIVE_RESULT_FHIR_JSON_STRING = "{\"resourceType\":\"ServiceRequest\",\"locationCode\":\"%s\",\"subject\":{\"resourceType\":\"Location\",\"name\":\"UgandaEMR\"},\"specimen\":[{\"subject\":{\"resourceType\":\"Patient\",\"identifier\":\"%s\"},\"resourceType\":\"Specimen\",\"identifier\":\"%s\"}]}";
-
+ 
     public static final String PERSON_QUERY = "SELECT\n" + "  gender,\n" + "  birthdate,\n" + "  birthdate_estimated,\n"
 	        + "  dead,\n" + "  death_date,\n" + "  (SELECT c.uuid\n" + "   FROM concept c\n"
 	        + "   WHERE c.concept_id = p.cause_of_death) AS cause_of_death,\n" + "  (SELECT u.uuid\n" + "   FROM users u\n"
@@ -456,6 +456,8 @@ public class SyncConstant {
     public static final String VIRAL_LOAD_ORDERS_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) inner JOIN concept ON (orders.concept_id = concept.concept_id) inner join concept_reference_map on (concept.concept_id = concept_reference_map.concept_id) inner join concept_reference_term on (concept_reference_map.concept_reference_term_id = concept_reference_term.concept_reference_term_id) where accession_number!=\"\" AND specimen_source!=\"\" AND orders.instructions=\"REFER TO cphl\" AND code=\"" + VIRAL_LOAD_SYNC_TASK_TYPE_IDENTIFIER + "\"";
 
     public static final String VIRAL_LOAD_ORDER_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) where accession_number=\"%s\"";
+
+	public static final String LAB_REQUEST_ORDER_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id)";
 
     public static final String PERSON_UUID_QUERY="select uuid from person WHERE date_created > '%s' OR date_changed > '%s' OR date_voided > '%s'";
 	public static final String PATIENT_UUID_QUERY="select uuid from patient inner join person on (person.person_id =patient.patient_id) WHERE patient.date_created > '%s' OR patient.date_changed > '%s' OR patient.voided > '%s'";
