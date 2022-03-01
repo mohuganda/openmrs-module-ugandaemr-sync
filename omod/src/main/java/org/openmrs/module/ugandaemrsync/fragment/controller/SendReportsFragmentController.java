@@ -135,14 +135,13 @@ public class SendReportsFragmentController {
 				reportsServerUrlEndPoint = merUrlEndPoint;
 			}
 
-			System.out.println(reportsServerUrlEndPoint);
 			sendReportsTask= new SendReportsTask(jsonData,reportsServerUrlEndPoint);
 			sendReportsTask.execute();
 			if(sendReportsTask.isSent()){
 				response= "Report successfully sent";
 				status="success";
 			}else{
-				response= "Report not sent \n Regenerate Report and submit again";
+				response= sendReportsTask.getResponseMessage();
 				status="failure";
 			}
 		}else{

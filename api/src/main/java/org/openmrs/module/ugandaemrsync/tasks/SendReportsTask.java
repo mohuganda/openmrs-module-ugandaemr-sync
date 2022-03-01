@@ -22,7 +22,8 @@ import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
 public class SendReportsTask extends AbstractTask {
 
     protected Log log = LogFactory.getLog(getClass());
-     boolean sent=false;
+     boolean sent= false;
+     String responseMessage="";
 
      String previewBody;
 
@@ -61,26 +62,25 @@ public class SendReportsTask extends AbstractTask {
 
         log.info("Sending Report to server ");
 
-        if(previewBody!=""&& urlEndPoint !="") {
 
-            if (!ugandaEMRHttpURLConnection.isServerAvailable(urlEndPoint)) {
-                return;
-            }
+        if(previewBody!="") {
             JSONArray array = new JSONArray(previewBody);
             for(int i =0 ; i < array.length();i++){
                 String payload = array.getJSONObject(i).toString();
-               sendPost(payload, urlEndPoint);
+                sendPost(payload,urlEndPoint);
             }
         }
     }
 
-    public void sendPost(String requestBody,String reportsServerUrlEndPoint){
-        HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(reportsServerUrlEndPoint, requestBody, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
+    public void sendPost(String requestBody,String urlEndPoint){
+        HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(urlEndPoint, requestBody, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
             sent = true;
             log.info("Report  has been sent to central server");
+            responseMessage = " Data Successfully Sent";
         } else {
             log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: " + httpResponse.getStatusLine().getReasonPhrase());
+            responseMessage = httpResponse.getStatusLine().getReasonPhrase();
         }
     }
 
@@ -96,6 +96,14 @@ public class SendReportsTask extends AbstractTask {
 
     public boolean isSent() {
         return sent;
+    }
+
+    public String getResponseMessage() {
+        return responseMessage;
+    }
+
+    public void setResponseMessage(String responseMessage) {
+        this.responseMessage = responseMessage;
     }
 
     public void setSent(boolean sent) {

@@ -224,47 +224,49 @@
                 attr1  = {"code":attr1.code};
                 myArray[i].code.coding[0]=attr1;
 
-                var attr2 = myObject.stratifier[0];
-                var attr2Child =attr2.code;
-                if(attr2Child.length>0){
-                    for(var x=0; x < attr2Child.length;x++){
-                        var myObject = attr2Child[x];
-                        var child = myObject.coding[0];
-                        child = {"code":child.code};
-                        attr2Child[x].coding[0] = child;
+                if(myObject.stratifier.length > 0){
+                    var attr2 = myObject.stratifier[0];
+                    var attr2Child =attr2.code;
+                    if(attr2Child.length>0){
+                        for(var x=0; x < attr2Child.length;x++){
+                            var myObject = attr2Child[x];
+                            var child = myObject.coding[0];
+                            child = {"code":child.code};
+                            attr2Child[x].coding[0] = child;
+                        }
                     }
-                }
-                myArray[i].stratifier[0].code=attr2Child;
+                    myArray[i].stratifier[0].code=attr2Child;
 
 
-                var attr2Child1 =attr2.stratum;
-                if(attr2Child1.length>0){
-                    for(var k=0; k < attr2Child1.length;k++){
-                        var myObject = attr2Child1[k];
-                        if(typeof myObject.value == "undefined"){
-                            var componentObject = myObject.component;
-                            if(componentObject.length>0){
-                                for(var j=0; j < componentObject.length;j++){
-                                    var child = componentObject[j].value.coding[0];
-                                    var child1 = componentObject[j].code.coding[0];
-                                    child = {"code":child.code};
-                                    child1 = {"code":child1.code};
-                                    attr2Child1[k].component[j].value.coding[0] = child;
-                                    attr2Child1[k].component[j].code.coding[0] = child1;
+                    var attr2Child1 =attr2.stratum;
+                    if(attr2Child1.length>0){
+                        for(var k=0; k < attr2Child1.length;k++){
+                            var myObject = attr2Child1[k];
+                            if(typeof myObject.value == "undefined"){
+                                var componentObject = myObject.component;
+                                if(componentObject.length>0){
+                                    for(var j=0; j < componentObject.length;j++){
+                                        var child = componentObject[j].value.coding[0];
+                                        var child1 = componentObject[j].code.coding[0];
+                                        child = {"code":child.code};
+                                        child1 = {"code":child1.code};
+                                        attr2Child1[k].component[j].value.coding[0] = child;
+                                        attr2Child1[k].component[j].code.coding[0] = child1;
+                                    }
+
                                 }
 
+
+                            }else{
+                                var child = myObject.value.coding;
+                                child = child.map(u =>({"code":u.code}));
+                                attr2Child1[k].value.coding = child;
                             }
 
-
-                        }else{
-                            var child = myObject.value.coding;
-                            child = child.map(u =>({"code":u.code}));
-                            attr2Child1[k].value.coding = child;
                         }
-
                     }
+                    myArray[i].stratifier[0].stratum=attr2Child1;
                 }
-                myArray[i].stratifier[0].stratum=attr2Child1;
 
             }
             dataObject.group = [];
@@ -327,9 +329,7 @@
         jq('#sendData').click(function(){
             var strippedPreviewBody = stripDisplayAttributes(previewBody);
             var data = sendPayLoadInPortionsWithIndicators(strippedPreviewBody,5);
-            console.log(data)
-            // data = JSON.stringify(previewBody,null,0);
-             data = JSON.stringify(data);
+            data = JSON.stringify(data);
             sendData(data,uuid);
         });
 
