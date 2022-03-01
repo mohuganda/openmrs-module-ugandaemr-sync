@@ -894,28 +894,6 @@
             INSERT INTO fhir_concept_source (concept_source_id, url, name, description, creator, date_created,retired, uuid) VALUES (1, 'http://snomed.info/sct', 'SNOMED CT', null, 1, '2022-02-10 12:47:05', 0,'a665f90c-8a52-11ec-91f9-ad26b3113bf4');
         </sql>
     </changeSet>
-    <changeSet id="20211026-1421" author="mmwanje">
-        <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">
-                SELECT COUNT(*) FROM scheduler_task_config
-                WHERE schedulable_class = 'org.openmrs.module.ugandaemrsync.tasks.ReceiveLabResultsFromALISTask'
-            </sqlCheck>
-        </preConditions>
-        <comment>Inserting Lab Results From ALIS Task into 'schedule_task_config' table</comment>
-        <insert tableName="scheduler_task_config">
-            <column name="name" value="Receive Lab Results From ALIS Task" />
-            <column name="description" value="Receive Lab Results From ALIS Task" />
-            <column name="schedulable_class" value="org.openmrs.module.ugandaemrsync.tasks.ReceiveLabResultsFromALISTask" />
-            <column name="start_time_pattern" value="MM/dd/yyyy HH:mm:ss" />
-            <column name="start_time" valueDate="2021-07-08T11:59:59" />
-            <column name="repeat_interval" value="86400" />
-            <column name="date_created" valueDate="CURRENT_TIMESTAMP" />
-            <column name="created_by" value="1" />
-            <column name="start_on_startup" value="1"/>
-            <column name="started" value="1"/>
-            <column name="uuid" value="f947128e-93d7-46d5-aa32-645e38a125fe" />
-        </insert>
-    </changeSet>
 
     <changeSet id="ugandaemrsync-26102021-1611" author="mmwanje">
         <preConditions onFail="MARK_RAN">
