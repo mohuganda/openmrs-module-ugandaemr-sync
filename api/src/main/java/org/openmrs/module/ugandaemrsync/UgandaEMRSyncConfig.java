@@ -78,4 +78,6 @@ public class UgandaEMRSyncConfig {
 	
 	public static final String GP_SUBMIT_RECENCY_DATA_ONCE_DAILY = "ugandaemrsync.recency.submit.data.once.daily";
 	public static final String GP_ART_ACCESS_LAST_SYNC_DATE = "ugandaemrsync.ARTAccess.last.successful.submission.date";
+
+	public static final String GP_ALIS_LAB_RESULTS_LAST_SYNC_DATE = "ugandaemrsync.ALISLabResults.last.successful.submission.date";
 }

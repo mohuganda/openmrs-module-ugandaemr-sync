@@ -73,6 +73,7 @@ public class SyncConstant {
     public static final String FHIRSERVER_SYNC_TASK_TYPE_UUID = "3c1ce940-8ade-11ea-bc55-0242ac130003";
     public static final String VIRAL_LOAD_RESULT_PULL_TYPE_UUID = "3396dcf0-2106-4e73-9b90-c63978c3a8b4";
     public static final String ART_ACCESS_PULL_TYPE_UUID = "4c4e9551-d9d6-4882-93bd-e61a42e2f755";
+	public static final String ALIS_LAB_RESULTS_PULL_TYPE_UUID = "f947128e-93d7-46d5-aa32-645e38a125fe";
 
     public static final String PATIENT_IDENTIFIER_TYPE = "e1731641-30ab-102d-86b0-7a5022ba4115";
 
@@ -455,6 +456,8 @@ public class SyncConstant {
     public static final String VIRAL_LOAD_ORDERS_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) inner JOIN concept ON (orders.concept_id = concept.concept_id) inner join concept_reference_map on (concept.concept_id = concept_reference_map.concept_id) inner join concept_reference_term on (concept_reference_map.concept_reference_term_id = concept_reference_term.concept_reference_term_id) where accession_number!=\"\" AND specimen_source!=\"\" AND orders.instructions=\"REFER TO cphl\" AND code=\"" + VIRAL_LOAD_SYNC_TASK_TYPE_IDENTIFIER + "\"";
 
     public static final String VIRAL_LOAD_ORDER_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) where accession_number=\"%s\"";
+
+	public static final String LAB_REQUEST_ORDER_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id)";
 
     public static final String PERSON_UUID_QUERY="select uuid from person WHERE date_created > '%s' OR date_changed > '%s' OR date_voided > '%s'";
 	public static final String PATIENT_UUID_QUERY="select uuid from patient inner join person on (person.person_id =patient.patient_id) WHERE patient.date_created > '%s' OR patient.date_changed > '%s' OR patient.voided > '%s'";

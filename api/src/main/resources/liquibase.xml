@@ -894,4 +894,73 @@
             INSERT INTO fhir_concept_source (concept_source_id, url, name, description, creator, date_created,retired, uuid) VALUES (1, 'http://snomed.info/sct', 'SNOMED CT', null, 1, '2022-02-10 12:47:05', 0,'a665f90c-8a52-11ec-91f9-ad26b3113bf4');
         </sql>
     </changeSet>
+    <changeSet id="20211026-1421" author="mmwanje">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM scheduler_task_config
+                WHERE schedulable_class = 'org.openmrs.module.ugandaemrsync.tasks.ReceiveLabResultsFromALISTask'
+            </sqlCheck>
+        </preConditions>
+        <comment>Inserting Lab Results From ALIS Task into 'schedule_task_config' table</comment>
+        <insert tableName="scheduler_task_config">
+            <column name="name" value="Receive Lab Results From ALIS Task" />
+            <column name="description" value="Receive Lab Results From ALIS Task" />
+            <column name="schedulable_class" value="org.openmrs.module.ugandaemrsync.tasks.ReceiveLabResultsFromALISTask" />
+            <column name="start_time_pattern" value="MM/dd/yyyy HH:mm:ss" />
+            <column name="start_time" valueDate="2021-07-08T11:59:59" />
+            <column name="repeat_interval" value="86400" />
+            <column name="date_created" valueDate="CURRENT_TIMESTAMP" />
+            <column name="created_by" value="1" />
+            <column name="start_on_startup" value="1"/>
+            <column name="started" value="1"/>
+            <column name="uuid" value="f947128e-93d7-46d5-aa32-645e38a125fe" />
+        </insert>
+    </changeSet>
+
+    <changeSet id="ugandaemrsync-26102021-1611" author="mmwanje">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM sync_task_type WHERE uuid = 'f947128e-93d7-46d5-aa32-645e38a125fe'
+            </sqlCheck>
+        </preConditions>
+        <comment>Sync Task Type</comment>
+        <insert tableName="sync_task_type">
+            <column name="name" value="Receive ALIS Lab Results" />
+            <column name="data_type" value="org.openmrs.Encounter" />
+            <column name="data_type_id" value="315124004" />
+            <column name="url_end_point" value="http://192.168.1.100:8080/api/alisLabdata" />
+            <column name="url_username" value="" />
+            <column name="url_password" value="" />
+            <column name="url_token" value="" />
+            <column name="creator" value="1" />
+            <column name="voided" value="0" />
+            <column name="date_created" value="2021-10-26 16:07:27" />
+            <column name="uuid" value="f947128e-93d7-46d5-aa32-645e38a125fe" />
+        </insert>
+    </changeSet>
+
+
+    <changeSet id="ugandaemrsync-17022022-1633" author="mmwanje">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM scheduler_task_config
+                WHERE schedulable_class = 'org.openmrs.module.ugandaemrsync.tasks.CollectTestOrdersFromSyncFHIRResourceTask'
+            </sqlCheck>
+        </preConditions>
+        <comment>Collect Lab Test Orders From Sync FHIR Resource Task</comment>
+        <insert tableName="scheduler_task_config">
+            <column name="name" value="LAB TEST ORDERS FROM SYNC FHIR" />
+            <column name="description" value="Collect Lab Test Orders From Sync FHIR" />
+            <column name="schedulable_class" value="org.openmrs.module.ugandaemrsync.tasks.CollectTestOrdersFromSyncFHIRResourceTask" />
+            <column name="start_time_pattern" value="MM/dd/yyyy HH:mm:ss" />
+            <column name="start_time" valueDate="2022-02-17T13:59:59" />
+            <column name="repeat_interval" value="3600" />
+            <column name="date_created" valueDate="CURRENT_TIMESTAMP" />
+            <column name="created_by" value="1" />
+            <column name="start_on_startup" value="1"/>
+            <column name="started" value="1"/>
+            <column name="uuid" value="51f8fa8f-a6fc-46b7-8f0a-afa28f7d4f40" />
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
