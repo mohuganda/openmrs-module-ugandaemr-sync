@@ -6,6 +6,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
+import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.ui.framework.SimpleObject;
@@ -24,10 +25,11 @@ public class SendReportsTask extends AbstractTask {
     protected Log log = LogFactory.getLog(getClass());
      boolean sent= false;
      String responseMessage="";
+     int responseCode ;
 
      String previewBody;
 
-     String urlEndPoint;
+     SyncTaskType syncTaskType;
 
      SimpleObject response;
 
@@ -36,9 +38,9 @@ public class SendReportsTask extends AbstractTask {
     }
 
 
-    public SendReportsTask(String previewBody,String urlEndPoint) {
+    public SendReportsTask(String previewBody,SyncTaskType syncTaskType) {
         this.previewBody = previewBody;
-        this.urlEndPoint = urlEndPoint;
+        this.syncTaskType = syncTaskType;
     }
 
     UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
@@ -67,13 +69,13 @@ public class SendReportsTask extends AbstractTask {
             JSONArray array = new JSONArray(previewBody);
             for(int i =0 ; i < array.length();i++){
                 String payload = array.getJSONObject(i).toString();
-                sendPost(payload,urlEndPoint);
+                sendPost(payload);
             }
         }
     }
 
-    public void sendPost(String requestBody,String urlEndPoint){
-        HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(urlEndPoint, requestBody, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
+    public void sendPost(String requestBody){
+        HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(syncTaskType.getUrl(), requestBody, syncTaskType.getUrlUserName(), syncTaskType.getUrlPassword());
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
             sent = true;
             log.info("Report  has been sent to central server");
@@ -81,6 +83,7 @@ public class SendReportsTask extends AbstractTask {
         } else {
             log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: " + httpResponse.getStatusLine().getReasonPhrase());
             responseMessage = httpResponse.getStatusLine().getReasonPhrase();
+            responseCode = httpResponse.getStatusLine().getStatusCode();
         }
     }
 
@@ -118,6 +121,9 @@ public class SendReportsTask extends AbstractTask {
         this.previewBody = previewBody;
     }
 
+    public int getResponseCode() { return responseCode; }
+
+    public void setResponseCode(int responseCode) { this.responseCode = responseCode; }
 
     public boolean isGpDhis2OrganizationUuidSet() {
         if (isBlank(syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID))) {

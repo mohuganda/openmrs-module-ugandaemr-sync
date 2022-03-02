@@ -20,6 +20,9 @@ import org.openmrs.module.reporting.report.definition.service.ReportDefinitionSe
 import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.reporting.report.renderer.TextTemplateRenderer;
 import org.openmrs.module.reporting.report.service.ReportService;
+import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
+import org.openmrs.module.ugandaemrsync.model.SyncTask;
+import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.module.ugandaemrsync.tasks.SendReportsTask;
 import org.openmrs.ui.framework.SimpleObject;
@@ -47,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
+import static org.openmrs.module.ugandaemrsync.server.SyncConstant.*;
 
 /**
  *  * Controller for a fragment that sends a report 
@@ -56,6 +60,7 @@ public class SendReportsFragmentController {
 	@Autowired
 	SendReportsTask sendReportsTask;
 
+	UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
 
 	SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
 	String reportUuids=  syncGlobalProperties.getGlobalProperty(GP_SEND_NEXT_GEN_REPORTS_SERVER_REPORT_UUIDS)+ ","+ syncGlobalProperties.getGlobalProperty(GP_SEND_HMIS_REPORTS_SERVER_REPORT_UUIDS);
@@ -127,15 +132,17 @@ public class SendReportsFragmentController {
 		String jsonData= body;
 
 		if(jsonData!=null){
+			SyncTaskType MERsyncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(SEND_MER_REPORTS_SYNC_TASK_TYPE_UUID);
+			SyncTaskType HMISsyncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(SEND_HMIS_REPORTS_SYNC_TASK_TYPE_UUID);
 
-			String reportsServerUrlEndPoint = "";
+			SyncTaskType syncTaskType =new SyncTaskType();
 			if(hmisReports.contains(uuid)){
-				reportsServerUrlEndPoint = hmisUrlEndPoint;
+				syncTaskType = HMISsyncTaskType;
 			}else if(merReports.contains(uuid)){
-				reportsServerUrlEndPoint = merUrlEndPoint;
+				syncTaskType= MERsyncTaskType;
 			}
 
-			sendReportsTask= new SendReportsTask(jsonData,reportsServerUrlEndPoint);
+			sendReportsTask= new SendReportsTask(jsonData,syncTaskType);
 			sendReportsTask.execute();
 			if(sendReportsTask.isSent()){
 				response= "Report successfully sent";
@@ -144,6 +151,17 @@ public class SendReportsFragmentController {
 				response= sendReportsTask.getResponseMessage();
 				status="failure";
 			}
+			SyncTask newSyncTask = new SyncTask();
+			newSyncTask.setDateSent(new Date());
+			newSyncTask.setCreator(Context.getUserService().getUser(1));
+			newSyncTask.setSentToUrl(syncTaskType.getUrl());
+			newSyncTask.setRequireAction(true);
+			newSyncTask.setActionCompleted(false);
+			newSyncTask.setStatus(status);
+			newSyncTask.setStatusCode(sendReportsTask.getResponseCode());
+			newSyncTask.setSyncTask(syncTaskType.getName());
+			newSyncTask.setSyncTaskType(syncTaskType);
+			ugandaEMRSyncService.saveSyncTask(newSyncTask);
 		}else{
 			response = "No Available Data to send";
 			status="failure";
