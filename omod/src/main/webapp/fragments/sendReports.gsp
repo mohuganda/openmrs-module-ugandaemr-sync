@@ -2,6 +2,32 @@
     def breadcrumbMiddle = breadcrumbOverride ?: '';
 %>
 <style type="text/css">
+#blurred
+{
+    display : none;
+}
+#blurred.show
+{
+    display : block;
+    position : fixed;
+    z-index: 100;
+    background-image : url('http://loadinggif.com/images/image-selection/3.gif');
+    background-color:#666;
+    opacity : 0.4;
+    background-repeat : no-repeat;
+    background-position : center;
+    left : 0;
+    bottom : 0;
+    right : 0;
+    top : 0;
+}
+
+#loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -50px 0px 0px -50px;
+}
 .grey {
     background-color:#c7c5c5 !important;
 }
@@ -297,6 +323,7 @@
 
             beforeSend : function()
             {
+                jq("div#blurred").addClass('show');
                 jq("#loader").show();
             },
             success: function (data) {
@@ -309,6 +336,7 @@
                     jq().toastmessage('showErrorToast', response.message);
                 }
                 jq("#loader").hide();
+                jq("div#blurred").removeClass('show');
             }
         });
     }
@@ -319,6 +347,7 @@
         hmisUuids ="${hmis_uuids}";
 
         jq("#loader").hide();
+        jq("#loading").hide();
         jq("#submit-button").css('display', 'none');
         var errorMessage = jq('#errorMessage').val();
 
@@ -331,6 +360,14 @@
             var data = sendPayLoadInPortionsWithIndicators(strippedPreviewBody,5);
             data = JSON.stringify(data);
             sendData(data,uuid);
+        });
+
+        jq('#run-button').click(function(){
+            jq("#loading").show();
+        });
+
+        jq('#run-a-report').click(function(){
+            jq("#loading").hide();
         });
 
        if(previewBody!=null && uuid!=null){
@@ -356,7 +393,7 @@
             }
 %>
 <div>
-    <button type="button" style="font-size: 25px" class="confirm" data-toggle="modal"
+    <button id="run-a-report" type="button" style="font-size: 25px" class="confirm" data-toggle="modal"
             data-target="#run-report"  data-whatever="@mdo"> Run a report</button>
 </div>
 <div class="row">
@@ -364,12 +401,15 @@
     <div class="col-md-12">
         <div id="loader">
             <img src="/openmrs/ms/uiframework/resource/uicommons/images/spinner.gif">
+            <h1 style="color: aqua">Sending...</h1>
         </div>
         <div id="display-report" style="overflow-y:scroll;">
             <div class='modal-header'> <label style="text-align: center"><h1> ${report_title}</h1></label></div>
         </div>
         <div id="submit-button">
             <p></p><span id="sendData"  class="button confirm right"> Submit </span>
+        </div>
+        <div id="blurred">
         </div>
     </div>
 
@@ -385,6 +425,10 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
+            </div>
+            <div id="loading">
+                <img src="/openmrs/ms/uiframework/resource/uicommons/images/spinner.gif">
+                <span>Running...</span>
             </div>
             <div>
                 <form method="post" id="sendReports">
@@ -412,7 +456,7 @@
 
                         <p></p>
                         <span>
-                            <button type="submit" class="confirm right" ng-class="{disabled: submitting}" ng-disabled="submitting">
+                            <button id="run-button" type="submit" class="confirm right" ng-class="{disabled: submitting}" ng-disabled="submitting">
                                 <i class="icon-play"></i>
                                 Run
                             </button>
