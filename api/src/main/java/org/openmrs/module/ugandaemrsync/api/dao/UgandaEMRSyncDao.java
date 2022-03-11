@@ -287,4 +287,13 @@ public class UgandaEMRSyncDao {
         criteria.add(Restrictions.eq("profile", syncFhirProfile));
         return criteria.list();
     }
+
+    public List<SyncFhirResource> getSyncedFHirResources(SyncFhirProfile syncFhirProfile) {
+
+        Criteria criteria = getSession().createCriteria(SyncFhirResource.class);
+        criteria.add(Restrictions.eq("generatorProfile", syncFhirProfile));
+        criteria.add(Restrictions.eq("synced", true));
+
+        return criteria.list();
+    }
 }

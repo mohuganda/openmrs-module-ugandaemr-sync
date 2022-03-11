@@ -333,5 +333,12 @@ public interface UgandaEMRSyncService extends OpenmrsService {
      * @return true is the order has results and false if it doesnt have results
      */
      public boolean testOrderHasResults(Order order);
+
+    /**
+     * gets all expired resources based on date passed
+     * @param syncFhirProfile the profile that generated the resources
+     * @return a list of expired resources
+     */
+    public List<SyncFhirResource> getSyncedFHirResources(SyncFhirProfile syncFhirProfile);
 }
 
