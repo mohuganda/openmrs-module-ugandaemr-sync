@@ -1108,7 +1108,7 @@ public class SyncFHIRRecord {
     public void CollectTestOrdersFromSyncFHIRResource(SyncFhirProfile syncFhirProfile) {
         UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
 
-        List<SyncFhirResource> syncFhirResources = ugandaEMRSyncService.getUnSyncedFHirResources(syncFhirProfile);
+        List<SyncFhirResource> syncFhirResources = ugandaEMRSyncService.getSyncedFHirResources(syncFhirProfile);
         List<Order> orders = new ArrayList<>();
         SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID("f947128e-93d7-46d5-aa32-645e38a125fe");
         for (SyncFhirResource syncFhirResource : syncFhirResources) {
@@ -1121,6 +1121,10 @@ public class SyncFHIRRecord {
 
                 if (jsonObject1.getJSONObject("resource").get("resourceType").equals("ServiceRequest")) {
                     Order order = Context.getOrderService().getOrderByUuid(jsonObject1.getJSONObject("resource").getString("id"));
+
+                    if(!order.isActive() || !ugandaEMRSyncService.getSyncTaskBySyncTaskId(order.getOrderNumber()).equals(null)){
+                        continue;
+                    }
 
                     SyncTask newSyncTask = new SyncTask();
                     newSyncTask.setDateSent(new Date());
