@@ -20,6 +20,7 @@ public class UgandaEMRSyncConfig {
 	public final static String MODULE_PRIVILEGE = "UgandaemrSync Privilege";
 
 	public static final String GP_RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
+	public static final String GP_SMS_SERVER_URL = "ugandaemrsync.smsAppointmentReminder.server.url";
 
 	public static final String GP_ANALYTICS_SERVER_URL = "ugandaemrsync.analytics.server.url";
 	public static final String GP_DHIS2_SERVER_URL = "ugandaemrsync.sendtoDHIS2.server.url";
@@ -56,10 +57,12 @@ public class UgandaEMRSyncConfig {
 	public static final String ANALYTICS_JSON_FILE_NAME = "Analytics_Metric_Report";
 
 	public static final String RECENCY_DATA_EXPORT_REPORT_DEFINITION_UUID = "662d4c00-d6bb-4494-8180-48776f415802";
+	public static final String SMS_DATA_EXPORT_REPORT_DEFINITION_UUID = "9a4bfceb-6205-4811-9a09-f95589249f65";
 
 	public static final String ANALYTICS_DATA_EXPORT_REPORT_DEFINITION_UUID = "dcd1f91a-04c8-4ae1-ac44-6abfdc91c98a";
 
 	public static final String REPORT_CSV_DESIGN_UUID = "152a4845-37e1-40c0-8fa8-5ef343e65ba5";
+	public static final String SMS_REPORT_CSV_DESIGN_UUID = "e8cd7d9f-e30e-463f-8073-ea7ccf3d3574";
 
 	public static final String ANALYTIC_REPORT_JSON_DESIGN_UUID = "13cf6468-07c2-40f5-a388-6fdc8fa8341e";
 
@@ -68,6 +71,7 @@ public class UgandaEMRSyncConfig {
 	public static final String JSON_REPORT_RENDERER_TYPE = "org.openmrs.module.reporting.report.renderer.TextTemplateRenderer";
 
 	public static final String GP_RECENCY_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE = "ugandaemrsync.recency.last.successful.submission.date";
+	public static final String GP_SMS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE = "ugandaemrsync.smsAppointmentReminder.last.successful.submission.date";
 
 	public static final String GP_ANALYTICS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE = "ugandaemrsync.analytics.last.successful.submission.date";
 
