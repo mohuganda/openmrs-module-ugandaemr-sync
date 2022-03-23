@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -140,11 +141,13 @@ public class SendSMSAppointmentTask extends AbstractTask {
                 throw new IllegalArgumentException("Unable to render CSV Data Export with " + reportRendergingMode);
             }
 
+            Cohort SMSAppointmentReminder = Context.getCohortService().getCohortByUuid("c418984c-fe55-431a-90be-134da0a5ec67");
             Map<String, Object> parameterValues = new HashMap<String, Object>();
 
             parameterValues.put("endDate", endDate);
             parameterValues.put("startDate", startDate);
             EvaluationContext context = new EvaluationContext();
+            context.setBaseCohort(SMSAppointmentReminder);
             context.setParameterValues(parameterValues);
             ReportData reportData = reportDefinitionService.evaluate(rd, context);
             ReportRequest reportRequest = new ReportRequest();
@@ -155,7 +158,7 @@ public class SendSMSAppointmentTask extends AbstractTask {
             renderingMode.getRenderer().render(reportData, renderingMode.getArgument(), fileOutputStream);
 
             strOutput = this.readOutputFile(strOutput);
-//            System.out.println(strOutput);
+            System.out.println(strOutput);
         }
         catch (Exception e) {
             log.info("Error rendering the contents of the Recency data export report to"
