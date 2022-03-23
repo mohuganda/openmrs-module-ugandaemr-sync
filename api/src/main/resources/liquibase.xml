@@ -879,7 +879,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="20220321-1425" author="dbaluku">
+    <changeSet id="ugandaemrsync_20220321-1425" author="dbaluku">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM scheduler_task_config

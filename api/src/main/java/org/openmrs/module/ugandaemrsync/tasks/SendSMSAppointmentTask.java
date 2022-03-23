@@ -25,7 +25,10 @@ import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -99,8 +102,17 @@ public class SendSMSAppointmentTask extends AbstractTask {
         if (!ugandaEMRHttpURLConnection.isServerAvailable(SMSBaseUrl)) {
             return;
         }
-        log.info("Sending SMS Appointment data to central server ");
-        String bodyText = getSMSAppointmentReminderDataExport();
+        log.error("Sending SMS Appointment data to central server ");
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        cal.add(Calendar.DATE, 7);
+        Date firstDateOfNextWeek = cal.getTime();
+
+        cal.add(Calendar.DATE, 6);
+        Date lastDateOfNextWeek = cal.getTime();
+
+        String bodyText = getSMSAppointmentReminderDataExport(firstDateOfNextWeek,lastDateOfNextWeek);
         HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(SMSServerUrlEndPoint, bodyText);
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             ReportUtil.updateGlobalProperty(GP_SMS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE,
@@ -112,7 +124,7 @@ public class SendSMSAppointmentTask extends AbstractTask {
         }
     }
 
-    private String getSMSAppointmentReminderDataExport() {
+    private String getSMSAppointmentReminderDataExport(Date startDate, Date endDate) {
         ReportDefinitionService reportDefinitionService = Context.getService(ReportDefinitionService.class);
         String strOutput = new String();
 
@@ -128,7 +140,12 @@ public class SendSMSAppointmentTask extends AbstractTask {
                 throw new IllegalArgumentException("Unable to render CSV Data Export with " + reportRendergingMode);
             }
 
+            Map<String, Object> parameterValues = new HashMap<String, Object>();
+
+            parameterValues.put("endDate", endDate);
+            parameterValues.put("startDate", startDate);
             EvaluationContext context = new EvaluationContext();
+            context.setParameterValues(parameterValues);
             ReportData reportData = reportDefinitionService.evaluate(rd, context);
             ReportRequest reportRequest = new ReportRequest();
             reportRequest.setReportDefinition(new Mapped<ReportDefinition>(rd, context.getParameterValues()));
@@ -138,6 +155,7 @@ public class SendSMSAppointmentTask extends AbstractTask {
             renderingMode.getRenderer().render(reportData, renderingMode.getArgument(), fileOutputStream);
 
             strOutput = this.readOutputFile(strOutput);
+//            System.out.println(strOutput);
         }
         catch (Exception e) {
             log.info("Error rendering the contents of the Recency data export report to"
