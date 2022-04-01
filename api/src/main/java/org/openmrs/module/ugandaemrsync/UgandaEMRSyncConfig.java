@@ -20,7 +20,6 @@ public class UgandaEMRSyncConfig {
 	public final static String MODULE_PRIVILEGE = "UgandaemrSync Privilege";
 
 	public static final String GP_RECENCY_SERVER_URL = "ugandaemrsync.recency.server.url";
-	public static final String GP_SMS_SERVER_URL = "ugandaemrsync.smsAppointmentReminder.server.url";
 
 	public static final String GP_ANALYTICS_SERVER_URL = "ugandaemrsync.analytics.server.url";
 	public static final String GP_DHIS2_SERVER_URL = "ugandaemrsync.sendtoDHIS2.server.url";

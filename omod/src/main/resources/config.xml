@@ -169,11 +169,6 @@
         <defaultValue></defaultValue>
         <description>SMS Appointment Reminder last successful submission date</description>
     </globalProperty>
-    <globalProperty>
-        <property>ugandaemrsync.smsAppointmentReminder.server.url</property>
-        <defaultValue>https://ugisl.mets.or.ug/adx-mer</defaultValue>
-        <description> </description>
-    </globalProperty>
 
 
 

@@ -15,6 +15,8 @@ import org.openmrs.module.reporting.report.definition.service.ReportDefinitionSe
 import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.reporting.report.util.ReportUtil;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
+import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
+import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.util.OpenmrsUtil;
@@ -34,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
+import static org.openmrs.module.ugandaemrsync.server.SyncConstant.SMS_APPOINTMENT_TYPE_UUID;
 
 /**
  * Posts SMS Appointment Remainder data to the central server
@@ -45,8 +48,11 @@ public class SendSMSAppointmentTask extends AbstractTask {
     protected Log log = LogFactory.getLog(getClass());
 
     UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
-
+    SyncTaskType syncTaskType = Context.getService(UgandaEMRSyncService.class).getSyncTaskTypeByUUID(SMS_APPOINTMENT_TYPE_UUID);
     SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
+    String url="";
+    String username = "";
+    String password = "";
 
     @Autowired
     @Qualifier("reportingReportDefinitionService")
@@ -57,16 +63,12 @@ public class SendSMSAppointmentTask extends AbstractTask {
         Date todayDate = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        if (!isGpSMSServerUrlSet()) {
-            return;
-        }
         if (!isGpDhis2OrganizationUuidSet()) {
             return;
         }
 
 
-        String SMSServerUrlEndPoint = syncGlobalProperties.getGlobalProperty(GP_SMS_SERVER_URL);
-        String SMSBaseUrl = ugandaEMRHttpURLConnection.getBaseURL(SMSServerUrlEndPoint);
+        String SMSServerUrlEndPoint = url;
 
         String strSubmissionDate = Context.getAdministrationService()
                 .getGlobalPropertyObject(GP_SMS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE).getPropertyValue();
@@ -99,11 +101,11 @@ public class SendSMSAppointmentTask extends AbstractTask {
             return;
         }
 
-        //Check destination server availability
-        if (!ugandaEMRHttpURLConnection.isServerAvailable(SMSBaseUrl)) {
+//        //Check destination server availability
+        if (!ugandaEMRHttpURLConnection.isServerAvailable(SMSServerUrlEndPoint)) {
             return;
         }
-        log.error("Sending SMS Appointment data to central server ");
+        log.info("Sending SMS Appointment data to central server ");
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
@@ -114,8 +116,8 @@ public class SendSMSAppointmentTask extends AbstractTask {
         Date lastDateOfNextWeek = cal.getTime();
 
         String bodyText = getSMSAppointmentReminderDataExport(firstDateOfNextWeek,lastDateOfNextWeek);
-        HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(SMSServerUrlEndPoint, bodyText);
-        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+        HttpResponse httpResponse = ugandaEMRHttpURLConnection.post(SMSServerUrlEndPoint, bodyText,username,password);
+        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
             ReportUtil.updateGlobalProperty(GP_SMS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE,
                     dateTimeFormat.format(todayDate));
             log.info("SMS Appointment data has been sent to central server");
@@ -189,25 +191,9 @@ public class SendSMSAppointmentTask extends AbstractTask {
         return strOutput;
     }
 
-    public boolean isGpSMSServerUrlSet(){
-        if (isBlank(syncGlobalProperties.getGlobalProperty(GP_SMS_SERVER_URL))) {
-            log.info("SMS server URL is not set");
-            return false;
-        }
-        return true;
-    }
-
     public boolean isGpDhis2OrganizationUuidSet() {
         if (isBlank(syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID))) {
             log.info("DHIS2 Organization UUID is not set");
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isGpRecencyServerPasswordSet() {
-        if (isBlank(syncGlobalProperties.getGlobalProperty(GP_RECENCY_SERVER_PASSWORD))) {
-            log.info("Recency server URL is not set");
             return false;
         }
         return true;
