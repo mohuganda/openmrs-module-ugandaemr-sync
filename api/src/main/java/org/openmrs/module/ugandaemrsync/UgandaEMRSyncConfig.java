@@ -56,6 +56,7 @@ public class UgandaEMRSyncConfig {
 	public static final String ANALYTICS_JSON_FILE_NAME = "Analytics_Metric_Report";
 
 	public static final String RECENCY_DATA_EXPORT_REPORT_DEFINITION_UUID = "662d4c00-d6bb-4494-8180-48776f415802";
+	public static final String GP_RECENCY_REPORT_DURATION = "ugandaemr.hts.recency.surveillance_report_coverage_months";
 	public static final String SMS_DATA_EXPORT_REPORT_DEFINITION_UUID = "9a4bfceb-6205-4811-9a09-f95589249f65";
 
 	public static final String ANALYTICS_DATA_EXPORT_REPORT_DEFINITION_UUID = "dcd1f91a-04c8-4ae1-ac44-6abfdc91c98a";
