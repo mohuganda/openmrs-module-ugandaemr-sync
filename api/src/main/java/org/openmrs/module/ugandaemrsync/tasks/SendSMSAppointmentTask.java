@@ -15,9 +15,8 @@ import org.openmrs.module.reporting.report.definition.service.ReportDefinitionSe
 import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.reporting.report.util.ReportUtil;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
-import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
-import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
+import org.openmrs.module.ugandaemrsync.server.TaskType;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,11 +47,9 @@ public class SendSMSAppointmentTask extends AbstractTask {
     protected Log log = LogFactory.getLog(getClass());
 
     UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
-    SyncTaskType syncTaskType = Context.getService(UgandaEMRSyncService.class).getSyncTaskTypeByUUID(SMS_APPOINTMENT_TYPE_UUID);
+
     SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
-    String url="";
-    String username = "";
-    String password = "";
+    TaskType taskType = new TaskType();
 
     @Autowired
     @Qualifier("reportingReportDefinitionService")
@@ -68,8 +65,8 @@ public class SendSMSAppointmentTask extends AbstractTask {
         }
 
 
-        String SMSServerUrlEndPoint = url;
-
+        String SMSServerUrlEndPoint = taskType.getSyncTaskType(SMS_APPOINTMENT_TYPE_UUID).getUrl();
+        String baseUrl = ugandaEMRHttpURLConnection.getBaseURL(SMSServerUrlEndPoint);
         String strSubmissionDate = Context.getAdministrationService()
                 .getGlobalPropertyObject(GP_SMS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE).getPropertyValue();
 
@@ -98,11 +95,13 @@ public class SendSMSAppointmentTask extends AbstractTask {
         }
         //Check internet connectivity
         if (!ugandaEMRHttpURLConnection.isConnectionAvailable()) {
+            log.error("No network for server");
             return;
         }
 
-//        //Check destination server availability
-        if (!ugandaEMRHttpURLConnection.isServerAvailable(SMSServerUrlEndPoint)) {
+        //Check destination server availability
+        if (!ugandaEMRHttpURLConnection.isServerAvailable(baseUrl)) {
+            log.error("Server cant be reached");
             return;
         }
         log.info("Sending SMS Appointment data to central server ");
@@ -116,7 +115,8 @@ public class SendSMSAppointmentTask extends AbstractTask {
         Date lastDateOfNextWeek = cal.getTime();
 
         String bodyText = getSMSAppointmentReminderDataExport(firstDateOfNextWeek,lastDateOfNextWeek);
-        HttpResponse httpResponse = ugandaEMRHttpURLConnection.post(SMSServerUrlEndPoint, bodyText,username,password);
+
+        HttpResponse httpResponse = ugandaEMRHttpURLConnection.post(SMSServerUrlEndPoint, bodyText,taskType.getSyncTaskType(SMS_APPOINTMENT_TYPE_UUID).getUrlUserName(),taskType.getSyncTaskType(SMS_APPOINTMENT_TYPE_UUID).getUrlPassword());
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
             ReportUtil.updateGlobalProperty(GP_SMS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE,
                     dateTimeFormat.format(todayDate));
