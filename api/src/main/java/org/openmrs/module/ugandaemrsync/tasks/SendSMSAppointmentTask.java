@@ -15,6 +15,8 @@ import org.openmrs.module.reporting.report.definition.service.ReportDefinitionSe
 import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.reporting.report.util.ReportUtil;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
+import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
+import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.module.ugandaemrsync.server.TaskType;
 import org.openmrs.scheduler.tasks.AbstractTask;
@@ -47,7 +49,7 @@ public class SendSMSAppointmentTask extends AbstractTask {
     protected Log log = LogFactory.getLog(getClass());
 
     UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
-
+    UgandaEMRSyncService ugandaEMRSyncService = Context.getService(UgandaEMRSyncService.class);
     SyncGlobalProperties syncGlobalProperties = new SyncGlobalProperties();
     TaskType taskType = new TaskType();
 
@@ -120,6 +122,18 @@ public class SendSMSAppointmentTask extends AbstractTask {
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
             ReportUtil.updateGlobalProperty(GP_SMS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE,
                     dateTimeFormat.format(todayDate));
+            SyncTask newSyncTask = new SyncTask();
+            newSyncTask.setDateSent(new Date());
+            newSyncTask.setCreator(Context.getUserService().getUser(1));
+            newSyncTask.setSentToUrl(SMSServerUrlEndPoint);
+            newSyncTask.setRequireAction(true);
+            newSyncTask.setActionCompleted(false);
+            newSyncTask.setSyncTask(taskType.getSyncTaskType(SMS_APPOINTMENT_TYPE_UUID).getName());
+            newSyncTask.setStatusCode(httpResponse.getStatusLine().getStatusCode());
+            newSyncTask.setStatus("SUCCESS");
+            newSyncTask.setSyncTaskType(taskType.getSyncTaskType(SMS_APPOINTMENT_TYPE_UUID));
+            ugandaEMRSyncService.saveSyncTask(newSyncTask);
+
             log.info("SMS Appointment data has been sent to central server");
         } else {
             log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
