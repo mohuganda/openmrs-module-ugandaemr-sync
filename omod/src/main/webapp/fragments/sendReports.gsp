@@ -273,11 +273,14 @@
                                 if(componentObject.length>0){
                                     for(var j=0; j < componentObject.length;j++){
                                         var child = componentObject[j].value.coding[0];
-                                        var child1 = componentObject[j].code.coding[0];
                                         child = {"code":child.code};
-                                        child1 = {"code":child1.code};
+
+                                        if(typeof componentObject[j].code !== "undefined"){
+                                            var child1 = componentObject[j].code.coding[0];
+                                            child1 = {"code":child1.code};
+                                            attr2Child1[k].component[j].code.coding[0] = child1;
+                                        }
                                         attr2Child1[k].component[j].value.coding[0] = child;
-                                        attr2Child1[k].component[j].code.coding[0] = child1;
                                     }
 
                                 }
