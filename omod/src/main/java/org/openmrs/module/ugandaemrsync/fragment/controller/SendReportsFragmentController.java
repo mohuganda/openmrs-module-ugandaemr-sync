@@ -159,7 +159,7 @@ public class SendReportsFragmentController {
 			newSyncTask.setActionCompleted(false);
 			newSyncTask.setStatus(status);
 			newSyncTask.setStatusCode(sendReportsTask.getResponseCode());
-			newSyncTask.setSyncTask(syncTaskType.getName());
+			newSyncTask.setSyncTask(getReportDefinitionService().getDefinitionByUuid(uuid).getName());
 			newSyncTask.setSyncTaskType(syncTaskType);
 			ugandaEMRSyncService.saveSyncTask(newSyncTask);
 		}else{
