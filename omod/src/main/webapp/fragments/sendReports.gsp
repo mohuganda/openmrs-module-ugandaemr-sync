@@ -175,9 +175,10 @@
 
             indicatorCode = rowValue.code.coding[0].code;
             var indicatorDisplay = rowValue.code.coding[0].display;
+            var row_display_third_diaggregate ="";
+            var row_data_values ="";
             // total_Display_Name = rowValue.stratifier[0].code[0].coding[0].display;
              total_Value = rowValue.measureScore.value;
-            dataValueToDisplay += "<td class='tooltips'>"+indicatorCode+ "<span class='tooltiptext'>"+indicatorDisplay+"</span>"+"</td>";
 
             if(rowValue.stratifier.length!==0) {
                 var disaggregated_rows = rowValue.stratifier[0].stratum;
@@ -189,24 +190,39 @@
                     var row_displayAgeName = obj.component[0].value.coding[0].display;
 
                     if (index == 0) {
-                        if (key % 2) {
-                            ageHeaders = ageHeaders + "<th colspan='2'>" + row_displayAgeName + "</th>";
+                        if (disaggregated_rows.length >=120 && key >=24) {}
+                        else{
+                            if (key % 2) {
+                                ageHeaders = ageHeaders + "<th colspan='2'>" + row_displayAgeName + "</th>";
+                            }
+                            sexHeaders = sexHeaders + "<th>" + row_displaySexKey + "</th>";
+                            dataElementsNo = disaggregated_rows.length;
                         }
-                        sexHeaders = sexHeaders + "<th>" + row_displaySexKey + "</th>";
-                        dataElementsNo = disaggregated_rows.length;
                     }
 
-                    dataValueToDisplay += "<td>" + row_displayValue + "</td>";
+                    row_data_values += "<td>" + row_displayValue + "</td>";
+                    if(typeof obj.component[2] !=="undefined"){
+                        if(key===0){
+                            row_display_third_diaggregate = "("+obj.component[2].value.coding[0].code +")";
+                        }
+
+                        if(key+1 ===24 ||key+1 ===48||key+1 ===72 || key+1 ===96){
+                            dataElementsNo=24;
+                          row_data_values += "</tr><tr>";
+                          row_data_values += "<td class='tooltips'>"+indicatorCode+"("+ disaggregated_rows[key+1].component[2].value.coding[0].code +")" +"<span class='tooltiptext'>"+indicatorDisplay+"("+ disaggregated_rows[key+1].component[2].value.coding[0].code +")"+"</span>"+"</td>";
+                        }
+                    }
 
                 });
             }else{
                 if(typeof dataElementsNo !=="undefined"){
                     for(var x=1;x<=dataElementsNo;x++){
-                        dataValueToDisplay += "<td class='grey'></td>";
+                        row_data_values += "<td class='grey'></td>";
                     }
                 }
             }
-
+            dataValueToDisplay = "<td class='tooltips'>"+indicatorCode+ row_display_third_diaggregate +"<span class='tooltiptext'>"+indicatorDisplay+ row_display_third_diaggregate+"</span>"+"</td>";
+            dataValueToDisplay += row_data_values;
                 dataValueToDisplay += "<td>" + total_Value + "</td>";
 
             dataValueToDisplay += "</tr>";
@@ -472,5 +488,3 @@
         </div>
     </div>
 </div>
-
-
