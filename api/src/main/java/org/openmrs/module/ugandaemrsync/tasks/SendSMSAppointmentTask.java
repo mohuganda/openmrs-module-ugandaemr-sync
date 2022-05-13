@@ -122,16 +122,20 @@ public class SendSMSAppointmentTask extends AbstractTask {
         Date lastDateOfNextWeek = cal.getTime();
 
         String bodyText = getSMSAppointmentReminderDataExport(firstDateOfNextWeek,lastDateOfNextWeek);
-
-        HttpResponse httpResponse = ugandaEMRHttpURLConnection.post(SMSServerUrlEndPoint, bodyText,taskType.getSyncTaskType(SMS_APPOINTMENT_TYPE_UUID).getUrlUserName(),taskType.getSyncTaskType(SMS_APPOINTMENT_TYPE_UUID).getUrlPassword());
-        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-            ReportUtil.updateGlobalProperty(GP_SMS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE,
-                    dateTimeFormat.format(todayDate));
-             taskType.saveSyncTaskForSyncTaskType(taskType.getSyncTaskType(SMS_APPOINTMENT_TYPE_UUID));
-            log.info("SMS Appointment data has been sent to central server");
-        } else {
-            log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
-                    + httpResponse.getStatusLine().getReasonPhrase());
+        if(bodyText==""){
+            log.info("Empty report design");
+            return;
+        }else {
+            HttpResponse httpResponse = ugandaEMRHttpURLConnection.post(SMSServerUrlEndPoint, bodyText, taskType.getSyncTaskType(SMS_APPOINTMENT_TYPE_UUID).getUrlUserName(), taskType.getSyncTaskType(SMS_APPOINTMENT_TYPE_UUID).getUrlPassword());
+            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+                ReportUtil.updateGlobalProperty(GP_SMS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE,
+                        dateTimeFormat.format(todayDate));
+                taskType.saveSyncTaskForSyncTaskType(taskType.getSyncTaskType(SMS_APPOINTMENT_TYPE_UUID));
+                log.info("SMS Appointment data has been sent to central server");
+            } else {
+                log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
+                        + httpResponse.getStatusLine().getReasonPhrase());
+            }
         }
     }
 
