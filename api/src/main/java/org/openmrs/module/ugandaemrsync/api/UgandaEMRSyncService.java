@@ -414,7 +414,7 @@ public interface UgandaEMRSyncService extends OpenmrsService {
      * @return syncFhirProfileLog that has matched the search
      */
     public List<SyncFhirProfileLog> getSyncFhirProfileLogByProfile(SyncFhirProfile syncFhirProfile);
-     public boolean testOrderHasResults(Order order);
+
 
     /**
      * gets all expired resources based on date passed
