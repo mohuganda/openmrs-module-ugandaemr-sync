@@ -349,7 +349,7 @@ public class SyncFHIRRecord {
 
         if (savedResourcesIds.size() > 0) {
             SyncFhirProfileLog syncFhirProfileLog = new SyncFhirProfileLog();
-            syncFhirProfileLog.setNumberOfResources(syncFhirResources.size());
+            syncFhirProfileLog.setNumberOfResources(savedResourcesIds.size());
             syncFhirProfileLog.setProfile(syncFhirProfile);
             assert syncFhirProfile != null;
             syncFhirProfileLog.setResourceType(syncFhirProfile.getCaseBasedPrimaryResourceType());
@@ -832,8 +832,8 @@ public class SyncFHIRRecord {
         if (syncFhirProfile.getCaseBasedProfile()) {
             if (syncFhirCase != null && syncFhirCase.getLastUpdateDate() != null) {
                 lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(syncFhirCase.getLastUpdateDate());
-            } else {
-                lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, syncFhirProfile.getCaseBasedPrimaryResourceType()));
+            } else if(syncFhirCase != null){
+                lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(getDefaultLastSyncDate());
             }
         } else {
             lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, "Patient"));
@@ -884,7 +884,7 @@ public class SyncFHIRRecord {
             if (syncFhirCase != null && syncFhirCase.getLastUpdateDate() != null) {
                 lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(syncFhirCase.getLastUpdateDate());
             } else {
-                lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, syncFhirProfile.getCaseBasedPrimaryResourceType()));
+                lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(getDefaultLastSyncDate());
             }
         } else {
             lastUpdated = new DateRangeParam().setUpperBoundInclusive(new Date()).setLowerBoundInclusive(getLastSyncDate(syncFhirProfile, "Patient"));
