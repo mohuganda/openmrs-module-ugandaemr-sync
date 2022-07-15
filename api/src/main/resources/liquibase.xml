@@ -1129,7 +1129,7 @@
     </changeSet>
 
     <!-- ART Regimen Change -->
-    <changeSet id="ugandaemrsync-20220715-2305" author="iakileng">
+    <changeSet id="ugandaemrsync-20220715-2310" author="iakileng">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM sync_fhir_profile WHERE uuid = '4e0d3ff6-82ac-45a8-bcf3-7367a9098d65'
@@ -1155,7 +1155,7 @@
         </insert>
     </changeSet>
 
-    <changeSet id="ugandaemrsync-20220715-2304" author="iakileng">
+    <changeSet id="ugandaemrsync-20220715-2309" author="iakileng">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM scheduler_task_config
@@ -1205,7 +1205,7 @@
         </insert>
     </changeSet>
 
-    <changeSet id="ugandaemrsync-20220715-2304" author="iakileng">
+    <changeSet id="ugandaemrsync-20220715-2308" author="iakileng">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM scheduler_task_config
