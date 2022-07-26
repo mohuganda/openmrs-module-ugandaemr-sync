@@ -1128,6 +1128,21 @@
         </insert>
     </changeSet>
 
+    <changeSet id="ugandaemrsync-20220726-2301" author="iakileng" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM scheduler_task_config WHERE uuid = '527e1372-ff30-41e9-b139-d61b8a9ff197'
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM scheduler_task_config_property WHERE name = 'syncFhirProfileUUID' and value ='e060d3ed-9cf4-4421-94f9-6b9b3b3fe6f0';
+            </sqlCheck>
+        </preConditions>
+        <comment>Inserting HTS Data Task syncFhirProfileUUID property into 'scheduler_task_config_property' table</comment>
+        <sql>
+            INSERT INTO scheduler_task_config_property (name, value, task_config_id) VALUES ('syncFhirProfileUUID', 'e060d3ed-9cf4-4421-94f9-6b9b3b3fe6f0', (select task_config_id from scheduler_task_config where uuid="527e1372-ff30-41e9-b139-d61b8a9ff197"));
+        </sql>
+    </changeSet>
+
     <!-- ART Regimen Change -->
     <changeSet id="ugandaemrsync-20220715-2310" author="iakileng">
         <preConditions onFail="MARK_RAN">
@@ -1176,6 +1191,21 @@
             <column name="started" value="1"/>
             <column name="uuid" value="156f629d-ff53-4e23-93d5-de79be0f0feb" />
         </insert>
+    </changeSet>
+
+    <changeSet id="ugandaemrsync-20220726-2302" author="iakileng" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM scheduler_task_config WHERE uuid = '156f629d-ff53-4e23-93d5-de79be0f0feb'
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM scheduler_task_config_property WHERE name = 'syncFhirProfileUUID' and value ='4e0d3ff6-82ac-45a8-bcf3-7367a9098d65';
+            </sqlCheck>
+        </preConditions>
+        <comment>Inserting ART Regimen Change Task syncFhirProfileUUID property into 'scheduler_task_config_property' table</comment>
+        <sql>
+            INSERT INTO scheduler_task_config_property (name, value, task_config_id) VALUES ('syncFhirProfileUUID', '4e0d3ff6-82ac-45a8-bcf3-7367a9098d65', (select task_config_id from scheduler_task_config where uuid="156f629d-ff53-4e23-93d5-de79be0f0feb"));
+        </sql>
     </changeSet>
 
     <!-- TB Data -->
@@ -1228,6 +1258,21 @@
         </insert>
     </changeSet>
 
+    <changeSet id="ugandaemrsync-20220726-2303" author="iakileng" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM scheduler_task_config WHERE uuid = '8963510e-404a-4363-a033-effc682fdacc'
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM scheduler_task_config_property WHERE name = 'syncFhirProfileUUID' and value ='8adee026-d795-4f2a-aa29-6bafaf56b90e';
+            </sqlCheck>
+        </preConditions>
+        <comment>Inserting TB Data Task syncFhirProfileUUID property into 'scheduler_task_config_property' table</comment>
+        <sql>
+            INSERT INTO scheduler_task_config_property (name, value, task_config_id) VALUES ('syncFhirProfileUUID', '8adee026-d795-4f2a-aa29-6bafaf56b90e', (select task_config_id from scheduler_task_config where uuid="8963510e-404a-4363-a033-effc682fdacc"));
+        </sql>
+    </changeSet>
+
     <!-- HIV Exposed Infant Data -->
     <changeSet id="ugandaemrsync-20220715-2307" author="iakileng">
         <preConditions onFail="MARK_RAN">
@@ -1277,4 +1322,20 @@
             <column name="uuid" value="7f5d2fc4-43f4-4de2-845e-9490925e71c3" />
         </insert>
     </changeSet>
+
+    <changeSet id="ugandaemrsync-20220726-2304" author="iakileng" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM scheduler_task_config WHERE uuid = '7f5d2fc4-43f4-4de2-845e-9490925e71c3'
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM scheduler_task_config_property WHERE name = 'syncFhirProfileUUID' and value ='e8a37e2f-6c78-476e-93a5-14aec653c406';
+            </sqlCheck>
+        </preConditions>
+        <comment>Inserting HIV Exposed Infant Data Task syncFhirProfileUUID property into 'scheduler_task_config_property' table</comment>
+        <sql>
+            INSERT INTO scheduler_task_config_property (name, value, task_config_id) VALUES ('syncFhirProfileUUID', 'e8a37e2f-6c78-476e-93a5-14aec653c406', (select task_config_id from scheduler_task_config where uuid="7f5d2fc4-43f4-4de2-845e-9490925e71c3"));
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
