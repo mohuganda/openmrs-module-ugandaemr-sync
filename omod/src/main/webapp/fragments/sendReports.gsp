@@ -102,16 +102,28 @@
                 var disaggregated_rows = rowValue.stratifier[0].stratum;
                 var which_sex='';
                 var which_age='';
+                var test_result='';
                 jq.each(disaggregated_rows, function (key, obj) {
                     jq.each(obj.component,function(k,v){
                         if(v.code.coding[0].code=='SEX'){
                             which_sex = v.value.coding[0].code;
                         }else if (v.code.coding[0].code=='AGE_GROUP'){
                             which_age = v.value.coding[0].code;
+                        }else if (v.code.coding[0].code=='TEST_RESULT'){
+
                         }
                     });
 
-                    if(which_sex!='' && which_age!=''){
+                    if(which_sex!='' && which_age!='' && test_result!=''){
+                        if(test_result=='HIV Negative'){
+                           jq('#'+indicatorCode+'-'+which_age+'-'+which_sex+'-N').html(obj.measureScore.value);
+                        }else if(test_result=='HIV Positive 1st Test'){
+                           jq('#'+indicatorCode+'-'+which_age+'-'+which_sex+'-P1').html(obj.measureScore.value);
+                        }else if(test_result=='HIV Positive repeat Test'){
+                             jq('#'+indicatorCode+'-'+which_age+'-'+which_sex+'-P2').html(obj.measureScore.value);
+                        }
+
+                    } else if(which_sex!='' && which_age!=''){
                         jq('#'+indicatorCode+'-'+which_age+'-'+which_sex).html(obj.measureScore.value);
                     }else if (which_sex=='') {
                         jq('#'+indicatorCode+'-'+which_age).html(obj.measureScore.value);
@@ -781,6 +793,438 @@
                         <td class="tg-ogju" id="HTS_RECENT-P15Y--9999Y-M"> </td>
                         <td class="tg-wdya"> </td>
                     </tr>
+
+                    <tr>
+                        <td class="tg-nrix" rowspan="66">HTS_TST (Number of individuals who received HIV Testing Services&nbsp;&nbsp;&nbsp;(HTS) and received their test results infection with a documented result)</td>
+                        <td class="tg-zlip" rowspan="2">Social Network&nbsp;&nbsp;&nbsp;Strategy (SNS)-Positive - 1st Positive test</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_SNS-P0Y--P15Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_SNS-P0Y--P15Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_SNS-P15Y--P9999Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_SNS-P15Y--P9999Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Social&nbsp;&nbsp;&nbsp;Network Strategy (SNS)-Positive - Previously tested Positive (Repeat)	</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_SNS-P0Y--P15Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_SNS-P0Y--P15Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_SNS-P15Y--P9999Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_SNS-P15Y--P9999Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Social&nbsp;&nbsp;&nbsp;Network Strategy (SNS)-N</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_SNS-P0Y--P15Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_SNS-P0Y--P15Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_SNS-P15Y--P9999Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_SNS-P15Y--P9999Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Index&nbsp;&nbsp;&nbsp;Facility Client testing - Positive - 1st Positive test</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_FAC-P0Y--P15Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_FAC-P0Y--P15Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_FAC-P15Y--P9999Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_FAC-P15Y--P9999Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Index&nbsp;&nbsp;&nbsp;Facility Client testing - Positive - Previously tested Positive (Repeat)	</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_FAC-P0Y--P15Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_FAC-P0Y--P15Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_FAC-P15Y--P9999Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_FAC-P15Y--P9999Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Index&nbsp;&nbsp;&nbsp;Facility Client testing - N</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_FAC-P0Y--P15Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_FAC-P0Y--P15Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_FAC-P15Y--P9999Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_FAC-P15Y--P9999Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">PMTCT&nbsp;&nbsp;&nbsp;(ANC 1 only) - Positive - 1st Positive test</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_ANC-P0Y--P15Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_ANC-P0Y--P15Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_ANC-P15Y--P9999Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_ANC-P15Y--P9999Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">PMTCT&nbsp;&nbsp;&nbsp;(ANC 1 only) - Positive - Previously tested Positive (Repeat)	</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_ANC-P0Y--P15Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_ANC-P0Y--P15Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_ANC-P15Y--P9999Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_ANC-P15Y--P9999Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">PMTCT&nbsp;&nbsp;&nbsp;(ANC 1 only) - N</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_ANC-P0Y--P15Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_ANC-P0Y--P15Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_ANC-P15Y--P9999Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_ANC-P15Y--P9999Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">PMTCT&nbsp;&nbsp;&nbsp;– Post ANC  Pregnancy/L&amp;D/BF -&nbsp;&nbsp;&nbsp;Positive - 1st Positive test</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_POST-P0Y--P15Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_POST-P0Y--P15Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_POST-P15Y--P9999Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_POST-P15Y--P9999Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">PMTCT&nbsp;&nbsp;&nbsp;– Post ANC  Pregnancy/L&amp;D/BF -&nbsp;&nbsp;&nbsp;Positive - Previously tested Positive (Repeat)	</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_POST-P0Y--P15Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_POST-P0Y--P15Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_POST-P15Y--P9999Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_POST-P15Y--P9999Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">PMTCT&nbsp;&nbsp;&nbsp;– Post ANC  Pregnancy/L&amp;D/BF -&nbsp;&nbsp;&nbsp;N</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_POST-P0Y--P15Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_POST-P0Y--P15Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_POST-P15Y--P9999Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PMTCT_POST-P15Y--P9999Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Malnutrition&nbsp;&nbsp;&nbsp;- 1st Positive test</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_MAL-P0Y--P15Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_MAL-P0Y--P15Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_MAL-P15Y--P9999Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_MAL-P15Y--P9999Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Malnutrition-&nbsp;&nbsp;&nbsp;- Previously tested Positive (Repeat)	</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_MAL-P0Y--P15Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_MAL-P0Y--P15Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_MAL-P15Y--P9999Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_MAL-P15Y--P9999Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Malnutrition&nbsp;&nbsp;&nbsp;- N</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_MAL-P0Y--P15Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_MAL-P0Y--P15Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_MAL-P15Y--P9999Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_MAL-P15Y--P9999Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Pediatric&nbsp;&nbsp;&nbsp;- 1st Positive test</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PED-P0Y--P15Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PED-P0Y--P15Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PED-P15Y--P9999Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PED-P15Y--P9999Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Pediatric-&nbsp;&nbsp;&nbsp;Previously tested Positive (Repeat)	</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PED-P0Y--P15Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PED-P0Y--P15Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PED-P15Y--P9999Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PED-P15Y--P9999Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Pediatric&nbsp;&nbsp;&nbsp;- N</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PED-P0Y--P15Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PED-P0Y--P15Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_PED-P15Y--P9999Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_PED-P15Y--P9999Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">TB&nbsp;&nbsp;&nbsp;Clinic - 1st Positive test</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_TB-P0Y--P15Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_TB-P0Y--P15Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_TB-P15Y--P9999Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_TB-P15Y--P9999Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">TB&nbsp;&nbsp;&nbsp;Clinic Previously tested Positive (Repeat)	</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_TB-P0Y--P15Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_TB-P0Y--P15Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_TB-P15Y--P9999Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_TB-P15Y--P9999Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">TB&nbsp;&nbsp;&nbsp;Clinic - N</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_TB-P0Y--P15Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_TB-P0Y--P15Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_TB-P15Y--P9999Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_TB-P15Y--P9999Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Other&nbsp;&nbsp;&nbsp;PITC- 1st Positive test</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_OTHER_PITC-P0Y--P15Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_OTHER_PITC-P0Y--P15Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_OTHER_PITC-P15Y--P9999Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_OTHER_PITC-P15Y--P9999Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Other&nbsp;&nbsp;&nbsp;PITC- Previously tested Positive (Repeat)	</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_OTHER_PITC-P0Y--P15Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_OTHER_PITC-P0Y--P15Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_OTHER_PITC-P15Y--P9999Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_OTHER_PITC-P15Y--P9999Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Other&nbsp;&nbsp;&nbsp;PITC- N</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_OTHER_PITC-P0Y--P15Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_OTHER_PITC-P0Y--P15Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_OTHER_PITC-P15Y--P9999Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_OTHER_PITC-P15Y--P9999Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Index&nbsp;&nbsp;&nbsp;Community Client testing- 1st Positive test</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_COM-P0Y--P15Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_COM-P0Y--P15Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_COM-P15Y--P9999Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_COM-P15Y--P9999Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Index&nbsp;&nbsp;&nbsp;Community Client testing - Previously tested Positive (Repeat)	</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_COM-P0Y--P15Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_COM-P0Y--P15Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_COM-P15Y--P9999Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_COM-P15Y--P9999Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">Index&nbsp;&nbsp;&nbsp;Community Client testing- N</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_COM-P0Y--P15Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_COM-P0Y--P15Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_COM-P15Y--P9999Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_INDEX_COM-P15Y--P9999Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">VCT&nbsp;&nbsp;&nbsp;COMMUNITY- 1st Positive test</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_VCT-P0Y--P15Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_VCT-P0Y--P15Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_VCT-P15Y--P9999Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_VCT-P15Y--P9999Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">VCT&nbsp;&nbsp;&nbsp;COMMUNITY - Previously tested Positive (Repeat)	</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_VCT-P0Y--P15Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_VCT-P0Y--P15Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_VCT-P15Y--P9999Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_VCT-P15Y--P9999Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">VCT&nbsp;&nbsp;&nbsp;COMMUNITY- N</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_VCT-P0Y--P15Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_VCT-P0Y--P15Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_VCT-P15Y--P9999Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_VCT-P15Y--P9999Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">MOBILE&nbsp;&nbsp;&nbsp;COMMUNITY- 1st Positive test</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_MOB-P0Y--P15Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_MOB-P0Y--P15Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_MOB-P15Y--P9999Y-F-P1"> </td>
+                        <td class="tg-ogju" id="HTS_TST_MOB-P15Y--P9999Y-M-P1"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">MOBILE&nbsp;&nbsp;&nbsp;COMMUNITY- Previously tested Positive (Repeat)	</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_MOB-P0Y--P15Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_MOB-P0Y--P15Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_MOB-P15Y--P9999Y-F-P2"> </td>
+                        <td class="tg-ogju" id="HTS_TST_MOB-P15Y--P9999Y-M-P2"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-zlip" rowspan="2">MOBILE&nbsp;&nbsp;&nbsp;COMMUNITY- N</td>
+                        <td class="tg-8y2u"> &lt;15 Years</td>
+                        <td class="tg-ogju" id="HTS_TST_MOB-P0Y--P15Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_MOB-P0Y--P15Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8y2u">15+ Years</td>
+                        <td class="tg-ogju" id="HTS_TST_MOB-P15Y--P9999Y-F-N"> </td>
+                        <td class="tg-ogju" id="HTS_TST_MOB-P15Y--P9999Y-M-N"> </td>
+                        <td class="tg-wdya"> </td>
+                    </tr>
+
                     </tbody>
                 </table>
             </div>
