@@ -110,16 +110,16 @@
                         }else if (v.code.coding[0].code=='AGE_GROUP'){
                             which_age = v.value.coding[0].code;
                         }else if (v.code.coding[0].code=='TEST_RESULT'){
-
+                            test_result = v.value.coding[0].code;
                         }
                     });
-
-                    if(which_sex!='' && which_age!='' && test_result!=''){
-                        if(test_result=='HIV Negative'){
+                    // console.log('#'+indicatorCode+'-'+which_age+'-'+which_sex+'-'+test_result);
+                    if(which_sex!=='' && which_age!=='' && test_result!==''){
+                        if(test_result==='HIV Negative'){
                            jq('#'+indicatorCode+'-'+which_age+'-'+which_sex+'-N').html(obj.measureScore.value);
-                        }else if(test_result=='HIV Positive 1st Test'){
+                        }else if(test_result==='HIV Positive 1st Test'){
                            jq('#'+indicatorCode+'-'+which_age+'-'+which_sex+'-P1').html(obj.measureScore.value);
-                        }else if(test_result=='HIV Positive repeat Test'){
+                        }else if(test_result==='HIV Positive repeat Test'){
                              jq('#'+indicatorCode+'-'+which_age+'-'+which_sex+'-P2').html(obj.measureScore.value);
                         }
 
