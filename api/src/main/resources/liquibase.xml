@@ -1380,7 +1380,7 @@
         </sql>
     </changeSet>
 
-    <changeSet id="ugandaemrsync-20230116-1840" author="dbaluku">
+    <changeSet id="ugandaemrsync-20230208-1840" author="dbaluku">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM scheduler_task_config
@@ -1394,7 +1394,7 @@
             <column name="schedulable_class" value="org.openmrs.module.ugandaemrsync.tasks.ComputeAndSaveAuditToolDataTask" />
             <column name="start_time_pattern" value="MM/dd/yyyy HH:mm:ss" />
             <column name="start_time" valueDate="2023-01-15T19:44:15" />
-            <column name="repeat_interval" value="3600" />
+            <column name="repeat_interval" value="86400" />
             <column name="date_created" valueDate="CURRENT_TIMESTAMP" />
             <column name="created_by" value="1" />
             <column name="start_on_startup" value="1"/>

@@ -173,7 +173,7 @@ INSERT INTO reporting_audit_tool_hiv (
      IF(bled_for_vl.bled_date > vl_bled.vl_date, bled_for_vl.bled_date, '') as new_bled_date,
      HD_enc.visit_date,
      psy_issues.name,
-     psy_intervention.name FROM  (select DISTINCT e.patient_id as patient from encounter e INNER JOIN encounter_type et ON e.encounter_type = et.encounter_type_id WHERE e.voided = 0 and et.uuid in('8d5b27bc-c2cc-11de-8d13-0010c6dffd0f','8d5b2be0-c2cc-11de-8d13-0010c6dffd0f') and encounter_datetime<= CURRENT_DATE() and encounter_datetime>= DATE_SUB(CURRENT_DATE(), INTERVAL 6 MONTH))cohort join
+     psy_intervention.name FROM  (select DISTINCT e.patient_id as patient from encounter e INNER JOIN encounter_type et ON e.encounter_type = et.encounter_type_id WHERE e.voided = 0 and et.uuid in('8d5b27bc-c2cc-11de-8d13-0010c6dffd0f','8d5b2be0-c2cc-11de-8d13-0010c6dffd0f') and encounter_datetime<= CURRENT_DATE() and encounter_datetime>= DATE_SUB(CURRENT_DATE(), INTERVAL 12 MONTH))cohort join
     person p on p.person_id = cohort.patient LEFT JOIN
     (SELECT pi.patient_id as patientid,identifier FROM patient_identifier pi INNER JOIN patient_identifier_type pit ON pi.identifier_type = pit.patient_identifier_type_id and pit.uuid='e1731641-30ab-102d-86b0-7a5022ba4115'  WHERE  pi.voided=0 group by pi.patient_id)ids on patient=patientid
     LEFT JOIN(SELECT o.person_id,cn.name from obs o inner join (SELECT person_id,max(obs_datetime)latest_date from obs where concept_id=90041 and voided=0 group by person_id)A on o.person_id = A.person_id LEFT JOIN concept_name cn ON value_coded = cn.concept_id and cn.concept_name_type='FULLY_SPECIFIED' and cn.locale='en'
@@ -337,7 +337,7 @@ SELECT patient,
        decision_date.dates,
        decision_outcome.name,
        new_regimen.name
-FROM  (select DISTINCT e.patient_id as patient from encounter e INNER JOIN encounter_type et ON e.encounter_type = et.encounter_type_id WHERE e.voided = 0 and et.uuid in('8d5b27bc-c2cc-11de-8d13-0010c6dffd0f','8d5b2be0-c2cc-11de-8d13-0010c6dffd0f') and encounter_datetime<= CURRENT_DATE() and encounter_datetime>= DATE_SUB(CURRENT_DATE(), INTERVAL 6 MONTH))cohort join
+FROM  (select DISTINCT e.patient_id as patient from encounter e INNER JOIN encounter_type et ON e.encounter_type = et.encounter_type_id WHERE e.voided = 0 and et.uuid in('8d5b27bc-c2cc-11de-8d13-0010c6dffd0f','8d5b2be0-c2cc-11de-8d13-0010c6dffd0f') and encounter_datetime<= CURRENT_DATE() and encounter_datetime>= DATE_SUB(CURRENT_DATE(), INTERVAL 12 MONTH))cohort join
     person p on p.person_id = cohort.patient INNER JOIN
     (SELECT o.person_id from obs o inner join (SELECT person_id,max(obs_datetime)latest_date from obs where concept_id=856 and voided=0 group by person_id)A on o.person_id = A.person_id
     where o.concept_id=856 and obs_datetime =A.latest_date and o.voided=0 and obs_datetime <=current_date() and value_numeric>1000 group by o.person_id)VL on patient=VL.person_id
@@ -433,7 +433,7 @@ SELECT patient,
        CRAG.name,
        WHO_STAGE.name,
        start_date
-FROM  (select DISTINCT e.patient_id as patient from encounter e INNER JOIN encounter_type et ON e.encounter_type = et.encounter_type_id WHERE e.voided = 0 and et.uuid in('8d5b27bc-c2cc-11de-8d13-0010c6dffd0f','8d5b2be0-c2cc-11de-8d13-0010c6dffd0f') and encounter_datetime<= current_date() and encounter_datetime>= DATE_SUB(current_date(), INTERVAL 6 MONTH))cohort join
+FROM  (select DISTINCT e.patient_id as patient from encounter e INNER JOIN encounter_type et ON e.encounter_type = et.encounter_type_id WHERE e.voided = 0 and et.uuid in('8d5b27bc-c2cc-11de-8d13-0010c6dffd0f','8d5b2be0-c2cc-11de-8d13-0010c6dffd0f') and encounter_datetime<= current_date() and encounter_datetime>= DATE_SUB(current_date(), INTERVAL 12 MONTH))cohort join
     person p on p.person_id = cohort.patient LEFT JOIN
     (SELECT person_id, max(DATE (value_datetime))as en_date FROM obs WHERE concept_id=165312 and voided=0 and  value_datetime<=current_date() AND obs_datetime <=current_date() group by person_id)enroll_date on patient=enroll_date.person_id
     LEFT JOIN (SELECT o.person_id,cn.name from obs o inner join (SELECT person_id,max(obs_datetime)latest_date from obs where concept_id=99080 and voided=0 group by person_id)A on o.person_id = A.person_id LEFT JOIN concept_name cn ON value_coded = cn.concept_id and cn.concept_name_type='FULLY_SPECIFIED' and cn.locale='en'
@@ -509,6 +509,8 @@ CREATE TABLE reporting_audit_tool_eid (
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+# remove the not pregnant in the cohort
+
 INSERT INTO reporting_audit_tool_eid (
     PATTIENT_NO,
     EDD ,
@@ -570,7 +572,7 @@ SELECT patient,
 
     FROM  ( select DISTINCT o.person_id as patient from obs o WHERE o.voided = 0 and concept_id=90041 and value_coded in (1065,99601) and obs_datetime<= CURRENT_DATE() and obs_datetime>= DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR) union
                 SELECT person_a as patient from relationship r inner join person p on r.person_a = p.person_id inner join relationship_type rt on r.relationship = rt.relationship_type_id and rt.uuid='8d91a210-c2cc-11de-8d13-0010c6dffd0f' where p.gender='F' and r.person_b in (SELECT DISTINCT e.patient_id from encounter e INNER JOIN encounter_type et
-                ON e.encounter_type = et.encounter_type_id WHERE e.voided = 0 and et.uuid in('9fcfcc91-ad60-4d84-9710-11cc25258719','4345dacb-909d-429c-99aa-045f2db77e2b') and encounter_datetime<= CURRENT_DATE() and encounter_datetime>= DATE_SUB(CURRENT_DATE(), INTERVAL 2 YEAR))) cohort join
+                ON e.encounter_type = et.encounter_type_id WHERE e.voided = 0 and et.uuid in('9fcfcc91-ad60-4d84-9710-11cc25258719','4345dacb-909d-429c-99aa-045f2db77e2b') and encounter_datetime<= CURRENT_DATE() and encounter_datetime>= DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR))) cohort join
         person p on p.person_id = cohort.patient
         LEFT JOIN (SELECT person_id, max(DATE (value_datetime))as edd_date FROM obs WHERE concept_id=5596 and voided=0 and  obs_datetime<=CURRENT_DATE() AND obs_datetime >=DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR) group by person_id)EDD on patient=EDD.person_id
         LEFT JOIN (SELECT parent,DATE(value_datetime) mydate  from obs o inner join (SELECT person_a as parent,person_b,max(obs_datetime)latest_date from relationship inner join obs   on person_id = relationship.person_b inner join person p2 on relationship.person_b = p2.person_id and p2.birthdate >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 YEAR)   where relationship =(select relationship_type_id from relationship_type where uuid= '8d91a210-c2cc-11de-8d13-0010c6dffd0f')and concept_id=99771 and obs.voided=0 and obs_datetime<=CURRENT_DATE() AND obs_datetime >=DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR) group by person_b)A
