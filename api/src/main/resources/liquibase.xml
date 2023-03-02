@@ -1414,14 +1414,14 @@
         </sql>
     </changeSet>
 
-    <changeSet id="ugandaemrsync-20230208-1840" author="dbaluku">
+    <changeSet id="ugandaemrsync-20230302-0940" author="dbaluku">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM scheduler_task_config
                 WHERE schedulable_class = 'org.openmrs.module.ugandaemrsync.tasks.ComputeAndSaveAuditToolDataTask'
             </sqlCheck>
         </preConditions>
-        <comment>Creating ART Regimen Change Task</comment>
+        <comment>running audit sql script to save data in flat table</comment>
         <insert tableName="scheduler_task_config">
             <column name="name" value="Compute And Save Audit Tool Data" />
             <column name="description" value="Compute And Save Audit Tool Data" />
