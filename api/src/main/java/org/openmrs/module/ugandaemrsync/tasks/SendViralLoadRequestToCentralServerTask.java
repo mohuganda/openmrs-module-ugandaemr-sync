@@ -53,6 +53,7 @@ public class SendViralLoadRequestToCentralServerTask extends AbstractTask {
             if (syncTask == null) {
                 Map<String, String> dataOutput = generateVLFHIROrderTestRequestBody((TestOrder) order, VL_SEND_SAMPLE_FHIR_JSON_STRING);
                 String json = dataOutput.get("json");
+                System.out.println(json);
                 try {
                     Map map = ugandaEMRHttpURLConnection.sendPostBy(syncTaskType.getUrl(), syncTaskType.getUrlUserName(), syncTaskType.getUrlPassword(), "", json, false);
                     if ((map != null) && UgandaEMRSyncUtil.getSuccessCodeList().contains(map.get("responseCode"))) {
@@ -69,7 +70,7 @@ public class SendViralLoadRequestToCentralServerTask extends AbstractTask {
                         ugandaEMRSyncService.saveSyncTask(newSyncTask);
                     }
                 } catch (Exception e) {
-                    log.error("Faied to create sync task",e);
+                    log.error("Failed to create sync task",e);
                 }
             }
         }
@@ -161,7 +162,7 @@ public class SendViralLoadRequestToCentralServerTask extends AbstractTask {
                 ordererContact = getProviderAttributeValue(testOrder.getOrderer().getActiveAttributes());
             }
 
-            filledJsonFile = String.format(jsonFHIRMap, healthCenterCode, healthCenterName, requestType, sourceSystem, patientARTNO, sampleID, obsSampleType, sampleCollectionDate, labTechNames, labTechContact, clinicianNames, ordererContact, "CPHL");
+            filledJsonFile = String.format(jsonFHIRMap, healthCenterCode, healthCenterName, requestType, sourceSystem, patientARTNO, sampleID, obsSampleType, sampleCollectionDate, labTechNames, labTechContact,sampleCollectionDate, clinicianNames, ordererContact, "CPHL");
         }
         jsonMap.put("json", filledJsonFile);
         return jsonMap;
