@@ -507,6 +507,7 @@
                                                         <option value="Encounter">Encounter</option>
                                                         <option value="ProgramWorkFlowState">Program Workflow State</option>
                                                         <option value="Order">Order</option>
+                                                        <option value="CohortType">Cohort type</option>
                                                     </select>
                                                 </div>
 

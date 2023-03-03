@@ -232,6 +232,7 @@
                                         <option value="org.openmrs.ProgramWorkflow">org.openmrs.ProgramWorkflow</option>
                                         <option value="org.openmrs.Provider">org.openmrs.Provider</option>
                                         <option value="org.openmrs.User">org.openmrs.User</option>
+                                        <option value="org.openmrs.Cohort">org.openmrs.Cohort</option>
                                         <option value="org.openmrs.util.AttributableDate">org.openmrs.util.AttributableDate</option>
                                     </select>
 
