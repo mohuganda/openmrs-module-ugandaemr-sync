@@ -568,7 +568,7 @@
                                                     <label>Encounter Type UUIDS</label>
                                                     <input type="text" class="form-control resourceTypeFilter"
                                                            id="encounterTypeUUIDS"
-                                                           placeholder="comma separate encouter type uuids"
+                                                           placeholder="comma separate encounter type uuids"
                                                            name="encounterTypeUUIDS">
                                                 </div>
 

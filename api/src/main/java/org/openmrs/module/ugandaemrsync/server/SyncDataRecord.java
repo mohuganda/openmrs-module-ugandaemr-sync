@@ -214,7 +214,7 @@ public class SyncDataRecord {
 
             syncGlobalProperties.setGlobalProperty(SyncConstant.LAST_SYNC_DATE, newSyncDate);
         } catch (Exception e) {
-            log.error("Faied to process sync records central server", e);
+            log.error("Failed to process sync records central server", e);
         }
 
         return totals;
