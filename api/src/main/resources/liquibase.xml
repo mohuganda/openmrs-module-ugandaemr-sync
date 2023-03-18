@@ -1481,4 +1481,16 @@
         </sql>
     </changeSet>
 
+    <changeSet id="20230317-1002" author="iakileng">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="sync_fhir_case"/>
+        </preConditions>
+        <comment> Updating constraint on sync_fhir_case table </comment>
+        <sql>
+            ALTER table sync_fhir_case drop key sync_fhir_case_case_identifier_uindex;
+
+            ALTER table sync_fhir_case add constraint sync_fhir_case_case_profile_identifier_uindex unique (case_identifier,profile,patient);
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
