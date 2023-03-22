@@ -48,7 +48,7 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
             log.error("Failed to pass orders to list", e);
         }
 
-        SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(VIRAL_LOAD_SYNC_TYPE_UUID);
+        SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(VL_PROGRAM_DATA_SYNC_TYPE_UUID);
 
         for (Order order : orderList) {
             SyncTask syncTask = ugandaEMRSyncService.getSyncTaskBySyncTaskId(order.getAccessionNumber());
@@ -64,11 +64,11 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
                         newSyncTask.setCreator(Context.getUserService().getUser(1));
                         newSyncTask.setSentToUrl(syncTaskType.getUrl());
                         newSyncTask.setRequireAction(true);
-                        newSyncTask.setActionCompleted(false);
+                        newSyncTask.setActionCompleted(true);
                         newSyncTask.setSyncTask(order.getAccessionNumber());
                         newSyncTask.setStatusCode((Integer) map.get("responseCode"));
                         newSyncTask.setStatus("SUCCESS");
-                        newSyncTask.setSyncTaskType(ugandaEMRSyncService.getSyncTaskTypeByUUID(VIRAL_LOAD_SYNC_TYPE_UUID));
+                        newSyncTask.setSyncTaskType(ugandaEMRSyncService.getSyncTaskTypeByUUID(VL_PROGRAM_DATA_SYNC_TYPE_UUID));
                         ugandaEMRSyncService.saveSyncTask(newSyncTask);
                     }
                 } catch (Exception e) {
@@ -191,6 +191,15 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
                 artStartDate = (Date) myList.get(0);
             }
 
+            List obs_indication_for_VL = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patient.getPatientId(),168689,date_activated),true);
+
+            String vl_testing_for="";
+            if(obs_dsdmList.size()>0){
+                ArrayList myList = (ArrayList) obs_indication_for_VL.get(0);
+                int vl_indicator_code = Integer.parseInt(myList.get(0).toString());
+                vl_testing_for = Context.getConceptService().getConcept(vl_indicator_code).getName().getName();
+            }
+
             List obs_WHOList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patient.getPatientId(),90203,date_activated),true);
 
             String who_code = "";
@@ -257,7 +266,7 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
                line_body=thirdLineBody;
             }
 
-            filledJsonFile = String.format(jsonFHIRMap,patientARTNO,sampleID,patientARTNO,patientOpenMRSID,patientNATIONALID,patientANCID,otherID,patientPNC_ID,gender, patient.getBirthdate(),healthCenterCode,patient.getAge(),artStartDate,who_code,who_display,duration_string,pregnant,breastfeeding,hasActiveTB,tb_phase,adherence,dsdm,dsdm,line_body,current_regimen);
+            filledJsonFile = String.format(jsonFHIRMap,patientARTNO,sampleID,patientARTNO,patientOpenMRSID,patientNATIONALID,patientANCID,otherID,patientPNC_ID,gender, patient.getBirthdate(),healthCenterCode,patient.getAge(),artStartDate,who_code,who_display,duration_string,pregnant,breastfeeding,hasActiveTB,tb_phase,adherence,dsdm,vl_testing_for,line_body,current_regimen);
         }
         jsonMap.put("json", filledJsonFile);
         return jsonMap;
