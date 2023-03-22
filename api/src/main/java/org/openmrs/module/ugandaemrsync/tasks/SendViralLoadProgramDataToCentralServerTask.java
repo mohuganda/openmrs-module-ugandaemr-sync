@@ -70,6 +70,7 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
                         newSyncTask.setStatus("SUCCESS");
                         newSyncTask.setSyncTaskType(ugandaEMRSyncService.getSyncTaskTypeByUUID(VL_PROGRAM_DATA_SYNC_TYPE_UUID));
                         ugandaEMRSyncService.saveSyncTask(newSyncTask);
+                        System.out.println("Sent Message");
                     }
                 } catch (Exception e) {
                     log.error("Failed to create sync task",e);
@@ -194,7 +195,7 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
             List obs_indication_for_VL = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patient.getPatientId(),168689,date_activated),true);
 
             String vl_testing_for="";
-            if(obs_dsdmList.size()>0){
+            if(obs_indication_for_VL.size()>0){
                 ArrayList myList = (ArrayList) obs_indication_for_VL.get(0);
                 int vl_indicator_code = Integer.parseInt(myList.get(0).toString());
                 vl_testing_for = Context.getConceptService().getConcept(vl_indicator_code).getName().getName();
