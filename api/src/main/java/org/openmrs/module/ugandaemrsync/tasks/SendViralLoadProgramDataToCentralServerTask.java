@@ -19,6 +19,7 @@ import org.openmrs.scheduler.tasks.AbstractTask;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.*;
 
@@ -51,14 +52,16 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
         SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(VL_PROGRAM_DATA_SYNC_TYPE_UUID);
 
         for (Order order : orderList) {
-            SyncTask syncTask = ugandaEMRSyncService.getSyncTaskBySyncTaskId(order.getAccessionNumber());
-            if (syncTask == null) {
+            List<SyncTask> allSyncTasks = ugandaEMRSyncService.getAllSyncTask();
+            List<SyncTask> syncTasks = allSyncTasks.stream().filter(p -> order.getAccessionNumber().equals(p.getSyncTask()) && syncTaskType.getId().equals(p.getSyncTaskType().getId())).collect(Collectors.toList());
+
+            if (syncTasks.size()<1) {
                 Map<String, String> dataOutput = generateVLProgramDataFHIRBody((TestOrder) order, VL_SEND_PROGRAM_DATA_FHIR_JSON_STRING);
                 String json = dataOutput.get("json");
 
                 try {
                     Map map = ugandaEMRHttpURLConnection.sendPostBy(syncTaskType.getUrl(), syncTaskType.getUrlUserName(), syncTaskType.getUrlPassword(), "", json, false);
-                    if ((map != null) && UgandaEMRSyncUtil.getSuccessCodeList().contains(map.get("responseCode"))) {
+                    if (map != null) {
                         SyncTask newSyncTask = new SyncTask();
                         newSyncTask.setDateSent(new Date());
                         newSyncTask.setCreator(Context.getUserService().getUser(1));
@@ -67,10 +70,9 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
                         newSyncTask.setActionCompleted(true);
                         newSyncTask.setSyncTask(order.getAccessionNumber());
                         newSyncTask.setStatusCode((Integer) map.get("responseCode"));
-                        newSyncTask.setStatus("SUCCESS");
+                        newSyncTask.setStatus((String)map.get("responseMessage"));
                         newSyncTask.setSyncTaskType(ugandaEMRSyncService.getSyncTaskTypeByUUID(VL_PROGRAM_DATA_SYNC_TYPE_UUID));
                         ugandaEMRSyncService.saveSyncTask(newSyncTask);
-                        System.out.println("Sent Message");
                     }
                 } catch (Exception e) {
                     log.error("Failed to create sync task",e);
