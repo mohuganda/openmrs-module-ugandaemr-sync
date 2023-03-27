@@ -92,6 +92,7 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
             String healthCenterCode = ugandaEMRSyncService.getHealthCenterCode();
             String otherID= "";
             Patient patient = testOrder.getPatient();
+            int patientId = patient.getPatientId();
             Date date_activated = testOrder.getDateActivated();
             String patientARTNO = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient(),PATIENT_IDENTIFIER_TYPE);
             String patientOpenMRSID = ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient(),OPENMRS_IDENTIFIER_TYPE_UUID);
@@ -100,17 +101,18 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
             String patientPNC_ID= ugandaEMRSyncService.getPatientIdentifier(testOrder.getPatient(),PNC_IDENTIFIER_TYPE_UUID);
             String sampleID = testOrder.getAccessionNumber();
             String gender = patient.getGender();
-            List current_regimenList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patient.getPatientId(),90315,date_activated),true);
+            List current_regimenList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patientId,90315,date_activated),true);
 
 
             String current_regimen="";
-            if(current_regimenList.size()>0) {
+            int regimen_code=0;
+            if(current_regimenList.size() > 0) {
                 ArrayList regimenList = (ArrayList) current_regimenList.get(0);
-                int regimen_code = Integer.parseInt(regimenList.get(0).toString());
+                 regimen_code = Integer.parseInt(regimenList.get(0).toString());
                 current_regimen = Context.getConceptService().getConcept(regimen_code).getName().getName();
             }
 
-            List obs_dsdmList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patient.getPatientId(),165143,date_activated),true);
+            List obs_dsdmList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patientId,165143,date_activated),true);
 
             String dsdm="";
             if(obs_dsdmList.size()>0){
@@ -119,7 +121,7 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
                 dsdm = Context.getConceptService().getConcept(dsdm_code).getName().getName();
             }
 
-            List obs_adherenceList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patient.getPatientId(),90221,date_activated),true);
+            List obs_adherenceList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patientId,90221,date_activated),true);
             String adherence="";
             int adherence_code;
             if(obs_adherenceList.size()>0){
@@ -134,16 +136,13 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
                 }
             }
 
-            List obs_durationList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_numeric", patient.getPatientId(),99025,date_activated),true);
-
+            List current_regimen_start_date = administrationService.executeSQL(String.format("SELECT TIMESTAMPDIFF(MONTH, obs_datetime,'%s') from obs where person_id=%s and concept_id=90315 and voided=0 and value_coded = %s ORDER BY obs_datetime ASC LIMIT 1",date_activated.toString(),patientId,regimen_code),true);
 
             String duration_string="";
-            if(obs_durationList.size()>0){
-                ArrayList myList = (ArrayList) obs_durationList.get(0);
-                 Double duration = Double.parseDouble(myList.get(0).toString());
-                 if(duration==null){
-                     duration_string="";
-                 }else if(duration >=60){
+            if(current_regimen_start_date.size()>0){
+                ArrayList myList = (ArrayList) current_regimen_start_date.get(0);
+                int duration= Integer.parseInt(myList.get(0).toString());
+                 if(duration >=60){
                      duration_string=">5yrs";
                  }else if(duration >=24 && duration < 60 ){
                      duration_string="2- 5yrs";
@@ -156,7 +155,7 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
                  }
             }
 
-            List obs_pregnantList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patient.getPatientId(),90041,date_activated),true);
+            List obs_pregnantList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patientId,90041,date_activated),true);
 
             Boolean pregnant=false;
             Boolean breastfeeding=false;
@@ -170,7 +169,7 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
               }
             }
 
-            List obs_tbList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patient.getPatientId(),90216,date_activated),true);
+            List obs_tbList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patientId,90216,date_activated),true);
 
             Boolean hasActiveTB = false;
             String tb_phase="";
@@ -187,14 +186,14 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
               }
             }
 
-            List artStartList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_datetime", patient.getPatientId(),99161,date_activated),true);
+            List artStartList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_datetime", patientId,99161,date_activated),true);
             Date artStartDate = null;
             if(artStartList.size()>0){
                 ArrayList myList = (ArrayList) artStartList.get(0);
                 artStartDate = (Date) myList.get(0);
             }
 
-            List obs_indication_for_VL = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patient.getPatientId(),168689,date_activated),true);
+            List obs_indication_for_VL = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patientId,168689,date_activated),true);
 
             String vl_testing_for="";
             if(obs_indication_for_VL.size()>0){
@@ -203,7 +202,7 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
                 vl_testing_for = Context.getConceptService().getConcept(vl_indicator_code).getName().getName();
             }
 
-            List obs_WHOList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patient.getPatientId(),90203,date_activated),true);
+            List obs_WHOList = administrationService.executeSQL(String.format(Latest_obs_of_Person,"value_coded", patientId,90203,date_activated),true);
 
             String who_code = "";
             String who_display = "";
