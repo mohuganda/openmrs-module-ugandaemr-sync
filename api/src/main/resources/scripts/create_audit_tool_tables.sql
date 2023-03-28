@@ -211,7 +211,7 @@ INSERT INTO reporting_audit_tool_hiv (
     LEFT JOIN (SELECT AGE.person_id,count(*) as no from (SELECT family.person_id,obs_group_id from obs family inner join  (SELECT o.person_id,obs_id from obs o inner join (SELECT person_id,max(obs_datetime)latest_date from obs where concept_id=99075 and voided=0 group by person_id)A on o.person_id = A.person_id
     where concept_id=99075 AND obs_datetime =A.latest_date and o.voided=0)B on family.obs_group_id = B.obs_id  where concept_id=164352 and value_coded=90280
     )RELATIONSHIP INNER JOIN (SELECT family.person_id,obs_group_id from obs family inner join  (SELECT o.person_id,obs_id from obs o inner join (SELECT person_id,max(obs_datetime)latest_date from obs where concept_id=99075 and voided=0 group by person_id)A on o.person_id = A.person_id
-    where concept_id=99075 AND obs_datetime =A.latest_date and o.voided=0)B on family.obs_group_id = B.obs_id  where concept_id=99074 and value_numeric <=19
+    where concept_id=99075 AND obs_datetime =A.latest_date and o.voided=0)B on family.obs_group_id = B.obs_id  where concept_id=99074 and TIMESTAMPDIFF(YEAR,obs_datetime,CURRENT_DATE()) <=19
     )AGE on RELATIONSHIP.obs_group_id = AGE.obs_group_id group by AGE.person_id)INDEX_TESTING_CHILD_AGE on INDEX_TESTING_CHILD_AGE.person_id = patient
     LEFT JOIN (Select AGE.person_id,count(*) as no from (SELECT family.person_id,obs_group_id from obs family inner join  (SELECT o.person_id,obs_id from obs o inner join (SELECT person_id,max(obs_datetime)latest_date from obs where concept_id=99075 and voided=0 group by person_id)A on o.person_id = A.person_id
     where concept_id=99075 AND obs_datetime =A.latest_date and o.voided=0)B on family.obs_group_id = B.obs_id  where concept_id=164352 and value_coded=90280
