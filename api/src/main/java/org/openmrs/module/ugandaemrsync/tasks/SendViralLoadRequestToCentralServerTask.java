@@ -59,7 +59,7 @@ public class SendViralLoadRequestToCentralServerTask extends AbstractTask {
 
                 try {
                     Map map = ugandaEMRHttpURLConnection.sendPostBy(syncTaskType.getUrl(), syncTaskType.getUrlUserName(), syncTaskType.getUrlPassword(), "", json, false);
-                    if ((map != null) && UgandaEMRSyncUtil.getSuccessCodeList().contains(map.get("responseCode"))) {
+                    if (map != null) {
                         SyncTask newSyncTask = new SyncTask();
                         newSyncTask.setDateSent(new Date());
                         newSyncTask.setCreator(Context.getUserService().getUser(1));
@@ -68,7 +68,7 @@ public class SendViralLoadRequestToCentralServerTask extends AbstractTask {
                         newSyncTask.setActionCompleted(false);
                         newSyncTask.setSyncTask(order.getAccessionNumber());
                         newSyncTask.setStatusCode((Integer) map.get("responseCode"));
-                        newSyncTask.setStatus("SUCCESS");
+                        newSyncTask.setStatus((String)map.get("responseMessage"));
                         newSyncTask.setSyncTaskType(ugandaEMRSyncService.getSyncTaskTypeByUUID(VIRAL_LOAD_SYNC_TYPE_UUID));
                         ugandaEMRSyncService.saveSyncTask(newSyncTask);
                     }

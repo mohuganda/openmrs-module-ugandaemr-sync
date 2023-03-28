@@ -50,12 +50,15 @@ public class SendViralLoadProgramDataToCentralServerTask extends AbstractTask {
         }
 
         SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(VL_PROGRAM_DATA_SYNC_TYPE_UUID);
+        SyncTaskType firstMessageSyncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(VIRAL_LOAD_SYNC_TYPE_UUID);
 
         for (Order order : orderList) {
             List<SyncTask> allSyncTasks = ugandaEMRSyncService.getAllSyncTask();
             List<SyncTask> syncTasks = allSyncTasks.stream().filter(p -> order.getAccessionNumber().equals(p.getSyncTask()) && syncTaskType.getId().equals(p.getSyncTaskType().getId())).collect(Collectors.toList());
+            List<SyncTask> firstSyncTaskToRun = allSyncTasks.stream().filter(p -> order.getAccessionNumber().equals(p.getSyncTask()) && firstMessageSyncTaskType.getId().equals(p.getSyncTaskType().getId())).collect(Collectors.toList());
 
-            if (syncTasks.size()<1) {
+
+            if (syncTasks.size()<1 && firstSyncTaskToRun.size()>0) {
                 Map<String, String> dataOutput = generateVLProgramDataFHIRBody((TestOrder) order, VL_SEND_PROGRAM_DATA_FHIR_JSON_STRING);
                 String json = dataOutput.get("json");
 
