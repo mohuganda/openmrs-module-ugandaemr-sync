@@ -1537,4 +1537,12 @@
             <column name="uuid" value="f9b2fa5d-5d37-4fd9-b20a-a0cab664f520" />
         </insert>
     </changeSet>
+
+    <changeSet id="20230404-1001" author="iakileng">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="obs"/>
+        </preConditions>
+        <comment> Updating family member's hiv unknown status concept id in obs table </comment>
+        <sql> UPDATE obs SET value_coded = 90001 where value_coded = 165165 and concept_id = 165275; </sql>
+    </changeSet>
 </databaseChangeLog>
