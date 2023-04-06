@@ -1316,7 +1316,7 @@
     </changeSet>
 
     <!-- HIV Exposed Infant Data -->
-    <changeSet id="ugandaemrsync-20220715-2307" author="iakileng">
+    <changeSet id="ugandaemrsync-20230406-1001" author="iakileng">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM sync_fhir_profile WHERE uuid = 'e8a37e2f-6c78-476e-93a5-14aec653c406'
