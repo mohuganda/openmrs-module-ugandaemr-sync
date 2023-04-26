@@ -74,7 +74,9 @@ public class SyncConstant {
 
     public static final String VIRAL_LOAD_SYNC_TASK_TYPE_IDENTIFIER = "315124004";
 
+	public static final String LAB_SYNC_TASK_TYPE_IDENTIFIER = "315124004";
     public static final String VIRAL_LOAD_SYNC_TYPE_UUID = "3551ca84-06c0-432b-9064-fcfeefd6f4ec";
+	public static final String LAB_TEST_SYNC_TYPE_UUID ="10fffcfd-b29b-4b53-8e39-4f7304b5c6a8";
     public static final String VL_PROGRAM_DATA_SYNC_TYPE_UUID = "f9b2fa5d-5d37-4fd9-b20a-a0cab664f520";
     public static final String FHIRSERVER_SYNC_TASK_TYPE_UUID = "3c1ce940-8ade-11ea-bc55-0242ac130003";
     public static final String VIRAL_LOAD_RESULT_PULL_TYPE_UUID = "3396dcf0-2106-4e73-9b90-c63978c3a8b4";
@@ -87,6 +89,9 @@ public class SyncConstant {
     public static final String SMS_APPOINTMENT_TYPE_UUID = "08c5be38-1b79-4e27-b9ca-5da709aef5fe";
 
     public static final String PATIENT_IDENTIFIER_TYPE = "e1731641-30ab-102d-86b0-7a5022ba4115";
+	public static final String PATIENT_OPENMRS_IDENTIFIER_TYPE ="05a29f94-c0ed-11e2-94be-8c13b969e334";
+
+	public static final String PATIENT_NIN_IDENTIFIER_TYPE ="05a29f94-c0ed-11e2-94be-8c13b969e334";
 
     public static final int VL_SAMPLE_ID_CELL_NO = 1;
 
@@ -473,8 +478,9 @@ public class SyncConstant {
 
 	public static final String REGIMEN_LINE_QUERY ="Select patient_id from patient_state ps inner join patient_program pp on ps.patient_program_id = pp.patient_program_id inner join program p\n" +
 			"    on pp.program_id = p.program_id inner join program_workflow_state pws on ps.state = pws.program_workflow_state_id where ps.end_date is null and p.uuid='18c6d4aa-0a36-11e7-8dbb-507b9dc4c741' and pws.uuid='%s' and patient_id=%s";
-	public static final String LAB_ORDER_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) where order_number=\"%s\"";
-
+	//public static final String LAB_ORDER_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) where order_number=\"%s\"";
+	//public static final String LAB_ORDER_QUERY = "select o.order_id from orders o  inner join test_order t_o on (t_o.order_id=o.order_id) inner join order_type ot on o.order_type_id = ot.order_type_id and ot.uuid='52a447d3-a64a-11e3-9aeb-50e549534c5e'";
+	public static final String LAB_ORDER_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) where concept_id!=165412 AND accession_number IS NOT NULL AND fulfiller_status='IN_PROGRESS'";
     public static final String PERSON_UUID_QUERY="select uuid from person WHERE date_created > '%s' OR date_changed > '%s' OR date_voided > '%s'";
 	public static final String PATIENT_UUID_QUERY="select uuid from patient inner join person on (person.person_id =patient.patient_id) WHERE patient.date_created > '%s' OR patient.date_changed > '%s' OR patient.voided > '%s'";
     public static final String ENCOUNTER_UUID_QUERY="select uuid from encounter WHERE date_created > '%s' OR date_changed > '%s' OR date_voided > '%s'";
@@ -495,4 +501,699 @@ public class SyncConstant {
     public static List<String> VL_SYNC_TASK_COLUMNS = Arrays.asList("sync_task_id", "sync_task_type", "sync_task", "status", "status_code", "sent_to_url", "require_action", "action_completed", "date_sent", "creator", "date_created", "changed_by", "date_changed", "voided", "date_voided", "voided_by ", "void_reason", "uuid");
 
 	public static final String Latest_obs_of_Person = "SELECT %s from obs where person_id=%s and concept_id=%s and obs_datetime <= '%s' and voided= 0 ORDER BY obs_datetime DESC LIMIT 1";
+
+	public static final String SEND_LAB_PATIENT_FHIR_JSON_STRING = "{\n" +
+			"    \"fullUrl\": \"urn:uuid:c197b218-7edb-4122-bdde-0e5377f01a75\",\n" +
+			"    \"resource\": {\n" +
+			"      \"resourceType\": \"Patient\",\n" +
+			"      \"identifier\": [\n" +
+			"        {\n" +
+			"          \"use\": \"official\",\n" +
+			"          \"type\": {\n" +
+			"            \"coding\": [\n" +
+			"              {\n" +
+			"                \"system\": \"http://snomed.info/sct\",\n" +
+			"                \"code\": \"184107009\",\n" +
+			"                \"display\": \"Patient hospital number\"\n" +
+			"              }\n" +
+			"            ],\n" +
+			"            \"text\": \"Patient No\"\n" +
+			"          },\n" +
+			"          \"value\": \"%s\"\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"use\": \"official\",\n" +
+			"          \"type\": {\n" +
+			"            \"coding\": [\n" +
+			"              {\n" +
+			"                \"system\": \"http://snomed.info/sct\",\n" +
+			"                \"code\": \"722248002\",\n" +
+			"                \"display\": \"Patient hospital visit number\"\n" +
+			"              }\n" +
+			"            ],\n" +
+			"            \"text\": \"OPD/IPD No\"\n" +
+			"          },\n" +
+			"          \"value\": \"%s\"\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"use\": \"official\",\n" +
+			"          \"type\": {\n" +
+			"            \"coding\": [\n" +
+			"              {\n" +
+			"                \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n" +
+			"                \"code\": \"NI\",\n" +
+			"                \"display\": \"National unique individual identifier\"\n" +
+			"              }\n" +
+			"            ],\n" +
+			"            \"text\": \"NIN/ Passport No\"\n" +
+			"          },\n" +
+			"          \"value\": \"%s\"\n" +
+			"        }\n" +
+			"      ],\n" +
+			"      \"name\": [\n" +
+			"        {\n" +
+			"          \"family\": \"%s\",\n" +
+			"          \"given\": [\n" +
+			"            \"%s\"\n" +
+			"          ]\n" +
+			"        }\n" +
+			"      ],\n" +
+			"      \"birthDate\": \"%s\",\n" +
+			"      \"gender\": \"%s\",\n" +
+			"      \"telecom\": [\n" +
+			"        {\n" +
+			"          \"system\": \"phone\",\n" +
+			"          \"value\": \"%s\"\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"system\": \"email\",\n" +
+			"          \"value\": \"%s\"\n" +
+			"        }\n" +
+			"      ],\n" +
+			"      \"address\": [\n" +
+			"        {\n" +
+			"          \"use\":\"work\",\n" +
+			"          \"city\": \"%s\"\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"use\":\"home\",\n" +
+			"          \"city\": \"%s\"\n" +
+			"        }\n" +
+			"      ],\n" +
+			"      \"extension\": [\n" +
+			"        {\n" +
+			"          \"url\": \"http://labhie.cphluganda.org/fhir/patient-extension\",\n" +
+			"          \"extension\": [\n" +
+			"            {\n" +
+			"              \"url\": \"nationality\",\n" +
+			"              \"valueString\": \"%s\"\n" +
+			"            },\n" +
+			"            {\n" +
+			"              \"url\": \"age\",\n" +
+			"              \"valueAge\": {\n" +
+			"                \"system\": \"http://unitsofmeasure.org\",\n" +
+			"                \"code\": \"a\",\n" +
+			"                \"value\": \"%s\"\n" +
+			"              }\n" +
+			"            },\n" +
+			"            {\n" +
+			"              \"url\": \"occupation\",\n" +
+			"              \"valueString\": \"%s\"\n" +
+			"            }\n" +
+			"          ]\n" +
+			"        }\n" +
+			"      ]\n" +
+			"    },\n" +
+			"    \"request\": {\n" +
+			"      \"method\": \"POST\",\n" +
+			"      \"url\": \"Patient\",\n" +
+			"      \"ifNoneExist\": \"identifier=http:/labhie.cphluganda.org/fhir/ids|ARR-082021-0020\"\n" +
+			"    }\n" +
+			"  }";
+
+
+	public static final String LAB_SEND_FHIR_JSON_STRING = "{\n" +
+			"  \"resourceType\": \"Bundle\",\n" +
+			"  \"type\": \"transaction\",\n" +
+			"  \"entry\": [\n" +
+			"    {\n" +
+			"      \"fullUrl\": \"urn:uuid:c197b218-7edb-4122-bdde-0e5377f01a75\",\n" +
+			"      \"resource\": {\n" +
+			"        \"resourceType\": \"Patient\",\n" +
+			"        \"identifier\": [\n" +
+			"          {\n" +
+			"            \"use\": \"official\",\n" +
+			"            \"type\": {\n" +
+			"              \"coding\": [\n" +
+			"                {\n" +
+			"                  \"system\": \"http://snomed.info/sct\",\n" +
+			"                  \"code\": \"184107009\",\n" +
+			"                  \"display\": \"Patient hospital number\"\n" +
+			"                }\n" +
+			"              ],\n" +
+			"              \"text\": \"Patient No\"\n" +
+			"            },\n" +
+			"            \"value\": \"%s\"\n" +
+			"          },\n" +
+			"          {\n" +
+			"            \"use\": \"official\",\n" +
+			"            \"type\": {\n" +
+			"              \"coding\": [\n" +
+			"                {\n" +
+			"                  \"system\": \"http://snomed.info/sct\",\n" +
+			"                  \"code\": \"722248002\",\n" +
+			"                  \"display\": \"Patient hospital visit number\"\n" +
+			"                }\n" +
+			"              ],\n" +
+			"              \"text\": \"OPD/IPD No\"\n" +
+			"            },\n" +
+			"            \"value\": \"%s\"\n" +
+			"          },\n" +
+			"          {\n" +
+			"            \"use\": \"official\",\n" +
+			"            \"type\": {\n" +
+			"              \"coding\": [\n" +
+			"                {\n" +
+			"                  \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n" +
+			"                  \"code\": \"NI\",\n" +
+			"                  \"display\": \"National unique individual identifier\"\n" +
+			"                }\n" +
+			"              ],\n" +
+			"              \"text\": \"NIN/ Passport No\"\n" +
+			"            },\n" +
+			"            \"value\": \"%s\"\n" +
+			"          }\n" +
+			"        ],\n" +
+			"        \"name\": [\n" +
+			"          {\n" +
+			"            \"family\": \"%s\",\n" +
+			"            \"given\": [\n" +
+			"              \"%s\"\n" +
+			"            ]\n" +
+			"          }\n" +
+			"        ],\n" +
+			"        \"birthDate\": \"%s\",\n" +
+			"        \"gender\": \"%s\",\n" +
+			"        \"telecom\": [\n" +
+			"          {\n" +
+			"            \"system\": \"phone\",\n" +
+			"            \"value\": \"%s\"\n" +
+			"          },\n" +
+			"          {\n" +
+			"            \"system\": \"email\",\n" +
+			"            \"value\": \"%s\"\n" +
+			"          }\n" +
+			"        ],\n" +
+			"        \"address\": [\n" +
+			"          {\n" +
+			"            \"use\":\"work\",\n" +
+			"            \"city\": \"%s\"\n" +
+			"          },\n" +
+			"          {\n" +
+			"            \"use\":\"home\",\n" +
+			"            \"city\": \"%s\"\n" +
+			"          }\n" +
+			"        ],\n" +
+			"        \"extension\": [\n" +
+			"          {\n" +
+			"            \"url\": \"http://labhie.cphluganda.org/fhir/patient-extension\",\n" +
+			"            \"extension\": [\n" +
+			"              {\n" +
+			"                \"url\": \"nationality\",\n" +
+			"                \"valueString\": \"%s\"\n" +
+			"              },\n" +
+			"              {\n" +
+			"                \"url\": \"age\",\n" +
+			"                \"valueAge\": {\n" +
+			"                  \"system\": \"http://unitsofmeasure.org\",\n" +
+			"                  \"code\": \"a\",\n" +
+			"                  \"value\": \"%s\"\n" +
+			"                }\n" +
+			"              },\n" +
+			"              {\n" +
+			"                \"url\": \"occupation\",\n" +
+			"                \"valueString\": \"%s\"\n" +
+			"              }\n" +
+			"            ]\n" +
+			"          }\n" +
+			"        ]\n" +
+			"      },\n" +
+			"      \"request\": {\n" +
+			"        \"method\": \"POST\",\n" +
+			"        \"url\": \"Patient\",\n" +
+			"        \"ifNoneExist\": \"identifier=http:/labhie.cphluganda.org/fhir/ids|ARR-082021-0020\"\n" +
+			"      }\n" +
+			"  },\n" +
+			"  {\n" +
+			"    \"fullUrl\": \"urn:uuid:64bcd753-ed46-4235-8291-7df596a39d62\",\n" +
+			"    \"resource\": {\n" +
+			"      \"resourceType\": \"Practitioner\",\n" +
+			"      \"identifier\": [\n" +
+			"        {\n" +
+			"          \"use\": \"official\",\n" +
+			"          \"type\": {\n" +
+			"            \"text\": \"Cadre\"\n" +
+			"          },\n" +
+			"          \"value\": \"%s\"\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"use\": \"official\",\n" +
+			"          \"type\": {\n" +
+			"            \"text\": \"EMR-ID\"\n" +
+			"          },\n" +
+			"          \"value\": \"%s\"\n" +
+			"        }\n" +
+			"      ],\n" +
+			"      \"name\": [\n" +
+			"        {\n" +
+			"          \"family\": \"%s\",\n" +
+			"          \"given\": [\n" +
+			"            \"%s\"\n" +
+			"          ]\n" +
+			"        }\n" +
+			"      ],\n" +
+			"      \"telecom\": [\n" +
+			"        {\n" +
+			"          \"system\": \"phone\",\n" +
+			"          \"value\": \"%s\"\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"system\": \"email\",\n" +
+			"          \"value\": \"%s\"\n" +
+			"        }\n" +
+			"      ]\n" +
+			"    },\n" +
+			"    \"request\": {\n" +
+			"      \"method\": \"POST\",\n" +
+			"      \"url\": \"Practitioner\",\n" +
+			"      \"ifNoneExist\": \"identifier=http:/labhie.cphluganda.org/fhir/ids|123455\"\n" +
+			"    }\n" +
+			"  },\n";
+
+	public static final String SEND_LAB_REQUEST_FHIR_JSON_STRING_1 ="{\n" +
+			"    \"fullUrl\": \"urn:uuid:ab726878-2404-4b09-ba12-892212918a6e\",\n" +
+			"    \"resource\": {\n" +
+			"      \"resourceType\": \"ServiceRequest\",\n" +
+			"      \"id\": \"%s\",\n" +
+			"      \"identifier\": [\n" +
+			"        {\n" +
+			"          \"type\": {\n" +
+			"            \"text\": \"EMR-System\"\n" +
+			"          },\n" +
+			"          \"value\": \"UgandaEMR\"\n" +
+			"        }\n" +
+			"      ],\n" +
+			"      \"status\": \"active\",\n" +
+			"      \"intent\": \"order\",\n" +
+			"      \"category\": [\n" +
+			"        {\n" +
+			"          \"coding\": [\n" +
+			"            {\n" +
+			"              \"system\": \"http://snomed.info/sct\",\n" +
+			"              \"code\": \"108252007\",\n" +
+			"              \"display\": \"Laboratory procedure\"\n" +
+			"            }\n" +
+			"          ]\n" +
+			"        }\n" +
+			"      ],\n" +
+			"      \"code\": {\n" +
+			"        \"coding\": [\n" +
+			"          {\n" +
+			"            \"system\": \"http://snomed.info/sct\",\n" +
+			"            \"code\": \"%s\",\n" +
+			"            \"display\": \"%s\"\n" +
+			"          }\n" +
+			"        ],\n" +
+			"        \"text\": \"%s\"\n" +
+			"      },\n" +
+			"      \"subject\": {\n" +
+			"        \"reference\": \"urn:uuid:c197b218-7edb-4122-bdde-0e5377f01a75\"\n" +
+			"      },\n" +
+			"      \"authoredOn\": \"%s\",\n" +
+			"      \"requester\": {\n" +
+			"        \"reference\": \"urn:uuid:64bcd753-ed46-4235-8291-7df596a39d62\"\n" +
+			"      },\n" +
+			"      \"supportingInfo\": [\n" +
+			"        {\n" +
+			"          \"reference\": \"urn:uuid:b5c37d30-9a6a-47c3-8405-32c96d144cdf\",\n" +
+			"          \"type\": \"MedicationStatement\",\n" +
+			"          \"display\": \"previous therapy\"\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"reference\": \"urn:uuid:6df794e4-8c6e-4189-bc8a-40e86e9d07f7\",\n" +
+			"          \"type\": \"MedicationStatement\",\n" +
+			"          \"display\": \"current therapy\"\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"reference\": \"urn:uuid:e6e827a5-2b38-429e-ae36-171fb745bddc\",\n" +
+			"          \"type\": \"Observation\",\n" +
+			"          \"display\": \"antibiotics and hospitalisation info\"\n" +
+			"        }\n" +
+			"      ],\n" +
+			"      \"specimen\" : [{\n" +
+			"        \"reference\": \"urn:uuid:fe877754-322e-404d-9b06-a9d71c0b5e7a\",\n" +
+			"        \"type\": \"Specimen\"\n" +
+			"      }],\n" +
+			"      \"note\": [\n" +
+			"        {\n" +
+			"          \"text\": \"%s\"\n" +
+			"        }\n" +
+			"      ]\n" +
+			"    },\n" +
+			"    \"request\": {\n" +
+			"      \"method\": \"POST\",\n" +
+			"      \"url\": \"ServiceRequest\",\n" +
+			"      \"ifNoneExist\": \"identifier=http:/labhie.cphluganda.org/fhir/ids|123457\"\n" +
+			"    }\n" +
+			"  },\n" +
+			"  {\n" +
+			"    \"fullUrl\": \"urn:uuid:a4cc8aa5-5cfd-4b5d-8127-3345421ae358\",\n" +
+			"    \"resource\": {\n" +
+			"      \"resourceType\": \"Specimen\",\n" +
+			"      \"type\": {\n" +
+			"        \"coding\": [\n" +
+			"          {\n" +
+			"            \"system\": \"http://snomed.info/sct\",\n" +
+			"            \"code\": \"%s\",\n" +
+			"            \"display\": \"%s\"\n" +
+			"          }\n" +
+			"        ],\n" +
+			"        \"text\": \"%s\"\n" +
+			"      },\n" +
+			"      \"collection\":{\n" +
+			"        \"collector\":{\n" +
+			"          \"reference\": \"urn:uuid:64bcd753-ed46-4235-8291-7df596a39d62\",\n" +
+			"          \"type\": \"Practitioner\"\n" +
+			"        },\n" +
+			"        \"collectedDateTime\" : \"%s\"\n" +
+			"      }\n" +
+			"    }\n" +
+			"  }";
+
+
+	public static final String SEND_LAB_REQUEST_FHIR_JSON_STRING ="{\n" +
+			"    \"fullUrl\": \"urn:uuid:ab726878-2404-4b09-ba12-892212918a6e\",\n" +
+			"    \"resource\": {\n" +
+			"      \"resourceType\": \"ServiceRequest\",\n" +
+			"      \"id\": \"%s\",\n" +
+			"      \"identifier\": [\n" +
+			"        {\n" +
+			"          \"type\": {\n" +
+			"            \"text\": \"EMR-System\"\n" +
+			"          },\n" +
+			"          \"value\": \"UgandaEMR\"\n" +
+			"        }\n" +
+			"      ],\n" +
+			"      \"status\": \"active\",\n" +
+			"      \"intent\": \"order\",\n" +
+			"      \"priority\": \"routine\",\n" +
+			"      \"category\": [\n" +
+			"        {\n" +
+			"          \"coding\": [\n" +
+			"            {\n" +
+			"              \"system\": \"http://snomed.info/sct\",\n" +
+			"              \"code\": \"108252007\",\n" +
+			"              \"display\": \"Laboratory procedure\"\n" +
+			"            }\n" +
+			"          ]\n" +
+			"        }\n" +
+			"      ],\n" +
+			"      \"code\": {\n" +
+			"        \"coding\": [\n" +
+			"          {\n" +
+			"            \"system\": \"http://snomed.info/sct\",\n" +
+			"            \"code\": \"%s\",\n" +
+			"            \"display\": \"%s\"\n" +
+			"          }\n" +
+			"        ],\n" +
+			"        \"text\": \"%s\"\n" +
+			"      },\n" +
+			"      \"subject\": {\n" +
+			"        \"reference\": \"urn:uuid:c197b218-7edb-4122-bdde-0e5377f01a75\"\n" +
+			"      },\n" +
+			"      \"authoredOn\": \"%s\",\n" +
+			"      \"requester\": {\n" +
+			"        \"reference\": \"urn:uuid:64bcd753-ed46-4235-8291-7df596a39d62\"\n" +
+			"      },\n" +
+			"      \"supportingInfo\": [\n" +
+			"        {\n" +
+			"          \"reference\": \"urn:uuid:b5c37d30-9a6a-47c3-8405-32c96d144cdf\",\n" +
+			"          \"type\": \"MedicationStatement\",\n" +
+			"          \"display\": \"previous therapy\"\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"reference\": \"urn:uuid:6df794e4-8c6e-4189-bc8a-40e86e9d07f7\",\n" +
+			"          \"type\": \"MedicationStatement\",\n" +
+			"          \"display\": \"current therapy\"\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"reference\": \"urn:uuid:e6e827a5-2b38-429e-ae36-171fb745bddc\",\n" +
+			"          \"type\": \"Observation\",\n" +
+			"          \"display\": \"antibiotics and hospitalisation info\"\n" +
+			"        }\n" +
+			"      ],\n" +
+			"      \"specimen\" : [{\n" +
+			"        \"reference\": \"urn:uuid:fe877754-322e-404d-9b06-a9d71c0b5e7a\",\n" +
+			"        \"type\": \"Specimen\"\n" +
+			"      }],\n" +
+			"      \"note\": [\n" +
+			"        {\n" +
+			"          \"text\": \"%s\"\n" +
+			"        }\n" +
+			"      ]\n" +
+			"    },\n" +
+			"    \"request\": {\n" +
+			"      \"method\": \"POST\",\n" +
+			"      \"url\": \"ServiceRequest\",\n" +
+			"      \"ifNoneExist\": \"identifier=http:/labhie.cphluganda.org/fhir/ids|123457\"\n" +
+			"    }\n" +
+			"  },\n" +
+			"  {\n" +
+			"    \"fullUrl\": \"urn:uuid:a4cc8aa5-5cfd-4b5d-8127-3345421ae358\",\n" +
+			"    \"resource\": {\n" +
+			"      \"resourceType\": \"Specimen\",\n" +
+			"      \"type\": {\n" +
+			"        \"coding\": [\n" +
+			"          {\n" +
+			"            \"system\": \"http://snomed.info/sct\",\n" +
+			"            \"code\": \"%s\",\n" +
+			"            \"display\": \"%s\"\n" +
+			"          }\n" +
+			"        ],\n" +
+			"        \"text\": \"%s\"\n" +
+			"      },\n" +
+			"      \"collection\":{\n" +
+			"        \"collector\":{\n" +
+			"          \"reference\": \"urn:uuid:64bcd753-ed46-4235-8291-7df596a39d62\",\n" +
+			"          \"type\": \"Practitioner\"\n" +
+			"        },\n" +
+			"        \"collectedDateTime\" : \"%s\"\n" +
+			"      }\n" +
+			"    }\n" +
+			"  },\n" +
+			"  {\n" +
+			"    \"fullUrl\": \"urn:uuid:b5c37d30-9a6a-47c3-8405-32c96d144cdf\",\n" +
+			"    \"resource\": {\n" +
+			"      \"resourceType\": \"MedicationStatement\",\n" +
+			"      \"id\": \"current-therapy\",\n" +
+			"      \"subject\": {\n" +
+			"        \"reference\": \"urn:uuid:c197b218-7edb-4122-bdde-0e5377f01a75\"\n" +
+			"      },\n" +
+			"      \"status\": \"active\",\n" +
+			"      \"medicationCodeableConcept\": {\n" +
+			"        \"coding\": [\n" +
+			"          {\n" +
+			"            \"system\": \"http://snomed.info/sct\",\n" +
+			"            \"code\": \"%s\",\n" +
+			"            \"display\": \"Current medication as reported by patient (observable entity)\"\n" +
+			"          }\n" +
+			"        ],\n" +
+			"        \"text\": \"%S\"\n" +
+			"      },\n" +
+			"      \"note\": [\n" +
+			"        {\n" +
+			"          \"text\": \"%s\"\n" +
+			"        }\n" +
+			"      ]\n" +
+			"    },\n" +
+			"    \"request\": {\n" +
+			"      \"method\": \"POST\",\n" +
+			"      \"url\": \"MedicationStatement\",\n" +
+			"      \"ifNoneExist\": \"identifier=http:/labhie.cphluganda.org/fhir/ids|123455\"\n" +
+			"    }\n" +
+			"  },\n" +
+			"  {\n" +
+			"    \"fullUrl\": \"urn:uuid:6df794e4-8c6e-4189-bc8a-40e86e9d07f7\",\n" +
+			"    \"resource\": {\n" +
+			"      \"resourceType\": \"MedicationStatement\",\n" +
+			"      \"id\": \"previous-therapy\",\n" +
+			"      \"subject\": {\n" +
+			"        \"reference\": \"urn:uuid:c197b218-7edb-4122-bdde-0e5377f01a75\"\n" +
+			"      },\n" +
+			"      \"status\": \"%s\",\n" +
+			"      \"medicationCodeableConcept\": {\n" +
+			"        \"coding\": [\n" +
+			"          {\n" +
+			"            \"system\": \"http://snomed.info/sct\",\n" +
+			"            \"code\": \"%s\",\n" +
+			"            \"display\": \"Past medication (situation)\"\n" +
+			"          }\n" +
+			"        ],\n" +
+			"        \"text\": \"%s\"\n" +
+			"      },\n" +
+			"      \"note\": [\n" +
+			"        {\n" +
+			"          \"text\": \"%s\"\n" +
+			"        }\n" +
+			"      ]\n" +
+			"    },\n" +
+			"    \"request\": {\n" +
+			"      \"method\": \"POST\",\n" +
+			"      \"url\": \"MedicationStatement\",\n" +
+			"      \"ifNoneExist\": \"identifier=http:/labhie.cphluganda.org/fhir/ids|123455\"\n" +
+			"    }\n" +
+			"  },\n" +
+			"  {\n" +
+			"    \"fullUrl\": \"urn:uuid:e6e827a5-2b38-429e-ae36-171fb745bddc\",\n" +
+			"    \"resource\": {\n" +
+			"      \"resourceType\": \"Observation\",\n" +
+			"      \"id\": \"observation-1\",\n" +
+			"      \"status\": \"final\",\n" +
+			"      \"code\": {\n" +
+			"        \"coding\": [\n" +
+			"          {\n" +
+			"            \"system\": \"http://snomed.info/sct\",\n" +
+			"            \"code\": \"%s\",\n" +
+			"            \"display\": \"Observation - action (qualifier value)\"\n" +
+			"          }\n" +
+			"        ]\n" +
+			"      },\n" +
+			"      \"component\": [\n" +
+			"        {\n" +
+			"          \"code\": {\n" +
+			"            \"coding\": [\n" +
+			"              {\n" +
+			"                \"system\": \"http://snomed.info/sct\",\n" +
+			"                \"code\": \"%s\",\n" +
+			"                \"display\": \"Hospital admission (procedure)\"\n" +
+			"              }\n" +
+			"            ],\n" +
+			"            \"text\": \"hospitalized in the last 48 hours?\"\n" +
+			"          },\n" +
+			"          \"valueBoolean\": true\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"code\": {\n" +
+			"            \"coding\": [\n" +
+			"              {\n" +
+			"                \"system\": \"http://snomed.info/sct\",\n" +
+			"                \"code\": \"129019007\",\n" +
+			"                \"display\": \"Taking medication (observable entity)\"\n" +
+			"              }\n" +
+			"            ],\n" +
+			"            \"text\": \"On antibiotics?\"\n" +
+			"          },\n" +
+			"          \"valueBoolean\": false\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"code\": {\n" +
+			"            \"text\": \"Interim Diagnosis\"\n" +
+			"          },\n" +
+			"          \"valueString\": \"%s \"\n" +
+			"        }\n" +
+			"      ]\n" +
+			"    },\n" +
+			"    \"request\": {\n" +
+			"      \"method\": \"POST\",\n" +
+			"      \"url\": \"Observation\",\n" +
+			"      \"ifNoneExist\": \"identifier=http:/labhie.cphluganda.org/fhir/ids|123455\"\n" +
+			"    }\n" +
+			"  },\n" +
+			"  {\n" +
+			"    \"fullUrl\": \"urn:uuid:9b2d52c8-d4f8-4ec1-b13b-8c2f14a61427\",\n" +
+			"    \"resource\": {\n" +
+			"      \"resourceType\": \"Encounter\",\n" +
+			"      \"class\": {\n" +
+			"        \"system\": \"http://terminology.hl7.org/CodeSystem/v3-ActCode\",\n" +
+			"        \"code\": \"IMP\",\n" +
+			"        \"display\": \"inpatient encounter\"\n" +
+			"      },\n" +
+			"      \"status\": \"in-progress\",\n" +
+			"      \"subject\": {\n" +
+			"        \"reference\": \"urn:uuid:c197b218-7edb-4122-bdde-0e5377f01a75\"\n" +
+			"      },\n" +
+			"      \"serviceType\": {\n" +
+			"        \"coding\": [\n" +
+			"          {\n" +
+			"            \"system\": \"http://terminology.hl7.org/CodeSystem/service-type\",\n" +
+			"            \"code\": \"%s\",\n" +
+			"            \"display\": \"Inpatients\"\n" +
+			"          }\n" +
+			"        ],\n" +
+			"        \"text\": \"In-patient\"\n" +
+			"      },\n" +
+			"      \"location\": [\n" +
+			"        {\n" +
+			"          \"location\": {\n" +
+			"            \"reference\": \"urn:uuid:441617f0-1199-4a0a-bfe4-1109a1c07bff\"\n" +
+			"          },\n" +
+			"          \"physicalType\": {\n" +
+			"            \"coding\": [\n" +
+			"              {\n" +
+			"                \"system\": \"http://terminology.hl7.org/CodeSystem/location-physical-type\",\n" +
+			"                \"code\": \"%s\",\n" +
+			"                \"display\": \"Ward\"\n" +
+			"              }\n" +
+			"            ]\n" +
+			"          }\n" +
+			"        },\n" +
+			"        {\n" +
+			"          \"location\": {\n" +
+			"            \"reference\": \"urn:uuid:78a91359-3d0b-48bf-acea-6ed125439f25\"\n" +
+			"          },\n" +
+			"          \"physicalType\": {\n" +
+			"            \"coding\": [\n" +
+			"              {\n" +
+			"                \"system\": \"http://terminology.hl7.org/CodeSystem/location-physical-type\",\n" +
+			"                \"code\": \"%s\",\n" +
+			"                \"display\": \"Bed\"\n" +
+			"              }\n" +
+			"            ]\n" +
+			"          }\n" +
+			"        }\n" +
+			"      ]\n" +
+			"    },\n" +
+			"    \"request\": {\n" +
+			"      \"method\": \"POST\",\n" +
+			"      \"url\": \"Encounter\",\n" +
+			"      \"ifNoneExist\": \"identifier=http:/labhie.cphluganda.org/fhir/ids|ENCID\"\n" +
+			"    }\n" +
+			"  },\n" +
+			"  {\n" +
+			"    \"fullUrl\": \"urn:uuid:441617f0-1199-4a0a-bfe4-1109a1c07bff\",\n" +
+			"    \"resource\": {\n" +
+			"      \"resourceType\": \"Location\",\n" +
+			"      \"status\": \"active\",\n" +
+			"      \"name\": \"%s\",\n" +
+			"      \"physicalType\": {\n" +
+			"        \"coding\": [\n" +
+			"          {\n" +
+			"            \"system\": \"http://terminology.hl7.org/CodeSystem/location-physical-type\",\n" +
+			"            \"code\": \"%s\",\n" +
+			"            \"display\": \"Ward\"\n" +
+			"          }\n" +
+			"        ]\n" +
+			"      }\n" +
+			"    },\n" +
+			"    \"request\": {\n" +
+			"      \"method\": \"POST\",\n" +
+			"      \"url\": \"Location\",\n" +
+			"      \"ifNoneExist\": \"identifier=http:/labhie.cphluganda.org/fhir/ids|ANTUNIT\"\n" +
+			"    }\n" +
+			"  },\n" +
+			"  {\n" +
+			"    \"fullUrl\": \"urn:uuid:78a91359-3d0b-48bf-acea-6ed125439f25\",\n" +
+			"    \"resource\": {\n" +
+			"      \"resourceType\": \"Location\",\n" +
+			"      \"status\": \"active\",\n" +
+			"      \"name\": \"%s\",\n" +
+			"      \"physicalType\": {\n" +
+			"        \"coding\": [\n" +
+			"          {\n" +
+			"            \"system\": \"http://terminology.hl7.org/CodeSystem/location-physical-type\",\n" +
+			"            \"code\": \"bd\",\n" +
+			"            \"display\": \"Bed\"\n" +
+			"          }\n" +
+			"        ]\n" +
+			"      },\n" +
+			"      \"partOf\": {\n" +
+			"        \"reference\": \"urn:uuid:441617f0-1199-4a0a-bfe4-1109a1c07bff\"\n" +
+			"      }\n" +
+			"    },\n" +
+			"    \"request\": {\n" +
+			"      \"method\": \"POST\",\n" +
+			"      \"url\": \"Location\",\n" +
+			"      \"ifNoneExist\": \"identifier=http:/labhie.cphluganda.org/fhir/ids|BED25\"\n" +
+			"    }\n" +
+			"  }";
 }

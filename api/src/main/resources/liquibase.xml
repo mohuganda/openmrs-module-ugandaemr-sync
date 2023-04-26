@@ -1571,4 +1571,27 @@
             <column name="uuid" value="3201d456-9699-412d-9cff-3fec93c4bb21" />
         </insert>
     </changeSet>
+
+    <changeSet id="ugandaemrsync-22032025-2059" author="mmwanje">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM sync_task_type WHERE uuid = '10fffcfd-b29b-4b53-8e39-4f7304b5c6a8'
+            </sqlCheck>
+        </preConditions>
+        <comment>Send Lab Results To ALIS Sync Task Type</comment>
+        <insert tableName="sync_task_type">
+            <column name="name" value="Send LAB Requests To ALIS" />
+            <column name="data_type" value="org.openmrs.TestOrder" />
+            <column name="data_type_id" value="315124004" />
+            <column name="url_end_point" value="http://216.104.204.156:98/labhie/labrequest" />
+            <column name="url_username" value="" />
+            <column name="url_password" value="" />
+            <column name="url_token" value="" />
+            <column name="creator" value="1" />
+            <column name="voided" value="0" />
+            <column name="date_created" value="2023-04-25 20:59:27" />
+            <column name="uuid" value="10fffcfd-b29b-4b53-8e39-4f7304b5c6a8" />
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
