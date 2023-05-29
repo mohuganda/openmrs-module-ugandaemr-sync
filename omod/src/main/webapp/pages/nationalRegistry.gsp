@@ -605,6 +605,10 @@
                 getDistricts(option);
             })
 
+            jq("#submit").click(function(){
+                getHealthFacilities(96,329);
+            })
+
         });
 
         function getDistricts(regionId){
@@ -620,6 +624,28 @@
                     for (var i = 0; i<districts.length; i++) {
                         jq('#district').append("<option value='"+ districts[i].resource.id+"'>"+ districts[i].resource.name+ "</option>");
                     }
+                }
+            });
+        }
+
+        function getHealthFacilities(regionID, districtID){
+            jq.ajax({
+                type: "GET",
+                url: "https://nhfr-staging-api.planetsystems.co/nhfrApi/v0.0.1/externalSystem/search?count=40&region="+ regionID+ "&localGovernment="+ districtID,
+                dataType: "json",
+                contentType: "application/json",
+                async: false,
+                success: function(data){
+                    var tableRow = "";
+                    var healthFacilities = data.data.entry;
+                    for (var i = 0; i < healthFacilities.length; i++) {
+                        var id = healthFacilities[i].resource.id;
+                        var name = healthFacilities[i].resource.name;
+                        var subCounty = healthFacilities[i].resource.partOf.display;
+                        var row = "<tr><td>" + id + "</td><td>" + name + "</td><td>" + subCounty + "</td>/tr>";
+                        tableRow += row;
+                    }
+                    jq('#body').append(tableRow);
                 }
             });
         }
@@ -651,7 +677,7 @@
         </div>
         <div class="row">
             <div class="col-md-3">
-                <input type="submit">
+                <input type="submit" id="submit">
             </div>
         </div>
     </div>
@@ -665,14 +691,13 @@
         <table>
             <thead>
             <tr>
+                <th>Health Facility ID</th>
                 <th>Name</th>
-                <th>Description</th>
-                <th>Group Type</th>
-                <th>Created On</th>
+                <th>SubCounty</th>
                 <th>View Facility</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="body">
 
             </tbody>
         </table>
