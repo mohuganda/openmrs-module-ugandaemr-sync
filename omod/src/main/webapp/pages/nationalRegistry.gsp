@@ -606,7 +606,9 @@
             })
 
             jq("#submit").click(function(){
-                getHealthFacilities(96,329);
+                var regionID = jq('#region').val();
+                var districtID = jq('#district').val();
+                getHealthFacilities(regionID, districtID);
             })
 
         });
@@ -645,6 +647,9 @@
                         var row = "<tr><td>" + id + "</td><td>" + name + "</td><td>" + subCounty + "</td>/tr>";
                         tableRow += row;
                     }
+                    jq('#body').empty();
+                    jq('#region').val('');
+                    jq('#district').val('');
                     jq('#body').append(tableRow);
                 }
             });
