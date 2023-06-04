@@ -51,7 +51,7 @@ public class UgandaEMRSyncConfig {
 	public static final String GP_DHIS2_ORGANIZATION_UUID = "ugandaemr.dhis2.organizationuuid";
 	public static final String SYNC_METRIC_DATA = "ugandaemr.syncmetricsdata";
 
-	public static final String GP_FACILITY_NAME = "aijar.healthCenterName";
+	public static final String GP_FACILITY_NAME = "ugandaemr.healthCenterName";
 
 	public static final String RECENCY_CSV_FILE_NAME = "HTS_Recency_Client_Card_Data_Export_2019.csv";
 
@@ -83,4 +83,6 @@ public class UgandaEMRSyncConfig {
 	
 	public static final String GP_SUBMIT_RECENCY_DATA_ONCE_DAILY = "ugandaemrsync.recency.submit.data.once.daily";
 	public static final String GP_ART_ACCESS_LAST_SYNC_DATE = "ugandaemrsync.ARTAccess.last.successful.submission.date";
+
+	public static final String GP_NHFR_UNIQUE_IDENTIFIER = "ugandaemrsync.national.health.facility.registry.identifier";
 }

@@ -1,10 +1,10 @@
 <%
     // although called "patientDashboard" this is actually the patient visits screen, and clinicianfacing/patient is the main patient dashboard
     ui.decorateWith("appui", "standardEmrPage")
-    ui.includeJavascript("uicommons", "bootstrap-collapse.js")
-    ui.includeJavascript("uicommons", "bootstrap-transition.js")
-    ui.includeCss("uicommons", "styleguide/index.styles")
-    ui.includeCss("uicommons", "datatables/dataTables_jui.styles")
+    ui.includeFragment("appui", "standardEmrIncludes")
+    ui.includeCss("appui","bootstrap.min.css")
+    ui.includeJavascript("appui", "popper.min.js")
+    ui.includeJavascript("uicommons", "datatables/jquery.dataTables.min.js")
     ui.includeJavascript("ugandaemrsync", "synctasktype.js")
 
     ui.decorateWith("appui", "standardEmrPage", [ title: ui.message("National Facility Registry") ])
@@ -15,17 +15,7 @@
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "${ ui.message("coreapps.app.systemAdministration.label")}", link: '/' + OPENMRS_CONTEXT_PATH + '/coreapps/systemadministration/systemAdministration.page'},
         { label: "UgandaEMR Sync", link: '/' + OPENMRS_CONTEXT_PATH + '/ugandaemrsync/ugandaemrsync.page'},
-        { label: "Search National Facility Registry"}
-    ];
-
-</script>
-
-<script type="text/javascript">
-    var breadcrumbs = [
-        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("coreapps.app.systemAdministration.label")}", link: '/' + OPENMRS_CONTEXT_PATH + '/coreapps/systemadministration/systemAdministration.page'},
-        { label: "UgandaEMR Sync", link: '/' + OPENMRS_CONTEXT_PATH + '/ugandaemrsync/ugandaemrsync.page'},
-        { label: "Search National Facility Registry"}
+        { label: "Request Facility Identification"}
     ];
 
 </script>
@@ -601,6 +591,7 @@
             };
             var list = payload.data.entry;
             var sel = document.getElementById('region');
+            var facilities ;
             if(list){
                 for(var i = 0; i < list.length; i++) {
                     var opt = document.createElement('option');
@@ -612,16 +603,90 @@
 
             jq("#region").change(function(){
                 var option = jq('#region').val();
+                jq('#district').find('option:not(:first)').remove();
                 getDistricts(option);
             })
 
-            jq("#submit").click(function(){
+            jq("#district").change(function(){
                 var regionID = jq('#region').val();
                 var districtID = jq('#district').val();
-                getHealthFacilities(regionID, districtID);
+              facilities =  getHealthFacilities(regionID, districtID);
             })
 
+            jq("#search").bind("change paste keyup",function () {
+                var query =jq(this).val();
+                var keyFacilities = searchArray(query, facilities);
+                var tableRow = "";
+                for (var i = 0; i < keyFacilities.length; i++) {
+                    var id = keyFacilities[i].resource.id;
+                    var name = keyFacilities[i].resource.name;
+                    var address = keyFacilities[i].resource.address.text;
+                    var subCounty = keyFacilities[i].resource.partOf.display;
+                    var extensions =keyFacilities[i].resource.extension;
+                    var dhis2Uuid = getDhisIdentifier(extensions);
+                    var uniqueIdentifier = getUniqueIdentifier(extensions);
+                    var row = "<tr id='"+id+"'><td class='names'>" + name + "</td><td>" + subCounty + "</td><td>" + address + "</td><td class='dhis2uuids'>"+dhis2Uuid+"</td><td class='ids'>"+uniqueIdentifier+"</td><td><button type='button' class='facility-button' >My facility</button></td></tr>";
+                    tableRow += row;
+                }
+                jq('#body').empty();
+                jq('#body').append(tableRow);
+            })
+
+            function searchArray(query,jsonArray) {
+                var lowercaseQuery = query.toLowerCase();
+                // Filter the array based on the search query
+                var searchResults = jsonArray.filter((obj) =>
+                    obj.resource.name.toLowerCase().includes(lowercaseQuery)
+                );
+
+                return searchResults;
+            }
+
+            jq("#data-table").on("click",".facility-button",function(){
+                var table_row = jq(this).closest('tr');
+                var name = table_row.find('.names').text();
+                var id = table_row.find('.ids').text();
+                var dhisUuid = table_row.find('.dhis2uuids').text();
+
+                var message = "Facility details to be set are\\n\\nHealth Center Name: " + name + "\\n\\n" +
+                    "Dhis Uuid: " + dhisUuid + "\\n\\n" +
+                    "Unique identifier: " + id + "\\n\\n" +
+                    "Are you sure you want to proceed?";
+                var result = confirm(message);
+
+                if (result) {
+                    savefacilityDetails(name,id,dhisUuid)
+                }
+
+            });
         });
+
+
+        function getDhisIdentifier(extensions){
+            var identifier;
+            if(extensions.length>0){
+                for (var obj of extensions) {
+                    if (obj.url === "historicalIdentifier") {
+                       identifier = obj.valueCode;
+                        break;
+                    }
+                }
+            }
+            return identifier;
+        }
+
+        function getUniqueIdentifier(extensions){
+            var identifier;
+            if(extensions.length>0){
+                for (var obj of extensions) {
+                    if (obj.url === "uniqueIdentifier") {
+                       identifier = obj.valueString;
+                        break;
+                    }
+                }
+            }
+            return identifier;
+        }
 
         function getDistricts(regionId){
             jq.ajax({
@@ -632,7 +697,6 @@
                 async: false,
                 success: function (data) {
                     var districts = data.data.entry;
-                    jq('#district').find('option:not(:first)').remove();
                     for (var i = 0; i<districts.length; i++) {
                         jq('#district').append("<option value='"+ districts[i].resource.id+"'>"+ districts[i].resource.name+ "</option>");
                     }
@@ -641,26 +705,38 @@
         }
 
         function getHealthFacilities(regionID, districtID){
+            var facilities;
             jq.ajax({
                 type: "GET",
-                url: "https://nhfr-staging-api.planetsystems.co/nhfrApi/v0.0.1/externalSystem/search?count=40&region="+ regionID+ "&localGovernment="+ districtID,
+                url: "https://nhfr-staging-api.planetsystems.co/nhfrApi/v0.0.1/externalSystem/search?region="+ regionID+ "&localGovernment="+ districtID,
                 dataType: "json",
                 contentType: "application/json",
                 async: false,
                 success: function(data){
-                    var tableRow = "";
-                    var healthFacilities = data.data.entry;
-                    for (var i = 0; i < healthFacilities.length; i++) {
-                        var id = healthFacilities[i].resource.id;
-                        var name = healthFacilities[i].resource.name;
-                        var subCounty = healthFacilities[i].resource.partOf.display;
-                        var row = "<tr><td>" + id + "</td><td>" + name + "</td><td>" + subCounty + "</td>/tr>";
-                        tableRow += row;
+                  facilities = data.data.entry;
+
+                }
+            });
+            return facilities;
+        }
+
+        function savefacilityDetails(name,id,dhis) {
+
+            jq.ajax({
+                url:'${ui.actionLink("ugandaemrsync","nationalRegistry","saveFacilityDetails")}',
+                type: "POST",
+                data: {name:name,
+                        id:id,
+                    dhisuuid:dhis},
+                dataType:'json',
+
+                success: function (data) {
+                    var response = data;
+                    console.log(response);
+                    if (data.status === "success") {
+                        jq().toastmessage('showSuccessToast', "Facility details saved");
+                        window.location.replace('/' + OPENMRS_CONTEXT_PATH + '/index.htm');
                     }
-                    jq('#body').empty();
-                    jq('#region').val('');
-                    jq('#district').val('');
-                    jq('#body').append(tableRow);
                 }
             });
         }
@@ -688,10 +764,9 @@
                             <option value="">Select District</option>
                         </select>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-3">
-                        <input type="submit" id="submit">
+                        <label>Facility name:</label>
+                        <input type="text" class="form-control" name="search" id="search" />
                     </div>
                 </div>
             </div>
@@ -702,13 +777,16 @@
                 Facilities Found
             </div>
             <div class="card-body">
-                <table>
+                <table id="data-table" class="table table-striped table-bordered">
                     <thead>
                     <tr>
-                        <th>Health Facility ID</th>
                         <th>Name</th>
                         <th>SubCounty</th>
-                        <th>View Facility</th>
+                        <th>Address</th>
+                        <th>DHIS Identifier</th>
+                        <th>Unique Identifier</th>
+                        <th>Action</th>
+
                     </tr>
                     </thead>
                     <tbody id="body">

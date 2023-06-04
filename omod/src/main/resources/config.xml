@@ -235,6 +235,14 @@
            When Enabled to true CBS FHIR Data will be synced to the central fhir server
         </description>
     </globalProperty>
+
+    <globalProperty>
+        <property>ugandaemrsync.national.health.facility.registry.identifier</property>
+        <defaultValue></defaultValue>
+        <description>
+           This is the national Health facility Registry Unique Identifier
+        </description>
+    </globalProperty>
     <!-- Internationalization -->
     <!-- All message codes should start with @MODULE_ID@.* -->
     <messages>
