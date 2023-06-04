@@ -21,16 +21,6 @@
 </script>
 
 <script type="text/javascript">
-    var breadcrumbs = [
-        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("coreapps.app.systemAdministration.label")}", link: '/' + OPENMRS_CONTEXT_PATH + '/coreapps/systemadministration/systemAdministration.page'},
-        { label: "UgandaEMR Sync", link: '/' + OPENMRS_CONTEXT_PATH + '/ugandaemrsync/ugandaemrsync.page'},
-        { label: "Search National Facility Registry"}
-    ];
-
-</script>
-
-<script type="text/javascript">
     if(jQuery){
         jq(document).ready(function (){
 
@@ -666,6 +656,7 @@
         }
     }
 </script>
+
 <div class="row">
     <div class="col-md-12">
         <div class="card">
@@ -676,17 +667,9 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label>Region</label>
-                            <select class="form-control" name="region" id="region">
-                                <option value="">Select Region</option>
-                            </select>
+                            <h1>Health Facility Locator</h1>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Enter a facility name or keyword">
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <label>District:</label>
-                        <select class="form-control" name="district" id="district">
-                            <option value="">Select District</option>
-                        </select>
                     </div>
                 </div>
                 <div class="row">
