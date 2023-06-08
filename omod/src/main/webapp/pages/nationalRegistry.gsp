@@ -636,11 +636,17 @@
                 var lowercaseQuery = query.toLowerCase();
                 // Filter the array based on the search query
                 var searchResults = jsonArray.filter((obj) =>
-                    obj.resource.name.toLowerCase().includes(lowercaseQuery)
+                    obj.resource.name.toLowerCase() === lowercaseQuery
                 );
 
                 return searchResults;
             }
+
+            jq("#region, #district").change(function() {
+                jq("#search").val("");
+                jq("#body").empty();
+            });
+
 
             jq("#data-table").on("click",".facility-button",function(){
                 var table_row = jq(this).closest('tr');
@@ -795,7 +801,5 @@
                 </table>
             </div>
         </div>
-
     </div>
-
 </div>
