@@ -636,7 +636,7 @@
                 var lowercaseQuery = query.toLowerCase();
                 // Filter the array based on the search query
                 var searchResults = jsonArray.filter((obj) =>
-                    obj.resource.name.toLowerCase() === lowercaseQuery
+                    obj.resource.name.toLowerCase().includes(lowercaseQuery)
                 );
 
                 return searchResults;
