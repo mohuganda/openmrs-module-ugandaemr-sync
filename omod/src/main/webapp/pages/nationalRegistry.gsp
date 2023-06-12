@@ -706,6 +706,9 @@
                     for (var i = 0; i<districts.length; i++) {
                         jq('#district').append("<option value='"+ districts[i].resource.id+"'>"+ districts[i].resource.name+ "</option>");
                     }
+                },
+                error: function () {
+                    alert("Failed to load Districts. Please check your internet connection and try again.")
                 }
             });
         }
@@ -721,6 +724,9 @@
                 success: function(data){
                   facilities = data.data.entry;
 
+                },
+                error: function () {
+                    alert("Failed to load health facilities. PLease check your internet connection and try again.")
                 }
             });
             return facilities;
