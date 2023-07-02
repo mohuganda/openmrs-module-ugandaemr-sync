@@ -22,6 +22,8 @@
 
 <script type="text/javascript">
     if(jQuery){
+        var facilityUrl = "${facilityUrl}";
+        var districtUrl = "${districtUrl}";
         jq(document).ready(function (){
 
             var payload = {
@@ -697,7 +699,7 @@
         function getDistricts(regionId){
             jq.ajax({
                 type: "GET",
-                url: "https://nhfr-staging-api.planetsystems.co/nhfrApi/v0.0.1/externalSystem/byParentId/"+regionId,
+                url: districtUrl+regionId,
                 dataType: "json",
                 contentType: "application/json",
                 async: false,
@@ -717,7 +719,7 @@
             var facilities;
             jq.ajax({
                 type: "GET",
-                url: "https://nhfr-staging-api.planetsystems.co/nhfrApi/v0.0.1/externalSystem/search?region="+ regionID+ "&localGovernment="+ districtID,
+                url: facilityUrl+"?region="+ regionID+ "&localGovernment="+ districtID,
                 dataType: "json",
                 contentType: "application/json",
                 async: false,

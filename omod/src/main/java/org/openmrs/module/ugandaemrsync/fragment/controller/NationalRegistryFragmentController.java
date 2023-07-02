@@ -24,7 +24,6 @@ public class NationalRegistryFragmentController {
     public void controller(@SpringBean PageModel pageModel, @RequestParam(value = "breadcrumbOverride",
             required = false) String breadcrumbOverride) {
 
-        pageModel.put("breadcrumbOverride", breadcrumbOverride);
     }
 
     public SimpleObject saveFacilityDetails(HttpServletRequest request, @RequestParam("name") String name, @RequestParam("id")String id,@RequestParam("dhisuuid")String dhisuuid){
