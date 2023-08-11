@@ -69,6 +69,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.FSHR_SYNC_FHIR_PROFILE_UUID;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.LAST_SYNC_DATE;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.GP_ENABLE_SYNC_CBS_FHIR_DATA;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.PERSON_UUID_QUERY;
@@ -494,6 +495,17 @@ public class SyncFHIRRecord {
                     saveSyncFHIRCase(syncFhirProfile, currentDate, patient, patientIdentifier);
                 }
             }
+        } else if (syncFhirProfile.getCaseBasedPrimaryResourceType().equals("CohortType")) {
+            String uuid = syncFhirProfile.getCaseBasedPrimaryResourceTypeId();
+
+            List<Patient> patientList = getPatientByCohortType(uuid);
+            if(patientList.size()>0){
+                for(Patient patient:patientList){
+                    String patientIdentifier = patient.getPatientId().toString();
+                    saveSyncFHIRCase(syncFhirProfile, currentDate, patient, patientIdentifier);
+                }
+            }
+
         }
     }
 
@@ -1162,6 +1174,7 @@ public class SyncFHIRRecord {
                         syncFhirResource.setDateSynced(date);
                         syncFhirResource.setSynced(true);
                         syncFhirResource.setExpiryDate(UgandaEMRSyncUtil.addDaysToDate(date, syncFhirProfile.getDurationToKeepSyncedResources()));
+                        System.out.println(map.get("result"));
                         ugandaEMRSyncService.saveFHIRResource(syncFhirResource);
                     }
                 } else {
@@ -1282,5 +1295,18 @@ public class SyncFHIRRecord {
 
 
         }
+    }
+
+    private List<Patient> getPatientByCohortType(String cohortTypeUuid){
+        List list = Context.getAdministrationService().executeSQL("SELECT patient_id from cohort_member cm inner join cohort c on cm.cohort_id = c.cohort_id inner join cohort_type ct on c.cohort_type_id = ct.cohort_type_id where ct.uuid='"+cohortTypeUuid+"' and c.voided=0 and cm.voided=0;", true);
+        PatientService patientService = Context.getPatientService();
+        List<Patient> patientList = new ArrayList<>();
+
+        if (list.size() > 0) {
+            for (Object o : list) {
+                patientList.add(patientService.getPatient(Integer.parseUnsignedInt(((ArrayList) o).get(0).toString())));
+            }
+        }
+        return patientList;
     }
 }
