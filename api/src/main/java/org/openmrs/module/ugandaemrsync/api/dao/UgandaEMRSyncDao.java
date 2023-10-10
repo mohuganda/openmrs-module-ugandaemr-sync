@@ -410,7 +410,24 @@ public class UgandaEMRSyncDao {
         Criteria criteria = getSession().createCriteria(SyncTask.class);
         criteria.add(Restrictions.eq("syncTaskType", syncTaskType));
         criteria.add(Restrictions.between("dateSent", synceDateFrom, synceDateTo));
-        criteria.add(Restrictions.eq("status", "SUCCESS"));
         return criteria.list();
+    }
+
+    public List<SyncTask> getSyncTasksByType(SyncTaskType syncTaskType) {
+        Criteria criteria = getSession().createCriteria(SyncTask.class);
+        criteria.add(Restrictions.eq("syncTaskType", syncTaskType));
+        return criteria.list();
+    }
+
+    public SyncTask getSyncTaskByUUID(String uniqueId) {
+        Criteria criteria = getSession().createCriteria(SyncTask.class);
+        criteria.add(Restrictions.eq("uuid", uniqueId));
+        return (SyncTask) criteria.uniqueResult();
+    }
+
+    public SyncTask getSyncTaskById(Integer uniqueId) {
+        Criteria criteria = getSession().createCriteria(SyncTask.class);
+        criteria.add(Restrictions.eq("id", uniqueId));
+        return (SyncTask) criteria.uniqueResult();
     }
 }

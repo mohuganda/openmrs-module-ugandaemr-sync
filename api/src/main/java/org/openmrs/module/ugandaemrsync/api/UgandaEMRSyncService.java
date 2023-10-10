@@ -463,5 +463,12 @@ public interface UgandaEMRSyncService extends OpenmrsService {
     public SyncTaskType getSyncTaskTypeById(Integer id);
 
     List<SyncTask> getSyncTasksByType(SyncTaskType syncTaskType, Date synceDateFrom, Date synceDateTo);
+
+    List<SyncTask> getSyncTasksByType(SyncTaskType syncTaskType);
+
+    SyncTask getSyncTaskByUUID(String uniqueId);
+
+    SyncTask getSyncTaskById(Integer uniqueId);
+
 }
 
