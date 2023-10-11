@@ -53,6 +53,17 @@ public class ReceiveViralLoadResultFromCentralServerTask extends AbstractTask {
                     ugandaEMRSyncService.addVLToEncounter(result.get(0).get("valueString").toString(), result.get(0).get("valueInteger").toString(), order.getEncounter().getEncounterDatetime().toString(), order.getEncounter(), order);
                     syncTask.setActionCompleted(true);
                     ugandaEMRSyncService.saveSyncTask(syncTask);
+                    SyncTask newSyncTask = new SyncTask();
+                    newSyncTask.setDateSent(new Date());
+                    newSyncTask.setCreator(Context.getUserService().getUser(1));
+                    newSyncTask.setSentToUrl(syncTaskType.getUrl());
+                    newSyncTask.setRequireAction(true);
+                    newSyncTask.setActionCompleted(true);
+                    newSyncTask.setSyncTask(order.getAccessionNumber());
+                    newSyncTask.setStatusCode(200);
+                    newSyncTask.setStatus("Success");
+                    newSyncTask.setSyncTaskType(syncTaskType);
+                    ugandaEMRSyncService.saveSyncTask(newSyncTask);
                     try {
                         Context.getOrderService().discontinueOrder(order, "Completed", new Date(), order.getOrderer(), order.getEncounter());
                     } catch (Exception e) {
