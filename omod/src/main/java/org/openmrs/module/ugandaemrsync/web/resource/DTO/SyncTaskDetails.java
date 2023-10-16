@@ -6,14 +6,16 @@ public class SyncTaskDetails {
     String name;
     String identifier;
     String status;
+    int statusCode;
     Date dateCreated;
 
 
-    public SyncTaskDetails(String name, String identifier, String status, Date dateCreated) {
+    public SyncTaskDetails(String name, String identifier,int statusCode, String status, Date dateCreated) {
         this.name = name;
         this.identifier = identifier;
         this.status = status;
         this.dateCreated = dateCreated;
+        this.statusCode = statusCode;
     }
 
     public SyncTaskDetails() {

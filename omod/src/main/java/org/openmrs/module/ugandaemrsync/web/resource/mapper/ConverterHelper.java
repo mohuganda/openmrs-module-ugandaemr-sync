@@ -6,7 +6,9 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirResource;
 import org.openmrs.module.ugandaemrsync.model.SyncTask;
+import org.openmrs.module.ugandaemrsync.web.resource.DTO.FhirResourceDetails;
 import org.openmrs.module.ugandaemrsync.web.resource.DTO.SyncTaskDetails;
 
 
@@ -17,7 +19,7 @@ import java.util.Objects;
 
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.*;
 
-public class SyncTaskDetailsConverter {
+public class ConverterHelper {
     public static SyncTaskDetails convertSyncTaskDetails( SyncTask syncTask) {
 
         if (Objects.equals(syncTask.getSyncTaskType().getUuid(), VIRAL_LOAD_SYNC_TYPE_UUID)|| Objects.equals(syncTask.getSyncTaskType().getUuid(),VIRAL_LOAD_RESULT_PULL_TYPE_UUID)) {
@@ -29,9 +31,11 @@ public class SyncTaskDetailsConverter {
 
             String status = convertStatusCode(statusCode);
             PatientIdentifier pi = patient.getPatientIdentifier(identifierType);
-            String identifier = pi.getIdentifier();
-
-            SyncTaskDetails syncTaskDetails = new SyncTaskDetails(patient.getPersonName().getFullName(), identifier, status, dateSent);
+            String identifier = "";
+            if(pi!=null) {
+                identifier = pi.getIdentifier();
+            }
+            SyncTaskDetails syncTaskDetails = new SyncTaskDetails(patient.getPersonName().getFullName(), identifier, statusCode,status, dateSent);
             return syncTaskDetails;
         } else {
             return null;
@@ -72,4 +76,5 @@ public class SyncTaskDetailsConverter {
         }
         return patient;
     }
+
 }

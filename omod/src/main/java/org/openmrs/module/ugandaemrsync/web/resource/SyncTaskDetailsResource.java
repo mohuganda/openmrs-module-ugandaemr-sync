@@ -12,7 +12,7 @@ import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
 import org.openmrs.module.ugandaemrsync.model.SyncTask;
 import org.openmrs.module.ugandaemrsync.model.SyncTaskType;
 import org.openmrs.module.ugandaemrsync.web.resource.DTO.SyncTaskDetails;
-import org.openmrs.module.ugandaemrsync.web.resource.mapper.SyncTaskDetailsConverter;
+import org.openmrs.module.ugandaemrsync.web.resource.mapper.ConverterHelper;
 import org.openmrs.module.webservices.rest.SimpleObject;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.RestConstants;
@@ -39,12 +39,12 @@ public class SyncTaskDetailsResource extends DelegatingCrudResource<SyncTaskDeta
 
 	@Override
 	public SyncTaskDetails newDelegate() {
-		return new SyncTaskDetails();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public SyncTaskDetails save(SyncTaskDetails SyncTask) {
-		return new SyncTaskDetails();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class SyncTaskDetailsResource extends DelegatingCrudResource<SyncTaskDeta
 			if (id != null) {
 				SyncTask = Context.getService(UgandaEMRSyncService.class).getSyncTaskById(id);
 			}
-			details = SyncTaskDetailsConverter.convertSyncTaskDetails(SyncTask);
+			details = ConverterHelper.convertSyncTaskDetails(SyncTask);
 		}
 
 		return details;
@@ -74,7 +74,7 @@ public class SyncTaskDetailsResource extends DelegatingCrudResource<SyncTaskDeta
 		List<SyncTask> syncTasks = Context.getService(UgandaEMRSyncService.class)
 				.getAllSyncTask();
 		List<SyncTaskDetails> syncTaskDetails = new ArrayList<>();
-		syncTaskDetails = SyncTaskDetailsConverter.convertSyncTasks(syncTasks);
+		syncTaskDetails = ConverterHelper.convertSyncTasks(syncTasks);
 		return new NeedsPaging<SyncTaskDetails>(syncTaskDetails, context);
 	}
 
@@ -115,12 +115,12 @@ public class SyncTaskDetailsResource extends DelegatingCrudResource<SyncTaskDeta
 
 	@Override
 	protected void delete(SyncTaskDetails SyncTaskDetails, String s, RequestContext requestContext) throws ResponseException {
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void purge(SyncTaskDetails syncTask, RequestContext requestContext) throws ResponseException {
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -168,7 +168,7 @@ public class SyncTaskDetailsResource extends DelegatingCrudResource<SyncTaskDeta
 		List<SyncTaskDetails> syncTaskDetailsList = new ArrayList<>();
 		if(!syncTasksByQuery.isEmpty()){
 			for (SyncTask syncTask : syncTasksByQuery) {
-				SyncTaskDetails syncTaskDetails = SyncTaskDetailsConverter.convertSyncTaskDetails(syncTask);
+				SyncTaskDetails syncTaskDetails = ConverterHelper.convertSyncTaskDetails(syncTask);
 				syncTaskDetailsList.add(syncTaskDetails);
 			}
 		}
