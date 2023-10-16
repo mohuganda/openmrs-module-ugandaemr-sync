@@ -6,9 +6,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ugandaemrsync.model.SyncFhirResource;
 import org.openmrs.module.ugandaemrsync.model.SyncTask;
-import org.openmrs.module.ugandaemrsync.web.resource.DTO.FhirResourceDetails;
 import org.openmrs.module.ugandaemrsync.web.resource.DTO.SyncTaskDetails;
 
 
