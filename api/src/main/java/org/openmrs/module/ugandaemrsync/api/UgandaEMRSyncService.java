@@ -470,5 +470,6 @@ public interface UgandaEMRSyncService extends OpenmrsService {
 
     SyncTask getSyncTaskById(Integer uniqueId);
 
+    List<SyncFhirResource> getSyncFHIRResourceBySyncFhirProfile(SyncFhirProfile syncFhirProfile, String synceDateFrom, String synceDateTo);
 }
 

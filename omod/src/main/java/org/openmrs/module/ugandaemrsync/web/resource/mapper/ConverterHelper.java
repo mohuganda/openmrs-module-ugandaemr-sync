@@ -6,7 +6,9 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ugandaemrsync.model.SyncFhirResource;
 import org.openmrs.module.ugandaemrsync.model.SyncTask;
+import org.openmrs.module.ugandaemrsync.web.resource.DTO.FhirResourceDetails;
 import org.openmrs.module.ugandaemrsync.web.resource.DTO.SyncTaskDetails;
 
 
@@ -18,9 +20,9 @@ import java.util.Objects;
 import static org.openmrs.module.ugandaemrsync.server.SyncConstant.*;
 
 public class ConverterHelper {
-    public static SyncTaskDetails convertSyncTaskDetails( SyncTask syncTask) {
+    public static SyncTaskDetails convertSyncTaskDetails(SyncTask syncTask) {
 
-        if (Objects.equals(syncTask.getSyncTaskType().getUuid(), VIRAL_LOAD_SYNC_TYPE_UUID)|| Objects.equals(syncTask.getSyncTaskType().getUuid(),VIRAL_LOAD_RESULT_PULL_TYPE_UUID)) {
+        if (Objects.equals(syncTask.getSyncTaskType().getUuid(), VIRAL_LOAD_SYNC_TYPE_UUID) || Objects.equals(syncTask.getSyncTaskType().getUuid(), VIRAL_LOAD_RESULT_PULL_TYPE_UUID)) {
             PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(PATIENT_IDENTIFIER_TYPE);
             String accessionNumber = syncTask.getSyncTask();
             Patient patient = getPatientByAccessionNumber(accessionNumber);
@@ -30,14 +32,43 @@ public class ConverterHelper {
             String status = convertStatusCode(statusCode);
             PatientIdentifier pi = patient.getPatientIdentifier(identifierType);
             String identifier = "";
-            if(pi!=null) {
+            if (pi != null) {
                 identifier = pi.getIdentifier();
             }
-            SyncTaskDetails syncTaskDetails = new SyncTaskDetails(patient.getPersonName().getFullName(), identifier, statusCode,status, dateSent);
+            SyncTaskDetails syncTaskDetails = new SyncTaskDetails(patient.getPersonName().getFullName(), identifier, statusCode, status, dateSent);
             return syncTaskDetails;
         } else {
             return null;
         }
+    }
+
+    public static FhirResourceDetails convertSyncFhirResourceDetails(SyncFhirResource syncFhirResource) {
+
+        PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(UIC_IDENTIFIER_TYPE);
+
+        Patient patient = syncFhirResource.getPatient();
+        Date dateSent = syncFhirResource.getDateSynced();
+        Date dateCreated = syncFhirResource.getDateCreated();
+        Integer statusCode = syncFhirResource.getStatusCode();
+        String status= "";
+        if(statusCode!=null){
+            status = convertStatusCode(statusCode);
+        }else{
+            statusCode = 0;
+        }
+        String identifier = "";
+        String name = "";
+        if (patient != null) {
+            name = patient.getPersonName().getFullName();
+            PatientIdentifier pi = patient.getPatientIdentifier(identifierType);
+
+            if (pi != null) {
+                identifier = pi.getIdentifier();
+            }
+        }
+
+        return new FhirResourceDetails(name, identifier, statusCode, status, dateCreated, dateSent);
+
     }
 
     public static List<SyncTaskDetails> convertSyncTasks(List<SyncTask> syncTasks) {
@@ -46,6 +77,18 @@ public class ConverterHelper {
             for (SyncTask syncTask : syncTasks) {
                 SyncTaskDetails syncTaskDetail = convertSyncTaskDetails(syncTask);
                 result.add(syncTaskDetail);
+            }
+        }
+        return result;
+    }
+
+
+    public static List<FhirResourceDetails> convertSyncFhirResources(List<SyncFhirResource> syncFhirResources) {
+        List<FhirResourceDetails> result = new ArrayList<>();
+        if (syncFhirResources.size() > 0) {
+            for (SyncFhirResource syncFhirResource : syncFhirResources) {
+                FhirResourceDetails fhirResourceDetails = convertSyncFhirResourceDetails(syncFhirResource);
+                result.add(fhirResourceDetails);
             }
         }
         return result;

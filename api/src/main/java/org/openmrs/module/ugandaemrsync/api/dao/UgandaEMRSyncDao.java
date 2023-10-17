@@ -430,4 +430,15 @@ public class UgandaEMRSyncDao {
         criteria.add(Restrictions.eq("id", uniqueId));
         return (SyncTask) criteria.uniqueResult();
     }
+
+    public List<SyncFhirResource> getSyncResourceBySyncFhirProfile(SyncFhirProfile syncFhirProfile, String from, String to) {
+        String query ="select resource_id, synced, date_synced, expiry_date, generator_profile, NULL as resource, sfr.creator, sfr.date_created, sfr.changed_by, sfr.date_changed, sfr.voided, sfr.date_voided, sfr.voided_by, sfr.void_reason, sfr.uuid, sfr.statusCode, status_code_detail, patient_id from sync_fhir_resource sfr inner join sync_fhir_profile sfp on sfr.generator_profile = sfp.sync_fhir_profile_id where sfp.uuid='" + syncFhirProfile.getUuid()
+                + "' and sfr.date_created >='"+from +"'"+"and sfr.date_created <='"+to +"';" ;
+        SQLQuery sqlQuery = getSession()
+                .createSQLQuery(query);
+        System.out.println(query);
+        sqlQuery.addEntity(SyncFhirResource.class);
+        return sqlQuery.list();
+
+    }
 }
