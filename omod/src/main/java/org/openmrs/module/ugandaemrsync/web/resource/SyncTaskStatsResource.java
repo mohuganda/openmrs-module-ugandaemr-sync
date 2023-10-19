@@ -58,10 +58,10 @@ public class SyncTaskStatsResource {
                 }
             }
             String result ="{\"total\":" + syncTasks.size() + "," +
-                    "successes\":" + successes+ "," +
-                    "failures\":" + failures+ "}";
+                    "\"successes\":" + successes+ "," +
+                    "\"failures\":" + failures+ "}";
 
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            return new ResponseEntity<Object>(result, HttpStatus.OK);
 
         } catch (Exception ex) {
             return new ResponseEntity<String>("{Error: " + ex.getMessage() + "}", HttpStatus.INTERNAL_SERVER_ERROR);
