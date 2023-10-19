@@ -411,7 +411,7 @@ public class UgandaEMRSyncDao {
     public List<SyncTask> getSyncTasksByType(SyncTaskType syncTaskType, Date synceDateFrom, Date synceDateTo) {
         Criteria criteria = getSession().createCriteria(SyncTask.class);
         criteria.add(Restrictions.eq("syncTaskType", syncTaskType));
-        criteria.add(Restrictions.between("dateSent", synceDateFrom, synceDateTo));
+        criteria.add(Restrictions.between("dateCreated", synceDateFrom, synceDateTo));
         return criteria.list();
     }
 
