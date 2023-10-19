@@ -9,6 +9,8 @@ public class SyncTaskDetails {
     int statusCode;
     Date dateCreated;
 
+    String comment;
+
 
     public SyncTaskDetails(String name, String identifier,int statusCode, String status, Date dateCreated) {
         this.name = name;
@@ -16,6 +18,15 @@ public class SyncTaskDetails {
         this.status = status;
         this.dateCreated = dateCreated;
         this.statusCode = statusCode;
+    }
+
+    public SyncTaskDetails(String name, String identifier, String status, int statusCode, Date dateCreated, String comment) {
+        this.name = name;
+        this.identifier = identifier;
+        this.status = status;
+        this.statusCode = statusCode;
+        this.dateCreated = dateCreated;
+        this.comment = comment;
     }
 
     public SyncTaskDetails() {
@@ -59,5 +70,13 @@ public class SyncTaskDetails {
 
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

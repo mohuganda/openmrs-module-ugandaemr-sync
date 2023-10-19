@@ -22,7 +22,7 @@ import static org.openmrs.module.ugandaemrsync.server.SyncConstant.*;
 public class ConverterHelper {
     public static SyncTaskDetails convertSyncTaskDetails(SyncTask syncTask) {
 
-        if (Objects.equals(syncTask.getSyncTaskType().getUuid(), VIRAL_LOAD_SYNC_TYPE_UUID) || Objects.equals(syncTask.getSyncTaskType().getUuid(), VIRAL_LOAD_RESULT_PULL_TYPE_UUID)) {
+        if (Objects.equals(syncTask.getSyncTaskType().getUuid(), VIRAL_LOAD_SYNC_TYPE_UUID)) {
             PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(PATIENT_IDENTIFIER_TYPE);
             String accessionNumber = syncTask.getSyncTask();
             Patient patient = getPatientByAccessionNumber(accessionNumber);
@@ -35,9 +35,23 @@ public class ConverterHelper {
             if (pi != null) {
                 identifier = pi.getIdentifier();
             }
-            SyncTaskDetails syncTaskDetails = new SyncTaskDetails(patient.getPersonName().getFullName(), identifier, statusCode, status, dateSent);
-            return syncTaskDetails;
-        } else {
+            return new SyncTaskDetails(patient.getPersonName().getFullName(), identifier, statusCode, status, dateSent);
+        } if(Objects.equals(syncTask.getSyncTaskType().getUuid(), VIRAL_LOAD_RESULT_PULL_TYPE_UUID)){
+            PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(PATIENT_IDENTIFIER_TYPE);
+            String accessionNumber = syncTask.getSyncTask();
+            Patient patient = getPatientByAccessionNumber(accessionNumber);
+            Date dateSent = syncTask.getDateSent();
+            int statusCode = syncTask.getStatusCode();
+            String statusMessage = syncTask.getStatus();
+            String status = convertStatusCode(statusCode);
+            PatientIdentifier pi = patient.getPatientIdentifier(identifierType);
+            String identifier = "";
+            if (pi != null) {
+                identifier = pi.getIdentifier();
+            }
+            return new SyncTaskDetails(patient.getPersonName().getFullName(), identifier, status, statusCode, dateSent,statusMessage);
+        }
+        else {
             return null;
         }
     }

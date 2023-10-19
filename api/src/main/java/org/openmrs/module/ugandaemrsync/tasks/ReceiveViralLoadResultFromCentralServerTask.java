@@ -61,7 +61,8 @@ public class ReceiveViralLoadResultFromCentralServerTask extends AbstractTask {
                     newSyncTask.setActionCompleted(true);
                     newSyncTask.setSyncTask(order.getAccessionNumber());
                     newSyncTask.setStatusCode(200);
-                    newSyncTask.setStatus("Success");
+                    /* hack to store  results qualitative  in logs for HIE metrics */
+                    newSyncTask.setStatus(result.get(0).get("valueString").toString());
                     newSyncTask.setSyncTaskType(syncTaskType);
                     ugandaEMRSyncService.saveSyncTask(newSyncTask);
                     try {

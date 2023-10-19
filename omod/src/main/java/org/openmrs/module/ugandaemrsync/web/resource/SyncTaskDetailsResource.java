@@ -85,35 +85,14 @@ public class SyncTaskDetailsResource extends DelegatingCrudResource<SyncTaskDeta
 
 	@Override
 	public DelegatingResourceDescription getRepresentationDescription(Representation rep) {
-		if (rep instanceof DefaultRepresentation) {
 			DelegatingResourceDescription description = new DelegatingResourceDescription();
 			description.addProperty("name");
 			description.addProperty("identifier");
 			description.addProperty("status");
 			description.addProperty("statusCode");
 			description.addProperty("dateCreated");
-
-
-			description.addSelfLink();
+			description.addProperty("comment");
 			return description;
-		} else if (rep instanceof FullRepresentation) {
-			DelegatingResourceDescription description = new DelegatingResourceDescription();
-			description.addProperty("name");
-			description.addProperty("identifier");
-			description.addProperty("status");
-			description.addProperty("stat usCode");
-			description.addProperty("dateCreated");
-			return description;
-		} else if (rep instanceof RefRepresentation) {
-			DelegatingResourceDescription description = new DelegatingResourceDescription();
-			description.addProperty("name");
-			description.addProperty("identifier");
-			description.addProperty("status");
-			description.addProperty("statusCode");
-			description.addProperty("dateCreated");
-			return description;
-		}
-		return null;
 	}
 
 	@Override
