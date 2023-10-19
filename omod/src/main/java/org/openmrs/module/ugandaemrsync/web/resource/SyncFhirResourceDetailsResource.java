@@ -70,6 +70,7 @@ public class SyncFhirResourceDetailsResource extends DelegatingCrudResource<Sync
 			description.addProperty("name");
 			description.addProperty("identifier");
 			description.addProperty("status");
+			description.addProperty("statusCode");
 			description.addProperty("dateCreated");
 
 
@@ -80,6 +81,7 @@ public class SyncFhirResourceDetailsResource extends DelegatingCrudResource<Sync
 			description.addProperty("name");
 			description.addProperty("identifier");
 			description.addProperty("status");
+			description.addProperty("statusCode");
 			description.addProperty("dateCreated");
 			return description;
 		} else if (rep instanceof RefRepresentation) {
@@ -87,6 +89,7 @@ public class SyncFhirResourceDetailsResource extends DelegatingCrudResource<Sync
 			description.addProperty("name");
 			description.addProperty("identifier");
 			description.addProperty("status");
+			description.addProperty("statusCode");
 			description.addProperty("dateCreated");
 			return description;
 		}
