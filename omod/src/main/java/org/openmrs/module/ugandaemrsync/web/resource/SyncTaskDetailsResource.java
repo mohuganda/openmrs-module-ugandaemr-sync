@@ -92,6 +92,7 @@ public class SyncTaskDetailsResource extends DelegatingCrudResource<SyncTaskDeta
 			description.addProperty("statusCode");
 			description.addProperty("dateCreated");
 			description.addProperty("comment");
+			description.addProperty("patientUuid");
 			return description;
 	}
 
@@ -136,9 +137,9 @@ public class SyncTaskDetailsResource extends DelegatingCrudResource<SyncTaskDeta
 				}
 
 				if (syncTaskType != null) {
-					endDateString +=endDateString+" 23:59:00";
 					Date synceDateFrom = DateUtil.parseYmd(startDateString);
-					Date synceDateTo = DateUtil.parseYmdhms(endDateString);
+					Date synceDateTo = DateUtil.parseYmd(endDateString);
+					synceDateTo = DateUtil.getEndOfDay(synceDateTo);
 
 					syncTasksByQuery = ugandaEMRSyncService.getSyncTasksByType(syncTaskType, synceDateFrom, synceDateTo);
 				}
