@@ -125,7 +125,7 @@ public class SyncTaskDetailsResource extends DelegatingCrudResource<SyncTaskDeta
 		String endDateString = context.getParameter("endDate");
 
 		SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(syncTaskTypeUuid);
-		List<SyncTask> syncTasksByQuery = null;
+		List<SyncTask> syncTasksByQuery = new ArrayList<>();
 		if(startDateString != null &&endDateString != null) {
 
 			try {
@@ -136,8 +136,9 @@ public class SyncTaskDetailsResource extends DelegatingCrudResource<SyncTaskDeta
 				}
 
 				if (syncTaskType != null) {
+					endDateString +=endDateString+" 23:59:00";
 					Date synceDateFrom = DateUtil.parseYmd(startDateString);
-					Date synceDateTo = DateUtil.parseYmd(endDateString);
+					Date synceDateTo = DateUtil.parseYmdhms(endDateString);
 
 					syncTasksByQuery = ugandaEMRSyncService.getSyncTasksByType(syncTaskType, synceDateFrom, synceDateTo);
 				}
