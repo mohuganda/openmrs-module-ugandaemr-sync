@@ -47,7 +47,6 @@ public class SyncTaskStatsResource {
 
             SyncTaskType syncTaskType = ugandaEMRSyncService.getSyncTaskTypeByUUID(type);
             if (syncTaskType != null) {
-                endDate += endDate+" 23:59:00";
                 Date synceDateFrom = DateUtil.parseYmd(startDate);
                 Date synceDateTo = DateUtil.parseYmd(endDate);
 
