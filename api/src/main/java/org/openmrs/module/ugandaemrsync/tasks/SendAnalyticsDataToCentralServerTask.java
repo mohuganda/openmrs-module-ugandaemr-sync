@@ -4,6 +4,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -152,6 +157,9 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
         if (properties.getProperty(SYNC_METRIC_DATA).equalsIgnoreCase("true") && properties.getProperty(GP_DHIS2_ORGANIZATION_UUID).equalsIgnoreCase(syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID))) {
             log.info("Sending analytics data to central server ");
             String bodyText = getAnalyticsDataExport();
+            String dataEntryData = extractDataEntryStats();
+
+            System.out.println(dataEntryData);
             HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(analyticsServerUrlEndPoint, bodyText, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
             if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 
@@ -165,6 +173,18 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
         } else {
             log.info("Analytics data has not been sent to central server. Check whether you have a ugandaemr-settings.properties file and syncmetrictsdata is set to true");
         }
+    }
+
+    private String extractDataEntryStats() {
+        String baseUrl = "http://localhost:8080";
+        String baseUrl1 = "http://localhost:8081";
+        String url1=baseUrl1+"/openmrs/ws/rest/v1/dataentrystatistics?fromDate=2019-01-01&toDate=2024-02-29&encUserColumn=creator&groupBy=creator";
+        String url=baseUrl+"/openmrs/ws/rest/v1/dataentrystatistics?fromDate=2019-01-01&toDate=2024-02-29&encUserColumn=creator&groupBy=creator";
+        String response = getDataEntryStatistics(url1);
+        if (response==""){
+            response = getDataEntryStatistics(url);
+        }
+        return response;
     }
 
     private String getAnalyticsDataExport() {
@@ -240,5 +260,19 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
             return false;
         }
         return true;
+    }
+
+    public String getDataEntryStatistics(String url){
+        try {
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpGet httpGet = new HttpGet(url);
+            CloseableHttpResponse response = httpClient.execute(httpGet);
+            if (response.getStatusLine().getStatusCode() == 200||response.getStatusLine().getStatusCode() == 200)
+                return EntityUtils.toString(response.getEntity());
+            else
+                return "";
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
