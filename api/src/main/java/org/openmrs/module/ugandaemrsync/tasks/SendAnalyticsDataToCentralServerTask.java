@@ -175,7 +175,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 
             String jsonObject = "{"+ "\"metadata\":"  +facilityMetadata+ ",\"dataentry\":" +dataEntryData+"}";
 
-            System.out.println(jsonObject);
+
             HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(analyticsServerUrlEndPoint, jsonObject, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
             if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 
@@ -196,7 +196,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
         String baseUrl1 = "http://localhost:8081";
         String endpoint = "/openmrs/ws/rest/v1/dataentrystatistics?fromDate="+dateToday+"&toDate="+dateToday+"&encUserColumn=creator&groupBy=creator";
         String url1 = baseUrl1 + endpoint;
-        System.out.println(url1);
+
         String url = baseUrl + endpoint;
         String response = getDataFromEndpoint(url1);
         if (response == "") {
@@ -270,7 +270,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpGet httpGet = new HttpGet(url);
             CloseableHttpResponse response = httpClient.execute(httpGet);
-            System.out.println(response.getStatusLine().getStatusCode() + "code of response");
+
             if (response.getStatusLine().getStatusCode() == 200 || response.getStatusLine().getStatusCode() == 200)
                 return EntityUtils.toString(response.getEntity());
             else
