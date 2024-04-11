@@ -1,10 +1,8 @@
 package org.openmrs.module.ugandaemrsync.server;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.param.DateRangeParam;
-import ca.uhn.fhir.rest.param.StringAndListParam;
 import ca.uhn.fhir.rest.param.TokenAndListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.apache.commons.logging.Log;
@@ -17,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.openmrs.module.fhir2.api.search.param.PatientSearchParams;
-import org.openmrs.module.fhir2.api.search.param.EncounterSearchParams;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -46,7 +43,6 @@ import org.openmrs.module.fhir2.api.FhirPractitionerService;
 import org.openmrs.module.fhir2.api.FhirObservationService;
 import org.openmrs.module.fhir2.api.FhirEncounterService;
 import org.openmrs.module.fhir2.api.FhirServiceRequestService;
-import org.openmrs.module.ugandaemrsync.api.FhirEpisodeOfCareService;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
 import org.openmrs.module.ugandaemrsync.model.SyncFhirProfile;
@@ -430,14 +426,13 @@ public class SyncFHIRRecord {
 
             EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteria(null, null, null, null, null, null, encounterTypes, null, null, null, false);
 
-            Collection<Patient> patientArrayList = Context.getEncounterService().getEncounters(encounterSearchCriteria).stream().map(Encounter::getPatient).collect(Collectors.toCollection(ArrayList::new));
 
-            for (org.openmrs.Patient patient : patientArrayList) {
+            for (Encounter encounter : Context.getEncounterService().getEncounters(encounterSearchCriteria)) {
 
-                PatientIdentifier patientIdentifier = getPatientIdentifierByType(patient, syncFhirProfile.getPatientIdentifierType());
+                PatientIdentifier patientIdentifier = getPatientIdentifierByType(encounter.getPatient(), syncFhirProfile.getPatientIdentifierType());
 
                 if (patientIdentifier != null) {
-                    saveSyncFHIRCase(syncFhirProfile, currentDate, patient, patientIdentifier.getIdentifier());
+                    saveSyncFHIRCase(syncFhirProfile, currentDate, encounter.getPatient(), patientIdentifier.getIdentifier());
                 }
 
             }
@@ -1165,7 +1160,7 @@ public class SyncFHIRRecord {
 
         Collection<String> patientProgramUUIDs = patientPrograms.stream().map(PatientProgram::getUuid).collect(Collectors.toCollection(ArrayList::new));
 
-        iBaseResources.addAll(getApplicationContext().getBean(FhirEpisodeOfCareService.class).get(patientProgramUUIDs));
+        //iBaseResources.addAll(getApplicationContext().getBean(FhirEpisodeOfCareService.class).get(patientProgramUUIDs));
         return iBaseResources;
     }
 
