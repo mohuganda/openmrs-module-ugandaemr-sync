@@ -63,7 +63,6 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
     protected Log log = LogFactory.getLog(getClass());
     Date startDate;
     Date endDate;
-    Date lastSubmissionDateSet;
 
     UgandaEMRHttpURLConnection ugandaEMRHttpURLConnection = new UgandaEMRHttpURLConnection();
 
@@ -73,12 +72,6 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
     @Override
     public void execute() {
         Date todayDate = new Date();
-
-        Properties properties = Context.getService(UgandaEMRSyncService.class).getUgandaEMRProperties();
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
-        DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_YEAR, 1);
@@ -126,9 +119,6 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 
         HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(analyticsServerUrlEndPoint, jsonObject, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-
-            ReportUtil.updateGlobalProperty(GP_ANALYTICS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE,
-                    dateTimeFormat.format(lastSubmissionDateSet));
             log.info("Analytics data has been sent to central server");
         } else {
             log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
