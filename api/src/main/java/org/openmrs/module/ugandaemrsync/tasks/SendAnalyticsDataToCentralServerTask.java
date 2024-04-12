@@ -82,7 +82,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_YEAR, 1);
-        startDate= todayDate;
+        startDate = todayDate;
         endDate = cal.getTime();
         if (!isGpAnalyticsServerUrlSet()) {
             return;
@@ -109,45 +109,51 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
         }
 
 
-            log.info("Sending analytics data to central server ");
-            String facilityMetadata = null;
-            try {
-                facilityMetadata = getAnalyticsDataExport();
-            } catch (EvaluationException e) {
-                throw new RuntimeException(e);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            String dataEntryData = extractDataEntryStats(DateUtil.formatDate(startDate, "yyyy-MM-dd"),DateUtil.formatDate(endDate, "yyyy-MM-dd"));
+        log.info("Sending analytics data to central server ");
+        String facilityMetadata = null;
+        try {
+            facilityMetadata = getAnalyticsDataExport();
+        } catch (EvaluationException e) {
+            throw new RuntimeException(e);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String dataEntryData = extractDataEntryStats(DateUtil.formatDate(startDate, "yyyy-MM-dd"), DateUtil.formatDate(endDate, "yyyy-MM-dd"));
 
-            String jsonObject = "{"+ "\"metadata\":"  +facilityMetadata+ ",\"dataentry\":" +dataEntryData+"}";
+        String jsonObject = "{" + "\"metadata\":" + facilityMetadata + ",\"dataentry\":" + dataEntryData + "}";
 
-            HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(analyticsServerUrlEndPoint, jsonObject, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
-            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+        HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(analyticsServerUrlEndPoint, jsonObject, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
+        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 
-                ReportUtil.updateGlobalProperty(GP_ANALYTICS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE,
-                        dateTimeFormat.format(lastSubmissionDateSet));
-                log.info("Analytics data has been sent to central server");
-            } else {
-                log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
-                        + httpResponse.getStatusLine().getReasonPhrase());
-            }
+            ReportUtil.updateGlobalProperty(GP_ANALYTICS_TASK_LAST_SUCCESSFUL_SUBMISSION_DATE,
+                    dateTimeFormat.format(lastSubmissionDateSet));
+            log.info("Analytics data has been sent to central server");
+        } else {
+            log.info("Http response status code: " + httpResponse.getStatusLine().getStatusCode() + ". Reason: "
+                    + httpResponse.getStatusLine().getReasonPhrase());
+        }
 
     }
 
-    private String extractDataEntryStats(String dateToday,String dateTmro) {
+    private String extractDataEntryStats(String dateToday, String dateTmro) {
         String baseUrl = "http://localhost:8080";
         String baseUrl1 = "http://localhost:8081";
-        String endpoint = "/openmrs/ws/rest/v1/dataentrystatistics?fromDate="+dateToday+"&toDate="+dateTmro+"&encUserColumn=creator&groupBy=creator";
+        String endpoint = "/openmrs/ws/rest/v1/dataentrystatistics?fromDate=" + dateToday + "&toDate=" + dateTmro + "&encUserColumn=creator&groupBy=creator";
         String url1 = baseUrl1 + endpoint;
-
         String url = baseUrl + endpoint;
-        String response = getDataFromEndpoint(url1);
-        if (response == "") {
-            response = getDataFromEndpoint(url);
+        String response = "";
+        try {
+            response = getDataFromEndpoint(url1);
+        } catch (Exception e) {
+            try {
+                response = getDataFromEndpoint(url);
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
         }
+
         return response;
     }
 
@@ -172,26 +178,24 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
         ReportDesign reportDesign = reportDesigns.stream().filter(p -> "JSON".equals(p.getName())).findAny().orElse(null);
 
 
-            String reportRendergingMode = JSON_REPORT_RENDERER_TYPE + "!" + reportDesign.getUuid();
-            RenderingMode renderingMode = new RenderingMode(reportRendergingMode);
-            if (!renderingMode.getRenderer().canRender(rd)) {
-                throw new IllegalArgumentException("Unable to render Report with " + reportRendergingMode);
-            }
+        String reportRendergingMode = JSON_REPORT_RENDERER_TYPE + "!" + reportDesign.getUuid();
+        RenderingMode renderingMode = new RenderingMode(reportRendergingMode);
+        if (!renderingMode.getRenderer().canRender(rd)) {
+            throw new IllegalArgumentException("Unable to render Report with " + reportRendergingMode);
+        }
 
-            File file = new File(OpenmrsUtil.getApplicationDataDirectory() + "analytics");
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
+        File file = new File(OpenmrsUtil.getApplicationDataDirectory() + "analytics");
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
 
-            Writer pw = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
-            TextTemplateRenderer textTemplateRenderer = new TextTemplateRenderer();
-            ReportDesignResource reportDesignResource = textTemplateRenderer.getTemplate(reportDesign);
-            String templateContents = new String(reportDesignResource.getContents(), StandardCharsets.UTF_8);
-            templateContents = fillTemplateWithReportData(pw, templateContents, reportData, reportDesign, fileOutputStream);
+        Writer pw = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
+        TextTemplateRenderer textTemplateRenderer = new TextTemplateRenderer();
+        ReportDesignResource reportDesignResource = textTemplateRenderer.getTemplate(reportDesign);
+        String templateContents = new String(reportDesignResource.getContents(), StandardCharsets.UTF_8);
+        templateContents = fillTemplateWithReportData(pw, templateContents, reportData, reportDesign, fileOutputStream);
 
 
-            return templateContents;
+        return templateContents;
     }
-
-
 
 
     public boolean isGpAnalyticsServerUrlSet() {
@@ -256,7 +260,6 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
             throw new RenderingException("Unable to render results due to: " + var18, var18);
         }
     }
-
 
 
 }
