@@ -40,9 +40,8 @@ import java.util.Date;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.GP_DHIS2_ORGANIZATION_UUID;
-import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.GP_ART_ACCESS_LAST_SYNC_DATE;
-import static org.openmrs.module.ugandaemrsync.server.SyncConstant.ART_ACCESS_PULL_TYPE_UUID;
+import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
+import static org.openmrs.module.ugandaemrsync.server.SyncConstant.*;
 
 public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
     protected final Log log = LogFactory.getLog(ReceiveVisitsDataFromARTAccessTask.class);
@@ -73,7 +72,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
 
         String artAccessServerUrlEndPoint="";
         String results="";
-        if(syncTaskType.getUrl()!=null){
+        /*if(syncTaskType.getUrl()!=null){
             artAccessServerUrlEndPoint = syncTaskType.getUrl();
             artAccessServerUrlEndPoint = addParametersToUrl(artAccessServerUrlEndPoint);
 
@@ -82,13 +81,19 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
                 return;
             }
 
-        }
+        } */
         Map resultMap = new HashMap<>();
         try {
             String username = syncTaskType.getUrlUserName();
             String password = syncTaskType.getUrlPassword();
+            artAccessServerUrlEndPoint = "https://artaccess.idi.co.ug/api/read_visits?periodStart=2024-05-27%2000:30:00&%20periodEnd=2024-05-27%2022:05:59&managingOrganisation=sLOvwpCrdh2";
+            log.error(artAccessServerUrlEndPoint);
             resultMap = ugandaEMRHttpURLConnection.getByWithBasicAuth(artAccessServerUrlEndPoint, username, password, "String");
+
             results = (String)resultMap.get("result");
+            log.error("these are the results");
+            log.error(results);
+
 
         } catch (Exception e) {
             log.error("Failed to fetch results",e);
@@ -163,6 +168,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         Set<Obs> obsList =new HashSet<>();
 
         try {
+            log.error("processing visit dates");
             String visit_date = getJSONObjectValue(jsonObject.getJSONObject("0"), "visit_date");
             String dateFormat = ugandaEMRSyncService.getDateFormat(visit_date);
             Date startVisitDate = ugandaEMRSyncService.convertStringToDate(visit_date, "00:00:00", dateFormat);
@@ -171,8 +177,12 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             String next_visit_date = getJSONObjectValue(jsonObject.getJSONObject("1"), "next_visit_date");
            try{ Date return_date = ugandaEMRSyncService.convertStringToDate(next_visit_date, "00:00:00", ugandaEMRSyncService.getDateFormat(next_visit_date));
             if(next_visit_date!=""&&next_visit_date!=null) {
+                log.error("adding next_visit_date to obs list");
+                log.error(next_visit_date);
                 addObs(obsList, next_visit_date, conceptService.getConcept((int) conceptsCaptured.get("next_visit_date")), null, return_date, null, patient, user, startVisitDate);
             }}catch (Exception e){e.printStackTrace();}
+
+
 
             String adherence = getJSONObjectValue(jsonObject.getJSONObject("4"),"adherence");
             Concept adherence_concept = conceptService.getConcept((int)conceptsCaptured.get("adherence"));
@@ -287,10 +297,17 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         Object value = "";
         if(jsonObject!=null){
           value = jsonObject.getJSONObject(objectName).getJSONObject("coding").get("code");
+          log.error("this is json object returned value");
+          log.error(value);
+        }
+        else{
+            log.error("jsonObject is null");
         }
         try {
             return (String)value;
         }catch (ClassCastException e){
+            log.error("this is the json object value error");
+            log.error(e);
             return null;
         }
     }
@@ -335,6 +352,10 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         return newObs;
     }
     private Obs processObs(Concept question,double valueNumeric,Patient patient,User creator,Date visitDate){
+        log.error("setting patient obs");
+        log.error("question" + question);
+        log.error("value numeric" + valueNumeric);
+
         Obs newObs = new Obs();
         newObs.setConcept(question);
         newObs.setValueNumeric(valueNumeric);
@@ -342,12 +363,18 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         newObs.setObsDatetime(visitDate);
         newObs.setPerson(patient);
         newObs.setLocation(pharmacyLocation);
+        
         return newObs;
     }
 
     private Set<Obs> addObs(Set<Obs> obsList,String artAccessValue,Concept question, Concept valueCoded, Date valueDateTime,String valueText,Patient patient,User creator,Date visitDate){
-        if (artAccessValue!=null){
+        if (artAccessValue!=null) {
+            log.error("addObs:adding artaccess value");
+            log.error(artAccessValue);
             obsList.add(processObs(question,valueCoded, valueDateTime,valueText,patient,creator,visitDate));
+        }
+        else{
+            log.error("Art Access value is null");
         }
         return obsList;
     }

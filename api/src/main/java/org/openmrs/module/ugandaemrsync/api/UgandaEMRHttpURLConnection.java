@@ -144,7 +144,10 @@ public class UgandaEMRHttpURLConnection {
      * @throws Exception
      */
     public Map getByWithBasicAuth(String url, String username, String password, String resultType) throws Exception {
-
+        log.error(" ");
+        log.error("this is the url" + url);
+        log.error("username" + username);
+        log.error("password" + password);
 
         HttpResponse response = null;
 
@@ -169,12 +172,16 @@ public class UgandaEMRHttpURLConnection {
 
 
             response = client.execute(httpGet);
+            log.error("");
+            log.error("this is the response");
+            log.error(response);
 
             int responseCode = response.getStatusLine().getStatusCode();
             String responseMessage = response.getStatusLine().getReasonPhrase();
             //reading the response
             map.put("responseCode", responseCode);
             if ((responseCode == CONNECTION_SUCCESS_200 || responseCode == CONNECTION_SUCCESS_201)) {
+                log.error("Connected Successfully");
                 InputStream inputStreamReader = response.getEntity().getContent();
                 HttpEntity entityResponse = response.getEntity();
                 if (resultType.equals("String")) {
@@ -183,6 +190,7 @@ public class UgandaEMRHttpURLConnection {
                     map = getMapOfResults(entityResponse, responseCode);
                 }
             } else {
+                log.error("connection failed");
                 map.put("responseCode", responseCode);
                 log.info(responseMessage);
             }
@@ -190,6 +198,8 @@ public class UgandaEMRHttpURLConnection {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+        log.error("this is the map");
+        log.error(map);
         return map;
 
     }
