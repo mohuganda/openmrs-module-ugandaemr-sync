@@ -357,7 +357,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             Obs diabetesMedicinedispensingUnitObs =processObs(conceptService.getConcept(162402),strength,patient,user,startVisitDate); // dispensing units eg each, box, kit, tin
             Obs diabetesMedicineDurationObs = processObs(conceptService.getConcept(159368),diabetesMedicineDuration,patient,user,startVisitDate); // numeric duration e.g 10
             Obs diabetesMedicinedosingUnitObs = processObs(conceptService.getConcept(165791),diabetesMedicineDosingUnitsAnswer, null, null, patient,user,startVisitDate); // dosing unit e.g tablets/capsules
-            Obs diabetesMedicineFrequencyObs = processObs(conceptService.getConcept(160855),hypertensionMedicineFrequencyAnswer, null, null, patient,user,startVisitDate); // frequency of medication
+            Obs diabetesMedicineFrequencyObs = processObs(conceptService.getConcept(160855),diabetesMedicineFrequencyAnswer, null, null, patient,user,startVisitDate); // frequency of medication
             Obs diabetesMedicineDurationUnitObs =processObs(conceptService.getConcept(1732),diabetesMedicineDurationUnitsAnswer, null, null, patient,user,startVisitDate);// duration unit eg days
 
             //Obs diabetesMedicineObs =  processObs(diabetesMedicineConcept, diabetesMedicineAnswer, null, null, patient, user, startVisitDate);
