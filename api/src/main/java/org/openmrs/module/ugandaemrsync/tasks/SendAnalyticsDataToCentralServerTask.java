@@ -45,9 +45,6 @@ import java.io.Writer;
 import java.io.OutputStreamWriter;
 
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -128,26 +125,11 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
     }
 
     private String extractDataEntryStats(String dateToday, String dateTmro) {
-        String baseurl=Context.getAdministrationService().getGlobalProperty("ugandaemrsync.api.baseurl");
-        String alternativeBaseurl=Context.getAdministrationService().getGlobalProperty("ugandaemrsync.api.baseurlAlternative");
+        String baseurl = Context.getAdministrationService().getGlobalProperty("ugandaemrsync.api.baseurl");
+        String alternativeBaseurl = Context.getAdministrationService().getGlobalProperty("ugandaemrsync.api.baseurlAlternative");
         String endpoint = "/openmrs/ws/rest/v1/dataentrystatistics?fromDate=" + dateToday + "&toDate=" + dateTmro + "&encUserColumn=creator&groupBy=creator";
         String url1 = alternativeBaseurl + endpoint;
         String url = baseurl + endpoint;
-        String response = "";
-        try {
-            response = getDataFromEndpoint(url1);
-        } catch (Exception e) {
-            try {
-                response = getDataFromEndpoint(url);
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
-    private String extractDataEntryStats(String dateToday, String dateTmro) {
-        String baseUrl = "http://localhost:8080";
-        String baseUrl1 = "http://localhost:8081";
-        String endpoint = "/openmrs/ws/rest/v1/dataentrystatistics?fromDate=" + dateToday + "&toDate=" + dateTmro + "&encUserColumn=creator&groupBy=creator";
-        String url1 = baseUrl1 + endpoint;
-        String url = baseUrl + endpoint;
         String response = "[]";
         try {
             response = getDataFromEndpoint(url1);
@@ -158,7 +140,6 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
                 e2.printStackTrace();
             }
         }
-
         return response;
     }
 
