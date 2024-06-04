@@ -202,12 +202,12 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
             HttpGet httpGet = new HttpGet(url);
             CloseableHttpResponse response = httpClient.execute(httpGet);
 
-            if (response.getStatusLine().getStatusCode() == 200 || response.getStatusLine().getStatusCode() == 200)
+            if (response.getStatusLine().getStatusCode() == 200 || response.getStatusLine().getStatusCode() == 201)
                 return EntityUtils.toString(response.getEntity());
             else if (response.getStatusLine().getStatusCode() == 404){
                 HttpGet httpGet1 = new HttpGet(alternativeUrl);
                 CloseableHttpResponse response1 = httpClient.execute(httpGet1);
-                if (response1.getStatusLine().getStatusCode() == 200 || response1.getStatusLine().getStatusCode() == 200){
+                if (response1.getStatusLine().getStatusCode() == 200 || response1.getStatusLine().getStatusCode() == 201){
                     return EntityUtils.toString(response.getEntity());
                 }else{
                     return "[]";
