@@ -130,15 +130,10 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
         String endpoint = "/openmrs/ws/rest/v1/dataentrystatistics?fromDate=" + dateToday + "&toDate=" + dateTmro + "&encUserColumn=creator&groupBy=creator";
         String url1 = alternativeBaseurl + endpoint;
         String url = baseurl + endpoint;
-        String response = "[]";
+        String response = "";
         try {
-            response = getDataFromEndpoint(url1);
+            response = getDataFromEndpoint(url1,url);
         } catch (Exception e) {
-            try {
-                response = getDataFromEndpoint(url);
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
         }
         return response;
     }
@@ -200,7 +195,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
         return true;
     }
 
-    public String getDataFromEndpoint(String url) {
+    public String getDataFromEndpoint(String url,String alternativeUrl) {
 
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -209,8 +204,17 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 
             if (response.getStatusLine().getStatusCode() == 200 || response.getStatusLine().getStatusCode() == 200)
                 return EntityUtils.toString(response.getEntity());
-            else
-                return "";
+            else if (response.getStatusLine().getStatusCode() == 404){
+                HttpGet httpGet1 = new HttpGet(alternativeUrl);
+                CloseableHttpResponse response1 = httpClient.execute(httpGet1);
+                if (response1.getStatusLine().getStatusCode() == 200 || response1.getStatusLine().getStatusCode() == 200){
+                    return EntityUtils.toString(response.getEntity());
+                }else{
+                    return "[]";
+                }
+            }else{
+                return "[]";
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
