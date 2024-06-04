@@ -113,9 +113,9 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            String dataEntryData = extractDataEntryStats(DateUtil.formatDate(startDate, "yyyy-MM-dd"),DateUtil.formatDate(endDate, "yyyy-MM-dd"));
+            String dataEntryData= extractDataEntryStats(DateUtil.formatDate(startDate, "yyyy-MM-dd"),DateUtil.formatDate(endDate, "yyyy-MM-dd"));
 
-            String jsonObject = "{"+ "\"metadata\":"  +facilityMetadata+ ",\"dataentry\":" +dataEntryData+"}";
+        String jsonObject = "{"+ "\"metadata\":"  +facilityMetadata+ ",\"dataentry\":" +dataEntryData+"}";
 
             HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(analyticsServerUrlEndPoint, jsonObject, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
             if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
@@ -133,7 +133,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
         String endpoint = "/openmrs/ws/rest/v1/dataentrystatistics?fromDate=" + dateToday + "&toDate=" + dateTmro + "&encUserColumn=creator&groupBy=creator";
         String url1 = baseUrl1 + endpoint;
         String url = baseUrl + endpoint;
-        String response = "";
+        String response = "[]";
         try {
             response = getDataFromEndpoint(url1);
         } catch (Exception e) {
