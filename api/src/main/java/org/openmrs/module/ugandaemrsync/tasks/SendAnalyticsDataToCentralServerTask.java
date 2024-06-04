@@ -4,8 +4,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -130,7 +133,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
         String endpoint = "/openmrs/ws/rest/v1/dataentrystatistics?fromDate=" + dateToday + "&toDate=" + dateTmro + "&encUserColumn=creator&groupBy=creator";
         String url1 = alternativeBaseurl + endpoint;
         String url = baseurl + endpoint;
-        String response = "";
+        String response = "[]";
         try {
             response = getDataFromEndpoint(url1,url);
         } catch (Exception e) {
@@ -196,16 +199,19 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
     }
 
     public String getDataFromEndpoint(String url,String alternativeUrl) {
-
+        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("admin", "Admin123");
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpGet httpGet = new HttpGet(url);
+
+            httpGet.addHeader(new BasicScheme().authenticate(credentials, httpGet, null));
             CloseableHttpResponse response = httpClient.execute(httpGet);
 
             if (response.getStatusLine().getStatusCode() == 200 || response.getStatusLine().getStatusCode() == 201)
                 return EntityUtils.toString(response.getEntity());
             else if (response.getStatusLine().getStatusCode() == 404){
                 HttpGet httpGet1 = new HttpGet(alternativeUrl);
+                httpGet1.addHeader(new BasicScheme().authenticate(credentials, httpGet, null));
                 CloseableHttpResponse response1 = httpClient.execute(httpGet1);
                 if (response1.getStatusLine().getStatusCode() == 200 || response1.getStatusLine().getStatusCode() == 201){
                     return EntityUtils.toString(response.getEntity());
@@ -216,6 +222,8 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
                 return "[]";
             }
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (AuthenticationException e) {
             throw new RuntimeException(e);
         }
     }
