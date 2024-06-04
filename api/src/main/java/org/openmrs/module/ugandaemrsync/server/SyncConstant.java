@@ -21,7 +21,13 @@ import java.util.List;
 
 public class SyncConstant {
 	public static final String OPENMRS_IDENTIFIER_TYPE_UUID = "05a29f94-c0ed-11e2-94be-8c13b969e334";
+	public static final String OPENMRS_IDENTIFIER_SYSTEM_URL_GP= "ugandaemrsync.identifier.system.openmrs";
 	public static final String NATIONAL_ID_IDENTIFIER_TYPE_UUID = "f0c16a6d-dc5f-4118-a803-616d0075d282";
+	public static final String NATIONAL_ID_IDENTIFIER_SYSTEM_URL_GP = "ugandaemrsync.identifier.system.nationalId";
+	public static final String PASSPORT_IDENTIFIER_TYPE_UUID = "fd76e95a-9faa-42b8-8d88-5954fae77fba";
+	public static final String PASSPORT_IDENTIFIER_SYSTEM_URL_GP = "ugandaemrsync.identifier.system.passport";
+	public static final String NHPI_IDENTIFIER_TYPE_TYPE_UUID = "4c7d6bb2-c8a6-40d3-b70d-fffc062f3416";
+	public static final String NHPI_IDENTIFIER_SYSTEM_URL_GP = "ugandaemrsync.identifier.system.nphi";
 	public static final String ANC_IDENTIFIER_TYPE_UUID = "b0cc255e-ef57-4266-839e-0df7f5099eb9";
 	public static final String PNC_IDENTIFIER_TYPE_UUID = "758ef6e4-9ceb-4137-bc8d-9246dc7b41fe";
 
@@ -466,9 +472,10 @@ public class SyncConstant {
 	public static List<String> FINGERPRINT_COLUMNS = Arrays.asList("patient", "finger", "fingerprint", "date_created",
 	    "facility", "state");
 
+
     public static final String VIRAL_LOAD_ENCOUNTER_QUERY = "select * from encounter inner join encounter_type on (encounter.encounter_type=encounter_type.encounter_type_id) where encounter_type.uuid='077c43ee-9745-11e9-bc42-526af7764f64'";
 
-    public static final String VIRAL_LOAD_ORDERS_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) inner JOIN concept ON (orders.concept_id = concept.concept_id) inner join concept_reference_map on (concept.concept_id = concept_reference_map.concept_id) inner join concept_reference_term on (concept_reference_map.concept_reference_term_id = concept_reference_term.concept_reference_term_id) where accession_number is not null  AND specimen_source is not null AND orders.instructions=\"REFER TO cphl\" AND code=315124004";
+    public static final String VIRAL_LOAD_ORDERS_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) where accession_number is not null AND specimen_source is not null AND orders.instructions=\"REFER TO cphl\" AND orders.concept_id=165412 and date_stopped is null;";
 
     public static final String VIRAL_LOAD_ORDER_QUERY = "select orders.order_id from orders  inner join test_order on (test_order.order_id=orders.order_id) where accession_number=\"%s\"";
 

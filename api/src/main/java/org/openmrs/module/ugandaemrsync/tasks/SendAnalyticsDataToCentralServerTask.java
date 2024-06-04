@@ -113,9 +113,9 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            String dataEntryData= extractDataEntryStats(DateUtil.formatDate(startDate, "yyyy-MM-dd"),DateUtil.formatDate(endDate, "yyyy-MM-dd"));
+            String dataEntryData = extractDataEntryStats(DateUtil.formatDate(startDate, "yyyy-MM-dd"),DateUtil.formatDate(endDate, "yyyy-MM-dd"));
 
-        String jsonObject = "{"+ "\"metadata\":"  +facilityMetadata+ ",\"dataentry\":" +dataEntryData+"}";
+            String jsonObject = "{"+ "\"metadata\":"  +facilityMetadata+ ",\"dataentry\":" +dataEntryData+"}";
 
             HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(analyticsServerUrlEndPoint, jsonObject, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
             if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
@@ -127,6 +127,21 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 
     }
 
+    private String extractDataEntryStats(String dateToday, String dateTmro) {
+        String baseurl=Context.getAdministrationService().getGlobalProperty("ugandaemrsync.api.baseurl");
+        String alternativeBaseurl=Context.getAdministrationService().getGlobalProperty("ugandaemrsync.api.baseurlAlternative");
+        String endpoint = "/openmrs/ws/rest/v1/dataentrystatistics?fromDate=" + dateToday + "&toDate=" + dateTmro + "&encUserColumn=creator&groupBy=creator";
+        String url1 = alternativeBaseurl + endpoint;
+        String url = baseurl + endpoint;
+        String response = "";
+        try {
+            response = getDataFromEndpoint(url1);
+        } catch (Exception e) {
+            try {
+                response = getDataFromEndpoint(url);
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
     private String extractDataEntryStats(String dateToday, String dateTmro) {
         String baseUrl = "http://localhost:8080";
         String baseUrl1 = "http://localhost:8081";
