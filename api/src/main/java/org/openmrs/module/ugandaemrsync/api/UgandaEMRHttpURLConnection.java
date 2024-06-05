@@ -198,8 +198,7 @@ public class UgandaEMRHttpURLConnection {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        log.error("this is the map");
-        log.error(map);
+       
         return map;
 
     }

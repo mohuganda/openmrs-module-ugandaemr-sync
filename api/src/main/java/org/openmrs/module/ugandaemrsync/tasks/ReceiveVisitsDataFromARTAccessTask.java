@@ -31,13 +31,7 @@ import org.openmrs.scheduler.tasks.AbstractTask;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.openmrs.module.ugandaemrsync.UgandaEMRSyncConfig.*;
@@ -68,8 +62,6 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             return;
         }
 
-
-
         String artAccessServerUrlEndPoint="";
         String results="";
         if(syncTaskType.getUrl()!=null){
@@ -86,14 +78,10 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         try {
             String username = syncTaskType.getUrlUserName();
             String password = syncTaskType.getUrlPassword();
-            artAccessServerUrlEndPoint = "https://ugisl.mets.or.ug/crpddp/query?periodStart=2024-05-27%2000:30:00&%20periodEnd=2024-05-27%2022:05:59&managingOrganisation=sLOvwpCrdh2";
-            log.error(artAccessServerUrlEndPoint);
+                        
             resultMap = ugandaEMRHttpURLConnection.getByWithBasicAuth(artAccessServerUrlEndPoint, username, password, "String");
 
             results = (String)resultMap.get("result");
-            log.error("these are the results");
-            log.error(results);
-
 
         } catch (Exception e) {
             log.error("Failed to fetch results",e);
@@ -119,27 +107,26 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
     public String addParametersToUrl(String url) {
         String uuid  = syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID);
         String lastSyncDate = syncGlobalProperties.getGlobalProperty(GP_ART_ACCESS_LAST_SYNC_DATE);
-        System.out.println(lastSyncDate+"last sync date");
+        log.info(lastSyncDate+"last sync date");
         String uuidParameter  = "&managingOrganisation="+uuid;
-        String startDateParameter ="";
+        String startDateParameter;
         LocalDate today = LocalDate.now();
         LocalDate endDate = today.minusDays(1);
 
         String newEndDate = endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String endDateParameter = "&%20periodEnd="+ newEndDate+"%20"+"23:59:59";
-        if(lastSyncDate!=null&& lastSyncDate!=""){
-            startDateParameter = "?periodStart="+lastSyncDate+"%20"+"00:00:00";
-        }else{
+        if (lastSyncDate == null || lastSyncDate.equals("")) {
            startDateParameter=  "?periodStart="+"2021-06-01"+"%20"+"00:00:00";
+        } else {
+            startDateParameter = "?periodStart="+lastSyncDate+"%20"+"00:00:00";
         }
-        String newUrl =url+startDateParameter+endDateParameter+uuidParameter;
-        return newUrl;
+        return url+startDateParameter+endDateParameter+uuidParameter;
     }
 
     private void processData(JSONObject jsonObject, Map resultsMap) {
       JSONArray patientRecords =  jsonObject.getJSONArray("entry");
 
-      if(patientRecords.length()>0 && patientRecords!=null) {
+      if(patientRecords.length()>0) {
           for (Object o : patientRecords) {
              JSONObject patientRecord = (JSONObject)o;
            JSONObject patientAttributes = patientRecord.getJSONArray("entry").getJSONObject(0);
@@ -150,7 +137,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
            String patientARTNo = getIdentifier(patientAttributes);
            Patient patient = ugandaEMRSyncService.getPatientByPatientIdentifier(patientARTNo);
            if(patient!=null){
-               System.out.println(patientARTNo);
+               log.info(patientARTNo);
                 processPatientBundle(patientEncounterDetails,patient,no_of_days,no_of_pills);
            }
 
@@ -176,15 +163,15 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
 
             String next_visit_date = getJSONObjectValue(jsonObject.getJSONObject("1"), "next_visit_date");
            try{ Date return_date = ugandaEMRSyncService.convertStringToDate(next_visit_date, "00:00:00", ugandaEMRSyncService.getDateFormat(next_visit_date));
-            if(next_visit_date!=""&&next_visit_date!=null) {
-                log.error("adding next_visit_date to obs list");
-                log.error(next_visit_date);
+            if(!Objects.equals(next_visit_date, "") &&next_visit_date!=null) {
+                log.info("adding next_visit_date to obs list");
+                log.info(next_visit_date);
                 addObs(obsList, next_visit_date, conceptService.getConcept((int) conceptsCaptured.get("next_visit_date")), 
                     null, return_date, null, patient, user, startVisitDate);
-                log.error("exited add obs");
+                log.info("exited add obs");
             }
             else {
-                log.error("Next visit date is empty or null");
+                log.info("Next visit date is empty or null");
             }
             }catch (Exception e){
                 log.error("An Exception was thrown during addObs");
@@ -192,21 +179,21 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             }
 
 
-            log.error("adherence starts here");
+            log.info("adherence starts here");
             String adherence = getJSONObjectValue(jsonObject.getJSONObject("4"),"adherence");
             Concept adherence_concept = conceptService.getConcept((int)conceptsCaptured.get("adherence"));
             Concept adherence_answer = convertAdherence(adherence);
             addObs(obsList,adherence,adherence_concept, adherence_answer, null, null, patient, user, startVisitDate);
 
             String regimen= convertObjectToStringIfNotNull(jsonObject.getJSONObject("regimen").getJSONObject("coding").get("code"));
-            log.error("-----");
-            log.error("This is the regimen from AA- " + regimen );
+            log.info("-----");
+            log.info("This is the regimen from AA- " + regimen );
             Concept regimenConcept = conceptService.getConcept((int) conceptsCaptured.get("regimen"));
             Concept regimenAnswer = convertRegimen(regimen);
 
             if(regimenAnswer!=null) {
-                log.error("------");
-                log.error("Adding regimen pills and days to obs list");
+                log.info("------");
+                log.info("Adding regimen pills and days to obs list");
                 Obs regimenObs =  processObs(regimenConcept, regimenAnswer, null, null, patient, user, startVisitDate);
                 Obs pills =processObs(conceptService.getConcept(99038),no_of_pills,patient,user,startVisitDate); // no. of pills
                 Obs days =processObs(conceptService.getConcept(99036),no_of_days,patient,user,startVisitDate); // no. of days
@@ -215,13 +202,11 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
                 groupObs.addGroupMember(pills);
                 groupObs.addGroupMember(days);
                 obsList.add(groupObs);
-                log.error(obsList);
+                
             }
             else{
-                log.error("Missing regiment in emr");
+                log.info("Missing regiment in emr");
             }
-
-            System.out.println("print-results-2");
 
             String other_drugs = getJSONObjectValue(jsonObject.getJSONObject("13"),"other_drugs");
             Concept other_medicationsConcept = conceptService.getConcept((int)conceptsCaptured.get("other_drugs"));
@@ -229,7 +214,8 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
 
             String complaint = getJSONObjectValue(jsonObject.getJSONObject("6"),"complaints");
             Concept complaintQuestion  = conceptService.getConcept((int) conceptsCaptured.get("complaints"));
-            if(!(complaint.contains("null"))&& complaint!=null){
+              assert complaint != null;
+              if(!complaint.contains("null")){
                 if(complaint.contains(",")){
                     List<String> complaints = Arrays.asList(complaint.split(","));
                     for (String s:complaints) {
@@ -248,16 +234,9 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
 
             }
 
-            System.out.println("print-results-3");
-            System.out.println("print-results-4");
+           log.info("Processing family planning starts here");
 
-            System.out.println("print-results-5");
-
-            String family_planning_method = getJSONObjectValue(jsonObject.getJSONObject("18"),"family_planning");
             Concept familyPlanningMethodQuestion  = conceptService.getConcept(374);
-
-
-            System.out.println("print-results-6");
 
             JSONArray familyPlanningMethods = jsonObject.getJSONObject("18").getJSONObject("family_planning").getJSONObject("coding").getJSONArray("methods");
 
@@ -265,36 +244,53 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
                 JSONObject obj = familyPlanningMethods.getJSONObject(i);
                 String fpMethodName = obj.getString("display");
 
-                
-                if(fpMethodName=="Condoms") {
+                if(Objects.equals(fpMethodName, "Condoms")) {
                     Concept answerCondoms = convertFamilyPlanningMethods("condoms");
                     addObs(obsList, "condoms", familyPlanningMethodQuestion, answerCondoms, null, null, patient, user, startVisitDate);
+                    log.info("Condoms added to obsList");
                 }
-                else if(fpMethodName=="Sayana Press") {
+                else if(Objects.equals(fpMethodName, "Sayana Press")) {
                     Concept sayana_press = convertFamilyPlanningMethods("sayanaPress");
                     addObs(obsList, "sayanaPress", familyPlanningMethodQuestion, sayana_press, null, null, patient, user, startVisitDate);
+                    log.info("Sayana Press added to obs list");
                 }
             }
 
-
-            System.out.println("print-results-7");
-
-            String hypertension_medicine= convertObjectToStringIfNotNull(getJSONObjectValue(jsonObject.getJSONObject("20"),"hypertension_medicine"));
-            //Concept hypertensionMedicineConcept = conceptService.getConcept((int) conceptsCaptured.get("hypertension_medicine"));
-
+            //processing hypertension medicine
             Concept hypertensionMedicineConcept = conceptService.getConcept(1282);
-          
-
-            System.out.println("print-results-8");
 
             JSONObject hypertensionMedication = jsonObject.getJSONObject("20").getJSONObject("hypertension_medicine").getJSONObject("coding");
+
+            String hmQuantity = hypertensionMedication.getString("quantity");
+            String hmStrength = (String) hypertensionMedication.get("strength");
+            String hmDuration = hypertensionMedication.getString("duration");
+            String hmDurationUnit = (String) hypertensionMedication.get("durationUnit");
+            String hmDosingUnit = (String) hypertensionMedication.get("dosingUnit");
+            String hmFrequency = (String) hypertensionMedication.get("frequencyOfmedication");
+            String hmConceptId = hypertensionMedication.getString("conceptId");
+
+            if(!hmQuantity.equals("null") && !hmStrength.equals("null") && !hmDuration.equals("null") && !hmDosingUnit.equals("null") && !hmFrequency.equals("null") && !hmConceptId.equals("null")) {
+
+            log.info("hypertension medicine details");
+
+            log.info("Hypertension qty: " +hmQuantity);
+            log.info("Hypertension strength: " +hmStrength);
+            log.info("Hypertension duration: " +hmDuration);
+            log.info("Hypertension duration unit: " +hmDurationUnit);
+            log.info("Hypertension dose unit: " +hmDosingUnit);
+            log.info("Hypertension frequency: " +hmFrequency);
+            log.info("Hypertension concept id: " +hmConceptId);
+
+            log.info("start processing hypertension medicine"); 
+
             int hypertensionMedicineQuantity = Integer.parseInt(hypertensionMedication.getString("quantity"));
-            String hypertensionMedicineStrength =  (String) hypertensionMedication.get("strength");
-            int hypertensionMedicineDuration = Integer.parseInt(hypertensionMedication.getString("duration"));
+            String hypertensionMedicineStrength;
+                hypertensionMedicineStrength = (String) hypertensionMedication.get("strength");
+                int hypertensionMedicineDuration = Integer.parseInt(hypertensionMedication.getString("duration"));
             String hypertensionMedicineDurationUnit = (String) hypertensionMedication.get("durationUnit");
             String hypertensionMedicineDosingUnit = (String) hypertensionMedication.get("dosingUnit");
             String hypertensionMedicineFrequency = (String) hypertensionMedication.get("frequencyOfmedication");
-            String hypertensionMedicineConceptId = (String) hypertensionMedication.getString("conceptId");
+            String hypertensionMedicineConceptId = hypertensionMedication.getString("conceptId");
             Concept hypertensionMedicineAnswer = conceptService.getConcept(hypertensionMedicineConceptId);
             Concept hypertensionMedicineFrequencyAnswer = convertMedicationFrequency(hypertensionMedicineFrequency);
             Concept hypertensionMedicineDurationUnitsAnswer = convertDurationUnits(hypertensionMedicineDurationUnit);
@@ -303,96 +299,110 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             Obs hypertensionMedicineObs =  processObs(hypertensionMedicineConcept, hypertensionMedicineAnswer, null, null, patient, user, startVisitDate);
             Obs hypertensionMedicineQuantityObs = processObs(conceptService.getConcept(160856),hypertensionMedicineQuantity,patient,user,startVisitDate); // quantity
             Obs hypertensionMedicinestrengthObs = processObs(conceptService.getConcept(1444),hypertensionMedicineStrength,patient,user,startVisitDate); //
-            Obs hypertensionMedicinedispensingUnitObs =processObs(conceptService.getConcept(162402),strength,patient,user,startVisitDate); // dispensing units eg each, box, kit, tin
+            //Obs hypertensionMedicinedispensingUnitObs =processObs(conceptService.getConcept(162402),strength,patient,user,startVisitDate); // dispensing units eg each, box, kit, tin
             Obs hypertensionMedicineDurationObs = processObs(conceptService.getConcept(159368),hypertensionMedicineDuration,patient,user,startVisitDate); // numeric duration e.g 10
             Obs hypertensionMedicinedosingUnitObs = processObs(conceptService.getConcept(165791),hypertensionMedicineDosingUnitsAnswer, null, null, patient,user,startVisitDate); // dosing unit e.g tablets/capsules
             Obs hypertensionMedicineFrequencyObs = processObs(conceptService.getConcept(160855),hypertensionMedicineFrequencyAnswer, null, null, patient,user,startVisitDate); // frequency of medication
             Obs hypertensionMedicineDurationUnitObs =processObs(conceptService.getConcept(1732),hypertensionMedicineDurationUnitsAnswer, null, null, patient,user,startVisitDate); // duration unit eg days
-
-            System.out.println("print-results-9");
-
-          
 
             Obs groupObs = processObs(conceptService.getConcept(166707),null,null,null,patient,user,startVisitDate);
             groupObs.addGroupMember(hypertensionMedicineObs);
             groupObs.addGroupMember(hypertensionMedicineQuantityObs);
             groupObs.addGroupMember(hypertensionMedicinestrengthObs);
             groupObs.addGroupMember(hypertensionMedicinedosingUnitObs);
-            //groupObs.addGroupMember(hypertensionMedicinedispensingUnitObs);
             groupObs.addGroupMember(hypertensionMedicineDurationObs);
             groupObs.addGroupMember(hypertensionMedicineDurationUnitObs);
             groupObs.addGroupMember(hypertensionMedicineFrequencyObs);
             obsList.add(groupObs);
 
-            System.out.println("print-results-10");
+            }
+            else {
+                log.info("Missing Hypertension medicine information");
+            }
 
-            String diabetes_medicine= convertObjectToStringIfNotNull(getJSONObjectValue(jsonObject.getJSONObject("19"),"diabetes_medicine"));
-            //Concept diabetesMedicineConcept = conceptService.getConcept((int) conceptsCaptured.get("diabetes_medicine"));
-
+            //processing diabetes medicine
             Concept diabetesMedicineConcept = conceptService.getConcept(1282);
-            //Concept diabetesMedicineAnswer = convertDiabetesMedicine(diabetes_medicine);
-
-            System.out.println(diabetesMedicineConcept);
-
-            //Concept diabetesMedicineAnswer = convertDiabetesMedicine("Glibenclamide");
-            //Concept diabetesMedicineDurationUnitsAnswer = convertDurationUnits("days");
-            System.out.println("print-results-11");
 
             JSONObject diabetesMedication = jsonObject.getJSONObject("19").getJSONObject("diabetes_medicine").getJSONObject("coding");
-            int diabetesMedicineQuantity = Integer.parseInt(diabetesMedication.getString("quantity"));
-            String diabetesMedicineStrength =  (String) diabetesMedication.get("strength");
-            int diabetesMedicineDuration = Integer.parseInt(diabetesMedication.getString("duration"));
-            String diabetesMedicineDurationUnit = (String) diabetesMedication.get("durationUnit");
-            String diabetesMedicineDosingUnit = (String) diabetesMedication.get("dosingUnit");
-            String diabetesMedicineFrequency = (String) diabetesMedication.get("frequencyOfmedication");
-            String diabetesMedicineConceptId = (String) diabetesMedication.getString("conceptId");
-            Concept diabetesMedicineAnswer = conceptService.getConcept(diabetesMedicineConceptId);
-            Concept diabetesMedicineFrequencyAnswer = convertMedicationFrequency(diabetesMedicineFrequency);
-            Concept diabetesMedicineDurationUnitsAnswer = convertDurationUnits(diabetesMedicineDurationUnit);
-            Concept diabetesMedicineDosingUnitsAnswer = convertDosingUnits(diabetesMedicineDosingUnit);
 
-            Obs diabetesMedicineObs =  processObs(diabetesMedicineConcept, diabetesMedicineAnswer, null, null, patient, user, startVisitDate);
-            Obs diabetesMedicineQuantityObs = processObs(conceptService.getConcept(160856),diabetesMedicineQuantity,patient,user,startVisitDate); // quantity
-            Obs diabetesMedicinestrengthObs = processObs(conceptService.getConcept(1444),diabetesMedicineStrength,patient,user,startVisitDate); // strength / missing in emr data sent and AA data received
-            Obs diabetesMedicinedispensingUnitObs =processObs(conceptService.getConcept(162402),strength,patient,user,startVisitDate); // dispensing units eg each, box, kit, tin
-            Obs diabetesMedicineDurationObs = processObs(conceptService.getConcept(159368),diabetesMedicineDuration,patient,user,startVisitDate); // numeric duration e.g 10
-            Obs diabetesMedicinedosingUnitObs = processObs(conceptService.getConcept(165791),diabetesMedicineDosingUnitsAnswer, null, null, patient,user,startVisitDate); // dosing unit e.g tablets/capsules
-            Obs diabetesMedicineFrequencyObs = processObs(conceptService.getConcept(160855),diabetesMedicineFrequencyAnswer, null, null, patient,user,startVisitDate); // frequency of medication
-            Obs diabetesMedicineDurationUnitObs =processObs(conceptService.getConcept(1732),diabetesMedicineDurationUnitsAnswer, null, null, patient,user,startVisitDate);// duration unit eg days
+            String dmQuantity;
+              dmQuantity = diabetesMedication.getString("quantity");
+              String dmStrength = (String) diabetesMedication.get("strength");
+            String dmDuration;
+              dmDuration = diabetesMedication.getString("duration");
+              String dmDurationUnit = (String) diabetesMedication.get("durationUnit");
+            String dmDosingUnit = (String) diabetesMedication.get("dosingUnit");
+            String dmFrequency = (String) diabetesMedication.get("frequencyOfmedication");
+            String dmConceptId;
+              dmConceptId = diabetesMedication.getString("conceptId");
 
-            //Obs diabetesMedicineObs =  processObs(diabetesMedicineConcept, diabetesMedicineAnswer, null, null, patient, user, startVisitDate);
-            //Obs quantityObs =processObs(conceptService.getConcept(160856),quantity,patient,user,startVisitDate); // quantity
-            //Obs strengthObs =processObs(conceptService.getConcept(1444),strength,patient,user,startVisitDate); // strength / missing in emr data sent and AA data received
-            //Obs dosingUnitObs =processObs(conceptService.getConcept(162384),dosing_unit,patient,user,startVisitDate); // dosing unit e.g tablets/capsules
-            //Obs dispensingUnitObs =processObs(conceptService.getConcept(162402),dispensing_unit,patient,user,startVisitDate); // dispensing units eg each, box, kit, tin
-            // Obs durationObs =processObs(conceptService.getConcept(159368),duration,patient,user,startVisitDate); // numeric duration e.g 10
-            // Obs durationUnitObs =processObs(conceptService.getConcept(1732),duration_unit,patient,user,startVisitDate); // duration unit eg days
-            System.out.println("print-results-12");
-            //1732 - dosing unit missing on pay load
-            //AA provides units instead of duration
-            //dispensing_units missing
-            Obs diabetesGroupObs = processObs(conceptService.getConcept(166707),null,null,null,patient,user,startVisitDate);
-            diabetesGroupObs.addGroupMember(diabetesMedicineObs);
-            diabetesGroupObs.addGroupMember(diabetesMedicineQuantityObs);
-            diabetesGroupObs.addGroupMember(diabetesMedicinestrengthObs);
-            diabetesGroupObs.addGroupMember(diabetesMedicinedosingUnitObs);
-            //diabetesGroupObs.addGroupMember(diabetesMedicinedispensingUnitObs);
-            diabetesGroupObs.addGroupMember(diabetesMedicineDurationObs);
-            diabetesGroupObs.addGroupMember(diabetesMedicineDurationUnitObs);
-            diabetesGroupObs.addGroupMember(diabetesMedicineFrequencyObs);
-            obsList.add(diabetesGroupObs);
+              if(!dmQuantity.equals("null") && !dmStrength.equals("null") && !dmDuration.equals("null") && !dmDosingUnit.equals("null") && !dmFrequency.equals("null") && !dmConceptId.equals("null")) {
 
-            System.out.println("print-results-13"); 
+                log.info("diabetes medicine details");
+
+                log.info("diabetes qty: " +dmQuantity);
+                log.info("diabetes strength: " +dmStrength);
+                log.info("diabetes duration: " +dmDuration);
+                log.info("diabetes duration unit: " +dmDurationUnit);
+                log.info("diabetes dose unit: " +dmDosingUnit);
+                log.info("diabetes frequency: " +dmFrequency);
+                log.info("diabetes concept id: " +dmConceptId);
+
+                log.info("start processing diabetes medicine");
+
+                int diabetesMedicineQuantity = Integer.parseInt(diabetesMedication.getString("quantity"));
+                String diabetesMedicineStrength =  (String) diabetesMedication.get("strength");
+                int diabetesMedicineDuration = Integer.parseInt(diabetesMedication.getString("duration"));
+                String diabetesMedicineDurationUnit = (String) diabetesMedication.get("durationUnit");
+                String diabetesMedicineDosingUnit = (String) diabetesMedication.get("dosingUnit");
+                String diabetesMedicineFrequency = (String) diabetesMedication.get("frequencyOfmedication");
+                String diabetesMedicineConceptId = diabetesMedication.getString("conceptId");
+                Concept diabetesMedicineAnswer = conceptService.getConcept(diabetesMedicineConceptId);
+                Concept diabetesMedicineFrequencyAnswer = convertMedicationFrequency(diabetesMedicineFrequency);
+                Concept diabetesMedicineDurationUnitsAnswer = convertDurationUnits(diabetesMedicineDurationUnit);
+                Concept diabetesMedicineDosingUnitsAnswer = convertDosingUnits(diabetesMedicineDosingUnit);
+
+                Obs diabetesMedicineObs =  processObs(diabetesMedicineConcept, diabetesMedicineAnswer, null, null, patient, user, startVisitDate);
+                Obs diabetesMedicineQuantityObs = processObs(conceptService.getConcept(160856),diabetesMedicineQuantity,patient,user,startVisitDate); // quantity
+                Obs diabetesMedicinestrengthObs = processObs(conceptService.getConcept(1444),diabetesMedicineStrength,patient,user,startVisitDate); // strength / missing in emr data sent and AA data received
+                //Obs diabetesMedicinedispensingUnitObs =processObs(conceptService.getConcept(162402),strength,patient,user,startVisitDate); // dispensing units eg each, box, kit, tin
+                Obs diabetesMedicineDurationObs = processObs(conceptService.getConcept(159368),diabetesMedicineDuration,patient,user,startVisitDate); // numeric duration e.g 10
+                Obs diabetesMedicinedosingUnitObs = processObs(conceptService.getConcept(165791),diabetesMedicineDosingUnitsAnswer, null, null, patient,user,startVisitDate); // dosing unit e.g tablets/capsules
+                Obs diabetesMedicineFrequencyObs = processObs(conceptService.getConcept(160855),diabetesMedicineFrequencyAnswer, null, null, patient,user,startVisitDate); // frequency of medication
+                Obs diabetesMedicineDurationUnitObs =processObs(conceptService.getConcept(1732),diabetesMedicineDurationUnitsAnswer, null, null, patient,user,startVisitDate);// duration unit eg days
+
+                //Obs diabetesMedicineObs =  processObs(diabetesMedicineConcept, diabetesMedicineAnswer, null, null, patient, user, startVisitDate);
+                //Obs quantityObs =processObs(conceptService.getConcept(160856),quantity,patient,user,startVisitDate); // quantity
+                //Obs strengthObs =processObs(conceptService.getConcept(1444),strength,patient,user,startVisitDate); // strength / missing in emr data sent and AA data received
+                //Obs dosingUnitObs =processObs(conceptService.getConcept(162384),dosing_unit,patient,user,startVisitDate); // dosing unit e.g tablets/capsules
+                //Obs dispensingUnitObs =processObs(conceptService.getConcept(162402),dispensing_unit,patient,user,startVisitDate); // dispensing units eg each, box, kit, tin
+                // Obs durationObs =processObs(conceptService.getConcept(159368),duration,patient,user,startVisitDate); // numeric duration e.g 10
+                // Obs durationUnitObs =processObs(conceptService.getConcept(1732),duration_unit,patient,user,startVisitDate); // duration unit eg days
+              
+                Obs diabetesGroupObs = processObs(conceptService.getConcept(166707),null,null,null,patient,user,startVisitDate);
+                diabetesGroupObs.addGroupMember(diabetesMedicineObs);
+                diabetesGroupObs.addGroupMember(diabetesMedicineQuantityObs);
+                diabetesGroupObs.addGroupMember(diabetesMedicinestrengthObs);
+                diabetesGroupObs.addGroupMember(diabetesMedicinedosingUnitObs);
+                diabetesGroupObs.addGroupMember(diabetesMedicineDurationObs);
+                diabetesGroupObs.addGroupMember(diabetesMedicineDurationUnitObs);
+                diabetesGroupObs.addGroupMember(diabetesMedicineFrequencyObs);
+                obsList.add(diabetesGroupObs);
+
+            }
+            else {
+                log.info("Missing Diabetes medicine information");
+            } 
 
             addObsToEncounter(patient,startVisitDate,stopVisitDate,obsList,user);
 
 
-//            String medicine_picked = getJSONObjectValue(jsonObject.getJSONObject("2"),"medicine_picked");
+//        String medicine_picked = getJSONObjectValue(jsonObject.getJSONObject("2"),"medicine_picked");
 //        String clinical_status = getJSONObjectValue(jsonObject.getJSONObject("3"),"clinical_status");
 //        String adherence = getJSONObjectValue(jsonObject.getJSONObject("4"),"adherence");
 //        String viral_load = getJSONObjectValue(jsonObject.getJSONObject("5"),"viral_load");
 
-        String other_complaints = getJSONObjectValue(jsonObject.getJSONObject("7"),"other_complaints");
+ //         String other_complaints = getJSONObjectValue(jsonObject.getJSONObject("7"),"other_complaints");
 //        String reference_reason = getJSONObjectValue(jsonObject.getJSONObject("8"),"reference_reason");
 //        String client_representative = getJSONObjectValue(jsonObject.getJSONObject("9"),"client_representative");
 //        String discontinue_reason = getJSONObjectValue(jsonObject.getJSONObject("10"),"discontinue_reason");
@@ -401,7 +411,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
 //        String other_drugs = getJSONObjectValue(jsonObject.getJSONObject("13"),"other_drugs");
 //        String next_facility_visit = getJSONObjectValue(jsonObject.getJSONObject("14"),"next_facility_visit");
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            log.info(e.getMessage());
         }
     }
 
@@ -437,20 +447,15 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
     }
 
     private String getJSONObjectValue(JSONObject jsonObject,String objectName){
-        String value = "";
-        log.error("entering get jsonObject value function");
-        try {
-            if(jsonObject!=null){
-              value = convertObjectToStringIfNotNull(jsonObject.getJSONObject(objectName).getJSONObject("coding").get("code"));
-            }
-            else{
-                log.error("jsonObject is null");
-            }
-        }catch (ClassCastException e) {
-            log.error("this is the json object value error");
-            log.error(e);
+        Object value = "";
+        if(jsonObject!=null) {
+          value = jsonObject.getJSONObject(objectName).getJSONObject("coding").get("code");
         }
-        return value;
+        try {
+            return (String)value;
+        }catch (ClassCastException e){
+            return null;
+        }
     }
 
     private Visit createVisit(Patient patient, Date startDate,Date stopDate,User creator,Location location){
@@ -481,12 +486,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
     }
 
     private Obs processObs(Concept question, Concept valueCoded, Date valueDateTime,String valueText,Patient patient,User creator,Date visitDate){
-        log.error("----");
-        log.error("Process obs 1: processing single obs 1");
-        log.error("setting patient obs");
-        log.error("question" + question);
-        log.error("value coded" + valueCoded);
-
+       
         Obs newObs = new Obs();
         newObs.setConcept(question);
         newObs.setValueCoded(valueCoded);
@@ -499,12 +499,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         return newObs;
     }
     private Obs processObs(Concept question,double valueNumeric,Patient patient,User creator,Date visitDate){
-        log.error("----");
-        log.error("Process obs 2: processing single obs2");
-        log.error("setting patient obs");
-        log.error("question" + question);
-        log.error("value numeric" + valueNumeric);
-
+        
         Obs newObs = new Obs();
         newObs.setConcept(question);
         newObs.setValueNumeric(valueNumeric);
@@ -516,17 +511,25 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         return newObs;
     }
 
-    private Set<Obs> addObs(Set<Obs> obsList,String artAccessValue,Concept question, Concept valueCoded, Date valueDateTime,String valueText,Patient patient,User creator,Date visitDate){
-        
-        if (artAccessValue!=null) {
-            log.error("------");
-            log.error("addObs:adding artaccess value to obs list");
-            log.error(artAccessValue);
+    private Obs processObs(Concept question,String valueText,Patient patient,User creator,Date visitDate){
+        Obs newObs = new Obs();
+        newObs.setConcept(question);
+        newObs.setValueText(valueText);
+        newObs.setCreator(creator);
+        newObs.setObsDatetime(visitDate);
+        newObs.setPerson(patient);
+        newObs.setLocation(pharmacyLocation);
+        return newObs;
+    }
 
+    private Set<Obs> addObs(Set<Obs> obsList,String artAccessValue,Concept question, Concept valueCoded, Date valueDateTime,String valueText,Patient patient,User creator,Date visitDate){
+
+        if (artAccessValue!=null) {
+            
             Obs singleProcessedOb = processObs(question,valueCoded, valueDateTime,valueText,patient,creator,visitDate);
 
             obsList.add(singleProcessedOb);
-            //log.error(obsList);
+            
         }
         else{
             log.error("Art Access value is null, could not add to obs list");
@@ -582,7 +585,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
             if (fpMethod.contains("Condoms")) {
                 conceptValue = 190;
             } else if (fpMethod.contains("Sayana Press")) {
-                conceptValue = 175315; //get concept
+                conceptValue = 175402; 
             }
         }
         if(conceptValue!=0){
@@ -593,7 +596,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
     }
 
     private Concept convertDurationUnits(String durationUnits) {
-        int conceptValue =0 ;
+        int conceptValue;
         HashMap<String, Integer> map =new HashMap<>();
         map.put("seconds", 162583);
         map.put("minutes", 1733);
@@ -613,7 +616,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
     }
 
     private Concept convertMedicationFrequency(String medicationFrequency) {
-        int conceptValue =0 ;
+        int conceptValue;
         HashMap<String, Integer> map =new HashMap<>();
         map.put("OD", 160862);
         map.put("BD", 160858);
@@ -630,7 +633,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
     }
 
     private Concept convertDosingUnits(String dosingUnits) {
-        int conceptValue =0 ;
+        int conceptValue;
         HashMap<String, Integer> map =new HashMap<>();
         map.put("tablets", 1513);
         map.put("capsules", 1608);
@@ -644,51 +647,8 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         }
     }
 
-    private Concept convertDiabetesMedicine(String diabetesMeds) {
-        int conceptValue =0 ;
-        HashMap<String, Integer> map =new HashMap<>();
-        map.put("Glibenclamide", 165610);
-        map.put("Glibenclamide 5mg", 165610);
-        map.put("Glimepiride 2mg" , 165611);
-        map.put("Insulin isophane Aspert Injection 100 IU/ml", 165627);
-        map.put("Soluble Insulin Injection 100 IU/ml", 282);
-        map.put("Bi-phasic protamine crystallised insulin aspart 30%+70% in 100 U/ml (Mixtard)", 165722);
-        map.put("Metformin 500mg", 165670);
-        map.put("Metformin 1000mg",165671); //look it up in the concept dictionary
-
-        if(diabetesMeds!=null) {
-            conceptValue = map.get(diabetesMeds);
-            return conceptService.getConcept(conceptValue);
-        }
-        else {
-            return null;
-        }
-    }
-
-    private Concept convertHypertensionMedicine(String hypertensionMeds) {
-        int conceptValue =0 ;
-        HashMap<String, Integer> map =new HashMap<>();
-        map.put("Amlodipine", 165524); //remove it later
-        map.put("Amlodipine 10mg", 165524);
-        map.put("Amlodipine 5mg" , 165524); //create it in the dictionary
-        map.put("Atenolol 50mg", 165781);
-        map.put("Bisoprolol 5mg", 165507);
-        map.put("Bendroflumethiazide 5mg", 165789);
-        map.put("Enalapril 5mg", 1242);
-        map.put("Hydrochlorothiazide 25mg",1243); //look it up in the concept dictionary
-        map.put("Losartan 50mg", 165657);
-
-        if(hypertensionMeds!=null) {
-            conceptValue = map.get(hypertensionMeds);
-            return conceptService.getConcept(conceptValue);
-        }
-        else {
-            return null;
-        }
-    }
-
     private Concept convertRegimen(String regimenName) {
-        int conceptValue =0 ;
+        int conceptValue;
         HashMap<String, Integer> map =new HashMap<>();
         map.put("TDF/3TC/EFV",99040);
         map.put("ZDV/3TC/NVP" ,0);
@@ -779,26 +739,26 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
         EncounterSearchCriteria encounterSearchCriteria = new EncounterSearchCriteria(patient, pharmacyLocation, startVisitDate, stopVisitDate, null, null, Arrays.asList(artCardEncounterType), null, Arrays.asList(visitService.getVisitTypeByUuid("2ce24f40-8f4c-4bfa-8fde-09d475783468")), null, false);
         List<Encounter> savedEncounters = encounterService.getEncounters(encounterSearchCriteria);
 
-        System.out.println("print-obs-encounters");
-        System.out.println(obsList);
-        System.out.println(savedEncounters);
+        log.info("print-obs-encounters");
+        log.info(obsList);
+        log.info(savedEncounters);
 
-        if(!savedEncounters.isEmpty() && savedEncounters.size() > 0) {
+        if(!savedEncounters.isEmpty()) {
             Encounter encounter = savedEncounters.get(0);
-            System.out.println("print-encounters");
-            System.out.println(encounter);
-            System.out.println(obsList);
-            if(!obsList.isEmpty() && obsList.size() > 0) {
-                System.out.println("print-obs");
-                System.out.println(obsList);
+            log.info("print-encounters");
+            log.info(encounter);
+            log.info(obsList);
+            if(!obsList.isEmpty()) {
+                log.info("print-obs");
+                log.info(obsList);
                 voidObsFound( encounter, obsList);
             }
             encounter.setObs(obsList);
             encounterService.saveEncounter(encounter);
-            System.out.println("encounter saved");
+            log.info("encounter saved");
 
         }else{
-            System.out.println("print visit");
+            log.info("print visit");
             Visit visit =createVisit(patient,startVisitDate,stopVisitDate,creator, pharmacyLocation);
             Encounter encounter = createEncounter(patient,startVisitDate,creator, pharmacyLocation);
             encounter.setVisit(visit);
