@@ -135,7 +135,7 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
         String url = baseurl + endpoint;
         String response = "";
         try {
-            response = getDataFromEndpoint(url1,url);
+            response = getDataFromEndpoint(url,url1);
             if (!response.isEmpty() && response.charAt(0) != '[') {
                 response = "[]";
             }
