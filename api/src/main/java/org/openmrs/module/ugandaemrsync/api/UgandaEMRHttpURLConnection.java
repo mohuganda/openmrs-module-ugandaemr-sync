@@ -144,10 +144,6 @@ public class UgandaEMRHttpURLConnection {
      * @throws Exception
      */
     public Map getByWithBasicAuth(String url, String username, String password, String resultType) throws Exception {
-        log.error(" ");
-        log.error("this is the url" + url);
-        log.error("username" + username);
-        log.error("password" + password);
 
         HttpResponse response = null;
 
@@ -172,9 +168,6 @@ public class UgandaEMRHttpURLConnection {
 
 
             response = client.execute(httpGet);
-            log.error("");
-            log.error("this is the response");
-            log.error(response);
 
             int responseCode = response.getStatusLine().getStatusCode();
             String responseMessage = response.getStatusLine().getReasonPhrase();
@@ -200,7 +193,6 @@ public class UgandaEMRHttpURLConnection {
         }
        
         return map;
-
     }
 
     /**
