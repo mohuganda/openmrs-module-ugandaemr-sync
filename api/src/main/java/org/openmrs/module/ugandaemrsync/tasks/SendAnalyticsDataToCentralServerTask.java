@@ -117,7 +117,6 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
 
             String jsonObject = "{"+ "\"metadata\":"  +facilityMetadata+ ",\"dataentry\":" +dataEntryData+"}";
 
-            System.out.println(jsonObject);
             HttpResponse httpResponse = ugandaEMRHttpURLConnection.httpPost(analyticsServerUrlEndPoint, jsonObject, syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID), syncGlobalProperties.getGlobalProperty(GP_DHIS2_ORGANIZATION_UUID));
             if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                 log.info("Analytics data has been sent to central server");
@@ -137,7 +136,6 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
         String response = "[]";
         try {
             response = getDataFromEndpoint(url,url1);
-            System.out.println(response);
             if (!response.isEmpty() && response.charAt(0) != '[') {
                 response = "[]";
             }
