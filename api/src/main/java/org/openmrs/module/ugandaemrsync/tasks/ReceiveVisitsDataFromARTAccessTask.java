@@ -170,7 +170,7 @@ public class ReceiveVisitsDataFromARTAccessTask extends AbstractTask {
 
             String next_visit_date = getJSONObjectValue(jsonObject.getJSONObject("1"), "next_visit_date");
            try{ Date return_date = ugandaEMRSyncService.convertStringToDate(next_visit_date, "00:00:00", ugandaEMRSyncService.getDateFormat(next_visit_date));
-            if(!Objects.equals(next_visit_date, "") && next_visit_date!=null) {
+            if(next_visit_date!="" && next_visit_date!=null) {
                 log.info("adding next_visit_date to obs list");
                 log.info(next_visit_date);
                 addObs(obsList, next_visit_date, conceptService.getConcept((int) conceptsCaptured.get("next_visit_date")), 
