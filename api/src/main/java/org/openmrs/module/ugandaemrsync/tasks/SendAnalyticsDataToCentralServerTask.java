@@ -4,6 +4,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.reporting.common.DateUtil;
 import org.openmrs.module.reporting.common.MessageUtil;
@@ -22,6 +30,8 @@ import org.openmrs.module.reporting.report.renderer.TextTemplateRenderer;
 import org.openmrs.module.reporting.report.renderer.template.TemplateEngine;
 import org.openmrs.module.reporting.report.renderer.template.TemplateEngineManager;
 import org.openmrs.module.reporting.report.service.ReportService;
+import org.openmrs.module.reporting.report.util.ReportUtil;
+import org.openmrs.module.ugandaemrsync.api.UgandaEMRSyncService;
 import org.openmrs.module.ugandaemrsync.server.SyncGlobalProperties;
 import org.openmrs.module.ugandaemrsync.api.UgandaEMRHttpURLConnection;
 import org.openmrs.scheduler.tasks.AbstractTask;
@@ -135,23 +145,23 @@ public class SendAnalyticsDataToCentralServerTask extends AbstractTask {
         ReportDesign reportDesign = reportDesigns.stream().filter(p -> "JSON".equals(p.getName())).findAny().orElse(null);
 
 
-        String reportRendergingMode = JSON_REPORT_RENDERER_TYPE + "!" + reportDesign.getUuid();
-        RenderingMode renderingMode = new RenderingMode(reportRendergingMode);
-        if (!renderingMode.getRenderer().canRender(rd)) {
-            throw new IllegalArgumentException("Unable to render Report with " + reportRendergingMode);
-        }
+            String reportRendergingMode = JSON_REPORT_RENDERER_TYPE + "!" + reportDesign.getUuid();
+            RenderingMode renderingMode = new RenderingMode(reportRendergingMode);
+            if (!renderingMode.getRenderer().canRender(rd)) {
+                throw new IllegalArgumentException("Unable to render Report with " + reportRendergingMode);
+            }
 
-        File file = new File(OpenmrsUtil.getApplicationDataDirectory() + "/analytics");
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
+            File file = new File(OpenmrsUtil.getApplicationDataDirectory() + "/analytics");
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
 
-        Writer pw = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
-        TextTemplateRenderer textTemplateRenderer = new TextTemplateRenderer();
-        ReportDesignResource reportDesignResource = textTemplateRenderer.getTemplate(reportDesign);
-        String templateContents = new String(reportDesignResource.getContents(), StandardCharsets.UTF_8);
-        templateContents = fillTemplateWithReportData(pw, templateContents, reportData, reportDesign, fileOutputStream);
+            Writer pw = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
+            TextTemplateRenderer textTemplateRenderer = new TextTemplateRenderer();
+            ReportDesignResource reportDesignResource = textTemplateRenderer.getTemplate(reportDesign);
+            String templateContents = new String(reportDesignResource.getContents(), StandardCharsets.UTF_8);
+            templateContents = fillTemplateWithReportData(pw, templateContents, reportData, reportDesign, fileOutputStream);
 
 
-        return templateContents;
+            return templateContents;
     }
 
 
