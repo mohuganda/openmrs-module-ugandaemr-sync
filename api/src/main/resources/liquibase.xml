@@ -1884,7 +1884,7 @@
 
 
     <!--FSHR-->
-    <changeSet id="ugandaemrsync-2024-07-10-1001" author="slubwama">
+    <changeSet id="ugandaemrsync-2024-08-12-1112" author="slubwama">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
                 SELECT COUNT(*) FROM sync_fhir_profile WHERE uuid = '6a675910-8b97-43d6-8956-ec5d5e3dda9f'
@@ -1909,7 +1909,7 @@
             <column name="keep_profile_identifier_only" value="0"/>
             <column name="searchable" value="1"/>
             <column name="search_url" value="http://165.227.170.84:9091/fhir/Patient"/>
-            <column name="created_by" value="1"/>
+            <column name="creator" value="1"/>
             <column name="date_created" value="2024-06-10 09:09:50"/>
             <column name="voided" value="0"/>
             <column name="uuid" value="6a675910-8b97-43d6-8956-ec5d5e3dda9f"/>
@@ -1933,7 +1933,7 @@
             <column name="date_created" valueDate="CURRENT_TIMESTAMP" />
             <column name="start_on_startup" value="1"/>
             <column name="started" value="1"/>
-            <column name="creator" value="1"/>
+            <column name="created_by" value="1" />
             <column name="uuid" value="2ea451ae-b018-4003-8379-04b08fe66856" />
         </insert>
     </changeSet>
