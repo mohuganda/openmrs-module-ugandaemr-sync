@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.List;
 
 public class SyncConstant {
+
+	public final static String MODULE_ID = "ugandaemrsync";
 	public static final String OPENMRS_IDENTIFIER_TYPE_UUID = "05a29f94-c0ed-11e2-94be-8c13b969e334";
 	public static final String OPENMRS_IDENTIFIER_SYSTEM_URL_GP= "ugandaemrsync.identifier.system.openmrs";
 	public static final String NATIONAL_ID_IDENTIFIER_TYPE_UUID = "f0c16a6d-dc5f-4118-a803-616d0075d282";
@@ -494,8 +496,7 @@ public class SyncConstant {
     public static final String FHIR_BUNDLE_RESOURCE_METHOD_POST ="{\"resource\":%s,\"request\":{\"method\":\"POST\"}}";
     public static final String FHIR_BUNDLE_RESOURCE_METHOD_PUT ="{\"resource\":%s,\"request\":{\"method\":\"PUT\",\"url\":\"%s\"}}";
     public static final String FHIR_CODING_DATATYPE ="{\"system\":\"%s\",\"code\":\"%s\",\"display\":\"%s\"}";
-    public static final String FHIR_FILTER_OBJECT_STRING="{\"observationFilter\":{\"encounterReference\":[],\"patientReference\":[],\"hasMemberReference\":[],\"valueConcept\":\"valueConceptUUIDS\",\"valueDateParam\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"valueQuantityParam\":[],\"valueStringParam\":[],\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"code\":conceptQuestionUUID,\"category\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"patientFilter\":{\"name\":[],\"given\":[],\"family\":[],\"identifier\":[],\"gender\":[],\"birthDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deathDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"encounterFilter\":{\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"location\":[],\"participant\":[],\"subject\":[],\"type\":encounterTypeUUID,\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"personFilter\":{\"name\":[],\"gender\":[],\"birthDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"practitionerFilter\":{\"identifier\":[],\"name\":[],\"given\":[],\"family\":[],\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"episodeofcareFilter\":{\"type\":episodeOfCareTypeUUID,\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}}}";
-
+    public static final String FHIR_FILTER_OBJECT_STRING="{\"observationFilter\":{\"encounterReference\":[],\"patientReference\":[],\"hasMemberReference\":[],\"valueConcept\":[],\"valueDateParam\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"valueQuantityParam\":[],\"valueStringParam\":[],\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"code\":[],\"category\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"patientFilter\":{\"name\":[],\"given\":[],\"family\":[],\"identifier\":[],\"gender\":[],\"birthDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deathDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"encounterFilter\":{\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"location\":[],\"participant\":[],\"subject\":[],\"type\":\"\",\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"personFilter\":{\"name\":[],\"gender\":[],\"birthDate\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"practitionerFilter\":{\"identifier\":[],\"name\":[],\"given\":[],\"family\":[],\"deceased\":[],\"city\":[],\"state\":[],\"postalCode\":[],\"country\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"episodeofcareFilter\":{\"type\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"medicationdispenseFilter\":{\"encounterReference\":[],\"patientReference\":[],\"hasMemberReference\":[],\"valueConcept\":[],\"valueDateParam\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"valueQuantityParam\":[],\"valueStringParam\":[],\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"code\":[],\"category\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"medicationrequestFilter\":{\"encounterReference\":[],\"patientReference\":[],\"hasMemberReference\":[],\"valueConcept\":[],\"valueDateParam\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"valueQuantityParam\":[],\"valueStringParam\":[],\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"code\":[],\"category\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"diagnosticreportFilter\":{\"encounterReference\":[],\"patientReference\":[],\"hasMemberReference\":[],\"valueConcept\":[],\"valueDateParam\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"valueQuantityParam\":[],\"valueStringParam\":[],\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"code\":[],\"category\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"conditionFilter\":{\"encounterReference\":[],\"patientReference\":[],\"hasMemberReference\":[],\"valueConcept\":[],\"valueDateParam\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"valueQuantityParam\":[],\"valueStringParam\":[],\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"code\":[],\"category\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}},\"servicerequestFilter\":{\"encounterReference\":[],\"patientReference\":[],\"hasMemberReference\":[],\"valueConcept\":[],\"valueDateParam\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"valueQuantityParam\":[],\"valueStringParam\":[],\"date\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"},\"code\":[],\"category\":[],\"id\":[],\"lastUpdated\":{\"lowerBound\":\"\",\"myUpperBound\":\"\"}}}";
 
 	public static final String firstLineBody = "{\"system\": \"http://snomed.info/sct\",\"code\": \"708255002\",\"display\": \"First Line Treatment\"}";
 	public static final String secondLineBody = "{\"system\": \"http://snomed.info/sct\",\"code\": \"708256001\",\"display\": \"Second Line Treatment\"}";
@@ -509,4 +510,51 @@ public class SyncConstant {
 			"where ot.uuid='131168f4-15f5-102d-96e4-000c29c2a5d7' and o.voided=0 and patient_id=%s and DATE(date_activated) <='%s'" +
 			" and o.concept_id in (SELECT answer_concept from concept_answer where concept_id=90315) ORDER BY date_activated DESC LIMIT 1\n";
 	public static final String ALIS_SYNC_TASK_TYPE_UUID = "d4a3ebbb-e793-4e56-867c-0cf998e51f56";
+
+
+	public final static String EAFYA_STOCK_SYNC_TASK_UUID = "2def1dea-fc0b-11ef-ab84-28977ca9db4b";
+
+	public final static String MAIN_STORE_LOCATION_UUID = "19dbe2c0-289d-11ed-bdcb-507b9dea1806";
+
+	public final static String EAFYA_STOCK_SOURCE_UUID = "9babcc02-fc0b-11ef-ab84-28977ca9db4b";
+
+
+	public final static String EAFYA_SMART_ERP_RECEIVE_STOCK = "Recieved stock from eAFYA";
+
+	public final static String PIECES = "167040";
+
+	public final static String VIAL = "162382";
+
+	public final static String TABLETS = "1513";
+
+	public final static String CAPSULE = "1608";
+
+	public final static String PACKS = "162398";
+
+	public final static String AMPOULE = "162335";
+
+	public final static String BOTTLE = "162353";
+
+	public final static String LITERS = "162262";
+
+	public final static String BLISTER = "165728";
+
+	public final static String BOX = "162396";
+	public final static String TIN="1291";
+	public final static String TAB="1513";
+	public final static String CAP="1608";
+	public final static String GRAM="161554";
+	public final static String AMPULE="162335";
+	public final static String BAR="162351";
+	public final static String CAN="162354";
+	public final static String KILOGRAM="162362";
+	public final static String TUBE="162380";
+	public final static String BAG="162395";
+	public final static String PACKET="162398";
+	public final static String ROLL="162861";
+	public final static String PESSARY="165538";
+	public final static String PACK="65728";
+	public final static String CYLINDER="166389";
+	public final static String CYCLE="166994";
+	public final static String PIECE="167040";
 }
