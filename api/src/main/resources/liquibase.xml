@@ -2020,7 +2020,7 @@
         </sql>
     </changeSet>
 
-    <changeSet id="ugandaemr-2025-05-30-1940" author="yourname">
+    <changeSet id="ugandaemr-2025-06-10-1232" author="mmwanje">
         <comment>U4X-1024: Create FHIR Patient Identifier System mappings for known exchangeable identifiers</comment>
         <sql>
             INSERT INTO fhir_patient_identifier_system ( patient_identifier_type_id, name, url, creator, date_created, retired, uuid )
@@ -2030,7 +2030,9 @@
             UNION ALL
             SELECT patient_identifier_type_id, name, 'http://health.go.ug/cr/hin' as url, 1, '2025-04-28 08:43:43', 0, '4d7a626e-3d70-11f0-bcbd-bf35c84f3004' FROM patient_identifier_type WHERE uuid = '4c7d6bb2-c8a6-40d3-b70d-fffc062f3416'
             UNION ALL
-            SELECT patient_identifier_type_id, name, 'http://health.go.ug/cr/nationalid' as url, 1, '2025-04-28 08:43:43', 0, '5e8a626e-3d70-11f0-bcbd-bf35c84f3004' FROM patient_identifier_type WHERE uuid = 'f0c16a6d-dc5f-4118-a803-616d0075d282';
+            SELECT patient_identifier_type_id, name, 'http://health.go.ug/cr/nationalid' as url, 1, '2025-04-28 08:43:43', 0, '5e8a626e-3d70-11f0-bcbd-bf35c84f3004' FROM patient_identifier_type WHERE uuid = 'f0c16a6d-dc5f-4118-a803-616d0075d282'
+            UNION ALL
+            SELECT patient_identifier_type_id, name, 'http://health.go.ug/uic' as url, 1, '2025-06-10 12:31:43', 0, 'f87c46cc-4202-11f0-bed2-4212909f6a37' FROM patient_identifier_type WHERE uuid = '877169c4-92c6-4cc9-bf45-1ab95faea242';
         </sql>
     </changeSet>
 </databaseChangeLog>
